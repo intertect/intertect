@@ -1,6 +1,6 @@
 {
   "name": "intertect",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "An interactive learning tool for computer architecture",
   "main": "server.js",
   "scripts": {
