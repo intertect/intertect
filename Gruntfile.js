@@ -27,4 +27,6 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-bootlint');
 
   grunt.registerTask('default', ['eslint', 'bootlint']);
+  // grunt build is a no-op until we have tasks to perform
+  grunt.registerTask('build', () => {});
 };
