@@ -6,7 +6,7 @@ An interactive learning tool for computer architecture
 Download dependencies
 
     npm install
-    node server
+    node start
 
     # Or if you want to change the port
-    PORT=7878 node server
+    PORT=7878 node start
