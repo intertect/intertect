@@ -10,6 +10,7 @@ module.exports = function (grunt) {
     eslint: {
       target: ['Gruntfile.js', '.eslint.js', 'server.js'],
       options: {
+        configFile: 'config/eslint.js',
         fix: true,
       },
     },
@@ -26,4 +27,6 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-bootlint');
 
   grunt.registerTask('default', ['eslint', 'bootlint']);
+  // grunt build is a no-op until we have tasks to perform
+  grunt.registerTask('build', () => {});
 };
