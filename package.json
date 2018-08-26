@@ -25,10 +25,13 @@
   "devDependencies": {
     "connect": "^3.6.6",
     "grunt": "^1.0.3",
+    "grunt-eslint": "^21.0.0",
     "grunt-htmllint": "^0.3.0",
     "grunt-linter": "^0.3.3",
     "htmllint": "^0.7.2",
     "jshint": "^2.9.6",
-    "serve-static": "^1.13.2"
+    "load-grunt-tasks": "^4.0.0",
+    "serve-static": "^1.13.2",
+    "standard": "^11.0.1"
   }
 }
