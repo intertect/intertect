@@ -3,7 +3,6 @@ node_js:
   - "8.11.4"
 before_install: npm install -g grunt-cli
 install: npm install
-before_script: grunt
 deploy:
   provider: heroku
   api_key:
