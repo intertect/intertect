@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Intertect</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="Computer architecture learning tool">
+    <meta name="keywords" content="HTML,CSS,XML,JavaScript">
+    <meta name="author" content="Yash Patel, Peter DeLong">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"> 
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body ng-controller="Ctrl">
+    <nav class="navbar navbar-inverse" role="navigation" style="background-color:#428BCA;border:0px;border-radius:0px;">
+        <div class="container">
+            <div class="navbar-header">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-success navbar-btn" ng-click="run()" ng-hide="isRunning"><span class="glyphicon glyphicon-play"></span> Run</button>
+                    <button type="button" class="btn btn-default navbar-btn" ng-click="stop()" ng-show="isRunning"><span class="glyphicon glyphicon-stop"></span> Stop</button>
+                    <button type="button" class="btn btn-default navbar-btn" ng-click="executeStep()" ng-disabled="isRunning"><span class="glyphicon glyphicon-forward"></span> Step</button>
+                </div>
+                <button type="button" class="btn btn-default navbar-btn" ng-click="reset()">Reset</button>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-7 col-md-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">Code</h4>
+                    </div>
+                    <div class="panel-body">
+                        <form role="form">
+                            <textarea id="sourceCode"
+                                      class="form-control source-code"
+                                      style="margin-bottom:5px;"
+                                      rows="35"
+                                      tab-support
+                                      select-line
+                                      ng-model="code"></textarea>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix visible-xs visible-sm"></div>
+            <div class="col-lg-5 col-md-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">Implement</h4>
+                    </div>
+                    <form role="form">
+                        <textarea id="sourceCode"
+                                  class="form-control source-code"
+                                  style="margin-bottom:5px;"
+                                  rows="35"
+                                  tab-support
+                                  select-line
+                                  ng-model="code"></textarea>
+                        <button type="button" class="btn btn-default" ng-click="assemble()">Compile</button>
+                    </form>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">CPU & Memory</h4>
+                    </div>
+                    <div class="panel-body">
+                        <p class="text-muted">Registers / Flags</p>
+                        <table class="table table-condensed table-striped">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:center">A</th>
+                                    <th style="text-align:center">B</th>
+                                    <th style="text-align:center">C</th>
+                                    <th style="text-align:center">D</th>
+                                    <th style="text-align:center">IP</th>
+                                    <th style="text-align:center">SP</th>
+                                    <th style="text-align:center">Z</th>
+                                    <th style="text-align:center">C</th>
+                                    <th style="text-align:center">F</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="text-align:center;" class="source-code">
+                                    <td><div style="margin:auto;" class="marker marker-sp"><small>blah</small></div></td>
+                                    <td><div style="margin:auto;" class="marker marker-sp"><small>blah</small></div></td>
+                                    <td><div style="margin:auto;" class="marker marker-sp"><small>blah</small></div></td>
+                                    <td><div style="margin:auto;" class="marker marker-sp"><small>blah</small></div></td>
+                                    <td><div style="margin:auto;" class="marker marker-sp"><small>blah</small></div></td>
+                                    <td><div style="margin:auto;" class="marker marker-sp"><small>blah</small></div></td>
+                                    <td><small>blah</small></td>
+                                    <td><small>blah</small></td>
+                                    <td><small>blah</small></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p class="text-muted">RAM</p>
+                        <div style="width:29em;" class="source-code">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr style="margin-top:10px;margin-bottom:10px;"/>
+    </div>
+
+    <footer>
+        <p>&copy;2018 Yash Patel and Peter DeLong. All rights reserved.</p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+</body>
+</html>
