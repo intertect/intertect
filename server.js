@@ -4,11 +4,21 @@
 */
 /* eslint-disable no-console */
 
-const connect = require('connect');
-const serveStatic = require('serve-static');
+var app = require('./app')
 
-const PORT = process.env.PORT !== undefined ? process.env.PORT : 8080;
+// set up server-side logging
+var bole = require('bole')
+bole.output({level: 'debug', stream: process.stdout})
+var log = bole('server')
+log.info('server process starting')
 
-connect().use(serveStatic(`${__dirname}/public/`)).listen(PORT, () => {
-  console.log(`Server running on ${PORT}`);
-});
+const PORT = "8080";
+const IP = "127.0.0.1";
+
+app.listen(PORT, IP, function (error) {
+  if (error) {
+    log.error('Unable to listen for connections', error)
+    process.exit(10)
+  }
+  log.info('express is listening on http://' + IP + ':' + PORT)
+})
