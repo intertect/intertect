@@ -19,4 +19,5 @@ app.get('/architecture', function (req, res) {
   res.sendFile(path.join(__dirname + '/public/architecture.html'));
 })
 
+app.use("/public", express.static(__dirname + "/public"));
 module.exports = app

@@ -3,4 +3,9 @@
 * All rights reserved.
 */
 
-const vivus = require('vivus');
+const Vivus = require('vivus');
+new Vivus('ls', {
+	start: 'autostart',
+	type: 'delayed',
+	duration: 150
+});

@@ -1111,6 +1111,10 @@ parsePositiveInt = function (value, defaultValue) {
 * All rights reserved.
 */
 
-const vivus = require('vivus');
-new Vivus('my-div', {duration: 200, file: 'link/to/my.svg'}, myCallback);
+const Vivus = require('vivus');
+new Vivus('ls', {
+	start: 'autostart',
+	type: 'delayed',
+	duration: 150
+});
 },{"vivus":1}]},{},[2]);
