@@ -4,7 +4,7 @@
 */
 
 const Vivus = require('vivus');
-new Vivus('ls', {
+new Vivus('monitor', {
 	start: 'autostart',
 	type: 'delayed',
 	duration: 150
