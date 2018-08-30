@@ -10,45 +10,29 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"> 
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/public/css/intro.css">
 </head>
 
 <body>
-    <div class="col-md-12 centered">
-        <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1000" id="monitor" >
-            <path d="M500,100 
-            h400 
-            a20,20 0 0 1 20,20 
-            v600 
-            a20,20 0 0 1 -20,20 
-            h-800 
-            a20,20 0 0 1 -20,-20 
-            v-600 
-            a20,20 0 0 1 20,-20 z" style="fill:none;stroke:black;stroke-width:10"/>
-
-            <path d="M500,150 
-            h350 
-            a20,20 0 0 1 20,20 
-            v500 
-            a20,20 0 0 1 -20,20 
-            h-700 
-            a20,20 0 0 1 -20,-20 
-            v-500 
-            a20,20 0 0 1 20,-20 z" style="fill:none;stroke:black;stroke-width:10"/>
-        </svg>
-
-        <path d="M500,150 
-            h350 
-            a20,20 0 0 1 20,20 
-            v500 
-            a20,20 0 0 1 -20,20 
-            h-700 
-            a20,20 0 0 1 -20,-20 
-            v-500 
-            a20,20 0 0 1 20,-20 z" style="fill:black;stroke:black;stroke-width:10"/>
+    <div class="shell-wrap">
+      <p class="shell-top-bar">/Users/ypatel5400/intertect/</p>
+      <ul class="shell-body" id="terminal"></ul>
     </div>
 
     <footer>
         <p>&copy;2018 Yash Patel and Peter DeLong. All rights reserved.</p>
     </footer>
-    <script src="/public/js/monitor.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.9/typed.min.js"></script>
+    <script>
+        var typed = new Typed('#terminal', {
+          strings: [
+            `
+              <li>cat desc.txt</li>
+              <li>Fuck yeah, this is the one</li>
+            `
+            ],
+          typeSpeed: 30
+        });
+    </script>
 </body>

@@ -1,1120 +1,1058 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
-/**
- * vivus - JavaScript library to make drawing animation on SVG
- * @version v0.4.4
- * @link https://github.com/maxwellito/vivus
- * @license MIT
+/*!
+ * 
+ *   typed.js - A JavaScript Typing Animation Library
+ *   Author: Matt Boldt <me@mattboldt.com>
+ *   Version: v2.0.9
+ *   Url: https://github.com/mattboldt/typed.js
+ *   License(s): MIT
+ * 
  */
-
-'use strict';
-
-(function () {
-
-  'use strict';
-
-/**
- * Pathformer
- * Beta version
- *
- * Take any SVG version 1.1 and transform
- * child elements to 'path' elements
- *
- * This code is purely forked from
- * https://github.com/Waest/SVGPathConverter
- */
-
-/**
- * Class constructor
- *
- * @param {DOM|String} element Dom element of the SVG or id of it
- */
-function Pathformer(element) {
-  // Test params
-  if (typeof element === 'undefined') {
-    throw new Error('Pathformer [constructor]: "element" parameter is required');
-  }
-
-  // Set the element
-  if (element.constructor === String) {
-    element = document.getElementById(element);
-    if (!element) {
-      throw new Error('Pathformer [constructor]: "element" parameter is not related to an existing ID');
-    }
-  }
-  if (element instanceof window.SVGElement || 
-      element instanceof window.SVGGElement ||
-      /^svg$/i.test(element.nodeName)) {
-    this.el = element;
-  } else {
-    throw new Error('Pathformer [constructor]: "element" parameter must be a string or a SVGelement');
-  }
-
-  // Start
-  this.scan(element);
-}
-
-/**
- * List of tags which can be transformed
- * to path elements
- *
- * @type {Array}
- */
-Pathformer.prototype.TYPES = ['line', 'ellipse', 'circle', 'polygon', 'polyline', 'rect'];
-
-/**
- * List of attribute names which contain
- * data. This array list them to check if
- * they contain bad values, like percentage.
- *
- * @type {Array}
- */
-Pathformer.prototype.ATTR_WATCH = ['cx', 'cy', 'points', 'r', 'rx', 'ry', 'x', 'x1', 'x2', 'y', 'y1', 'y2'];
-
-/**
- * Finds the elements compatible for transform
- * and apply the liked method
- *
- * @param  {object} options Object from the constructor
- */
-Pathformer.prototype.scan = function (svg) {
-  var fn, element, pathData, pathDom,
-      elements = svg.querySelectorAll(this.TYPES.join(','));
-
-  for (var i = 0; i < elements.length; i++) {
-    element = elements[i];
-    fn = this[element.tagName.toLowerCase() + 'ToPath'];
-    pathData = fn(this.parseAttr(element.attributes));
-    pathDom = this.pathMaker(element, pathData);
-    element.parentNode.replaceChild(pathDom, element);
-  }
-};
-
-
-/**
- * Read `line` element to extract and transform
- * data, to make it ready for a `path` object.
- *
- * @param  {DOMelement} element Line element to transform
- * @return {object}             Data for a `path` element
- */
-Pathformer.prototype.lineToPath = function (element) {
-  var newElement = {},
-      x1 = element.x1 || 0,
-      y1 = element.y1 || 0,
-      x2 = element.x2 || 0,
-      y2 = element.y2 || 0;
-
-  newElement.d = 'M' + x1 + ',' + y1 + 'L' + x2 + ',' + y2;
-  return newElement;
-};
-
-/**
- * Read `rect` element to extract and transform
- * data, to make it ready for a `path` object.
- * The radius-border is not taken in charge yet.
- * (your help is more than welcomed)
- *
- * @param  {DOMelement} element Rect element to transform
- * @return {object}             Data for a `path` element
- */
-Pathformer.prototype.rectToPath = function (element) {
-  var newElement = {},
-      x      = parseFloat(element.x)      || 0,
-      y      = parseFloat(element.y)      || 0,
-      width  = parseFloat(element.width)  || 0,
-      height = parseFloat(element.height) || 0;
-
-  if (element.rx || element.ry) {
-    var rx = parseInt(element.rx, 10) || -1,
-        ry = parseInt(element.ry, 10) || -1;
-    rx = Math.min(Math.max(rx < 0 ? ry : rx, 0), width/2);
-    ry = Math.min(Math.max(ry < 0 ? rx : ry, 0), height/2);
-
-    newElement.d = 'M ' + (x + rx) + ',' + y + ' ' +
-                   'L ' + (x + width - rx) + ',' + y + ' ' +
-                   'A ' + rx + ',' + ry + ',0,0,1,' + (x + width) + ',' + (y + ry) + ' ' +
-                   'L ' + (x + width) + ',' + (y + height - ry) + ' ' +
-                   'A ' + rx + ',' + ry + ',0,0,1,' + (x + width - rx) + ',' + (y + height) + ' ' +
-                   'L ' + (x + rx) + ',' + (y + height) + ' ' +
-                   'A ' + rx + ',' + ry + ',0,0,1,' + x + ',' + (y + height - ry) + ' ' +
-                   'L ' + x + ',' + (y + ry) + ' ' +
-                   'A ' + rx + ',' + ry + ',0,0,1,' + (x + rx) + ',' + y;
-  }
-  else {
-    newElement.d = 'M' + x + ' ' + y + ' ' +
-                   'L' + (x + width) + ' ' + y + ' ' +
-                   'L' + (x + width) + ' ' + (y + height) + ' ' +
-                   'L' + x + ' ' + (y + height) + ' Z';
-  }
-  return newElement;
-};
-
-/**
- * Read `polyline` element to extract and transform
- * data, to make it ready for a `path` object.
- *
- * @param  {DOMelement} element Polyline element to transform
- * @return {object}             Data for a `path` element
- */
-Pathformer.prototype.polylineToPath = function (element) {
-  var newElement = {},
-      points = element.points.trim().split(' '),
-      i, path;
-
-  // Reformatting if points are defined without commas
-  if (element.points.indexOf(',') === -1) {
-    var formattedPoints = [];
-    for (i = 0; i < points.length; i+=2) {
-      formattedPoints.push(points[i] + ',' + points[i+1]);
-    }
-    points = formattedPoints;
-  }
-
-  // Generate the path.d value
-  path = 'M' + points[0];
-  for(i = 1; i < points.length; i++) {
-    if (points[i].indexOf(',') !== -1) {
-      path += 'L' + points[i];
-    }
-  }
-  newElement.d = path;
-  return newElement;
-};
-
-/**
- * Read `polygon` element to extract and transform
- * data, to make it ready for a `path` object.
- * This method rely on polylineToPath, because the
- * logic is similar. The path created is just closed,
- * so it needs an 'Z' at the end.
- *
- * @param  {DOMelement} element Polygon element to transform
- * @return {object}             Data for a `path` element
- */
-Pathformer.prototype.polygonToPath = function (element) {
-  var newElement = Pathformer.prototype.polylineToPath(element);
-
-  newElement.d += 'Z';
-  return newElement;
-};
-
-/**
- * Read `ellipse` element to extract and transform
- * data, to make it ready for a `path` object.
- *
- * @param  {DOMelement} element ellipse element to transform
- * @return {object}             Data for a `path` element
- */
-Pathformer.prototype.ellipseToPath = function (element) {
-  var newElement = {},
-      rx = parseFloat(element.rx) || 0,
-      ry = parseFloat(element.ry) || 0,
-      cx = parseFloat(element.cx) || 0,
-      cy = parseFloat(element.cy) || 0,
-      startX = cx - rx,
-      startY = cy,
-      endX = parseFloat(cx) + parseFloat(rx),
-      endY = cy;
-
-  newElement.d = 'M' + startX + ',' + startY +
-                 'A' + rx + ',' + ry + ' 0,1,1 ' + endX + ',' + endY +
-                 'A' + rx + ',' + ry + ' 0,1,1 ' + startX + ',' + endY;
-  return newElement;
-};
-
-/**
- * Read `circle` element to extract and transform
- * data, to make it ready for a `path` object.
- *
- * @param  {DOMelement} element Circle element to transform
- * @return {object}             Data for a `path` element
- */
-Pathformer.prototype.circleToPath = function (element) {
-  var newElement = {},
-      r  = parseFloat(element.r)  || 0,
-      cx = parseFloat(element.cx) || 0,
-      cy = parseFloat(element.cy) || 0,
-      startX = cx - r,
-      startY = cy,
-      endX = parseFloat(cx) + parseFloat(r),
-      endY = cy;
-      
-  newElement.d =  'M' + startX + ',' + startY +
-                  'A' + r + ',' + r + ' 0,1,1 ' + endX + ',' + endY +
-                  'A' + r + ',' + r + ' 0,1,1 ' + startX + ',' + endY;
-  return newElement;
-};
-
-/**
- * Create `path` elements form original element
- * and prepared objects
- *
- * @param  {DOMelement} element  Original element to transform
- * @param  {object} pathData     Path data (from `toPath` methods)
- * @return {DOMelement}          Path element
- */
-Pathformer.prototype.pathMaker = function (element, pathData) {
-  var i, attr, pathTag = document.createElementNS('http://www.w3.org/2000/svg','path');
-  for(i = 0; i < element.attributes.length; i++) {
-    attr = element.attributes[i];
-    if (this.ATTR_WATCH.indexOf(attr.name) === -1) {
-      pathTag.setAttribute(attr.name, attr.value);
-    }
-  }
-  for(i in pathData) {
-    pathTag.setAttribute(i, pathData[i]);
-  }
-  return pathTag;
-};
-
-/**
- * Parse attributes of a DOM element to
- * get an object of attribute => value
- *
- * @param  {NamedNodeMap} attributes Attributes object from DOM element to parse
- * @return {object}                  Object of attributes
- */
-Pathformer.prototype.parseAttr = function (element) {
-  var attr, output = {};
-  for (var i = 0; i < element.length; i++) {
-    attr = element[i];
-    // Check if no data attribute contains '%', or the transformation is impossible
-    if (this.ATTR_WATCH.indexOf(attr.name) !== -1 && attr.value.indexOf('%') !== -1) {
-      throw new Error('Pathformer [parseAttr]: a SVG shape got values in percentage. This cannot be transformed into \'path\' tags. Please use \'viewBox\'.');
-    }
-    output[attr.name] = attr.value;
-  }
-  return output;
-};
-
-  'use strict';
-
-var setupEnv, requestAnimFrame, cancelAnimFrame, parsePositiveInt;
-
-/**
- * Vivus
- * Beta version
- *
- * Take any SVG and make the animation
- * to give give the impression of live drawing
- *
- * This in more than just inspired from codrops
- * At that point, it's a pure fork.
- */
-
-/**
- * Class constructor
- * option structure
- *   type: 'delayed'|'sync'|'oneByOne'|'script' (to know if the items must be drawn synchronously or not, default: delayed)
- *   duration: <int> (in frames)
- *   start: 'inViewport'|'manual'|'autostart' (start automatically the animation, default: inViewport)
- *   delay: <int> (delay between the drawing of first and last path)
- *   dashGap <integer> whitespace extra margin between dashes
- *   pathTimingFunction <function> timing animation function for each path element of the SVG
- *   animTimingFunction <function> timing animation function for the complete SVG
- *   forceRender <boolean> force the browser to re-render all updated path items
- *   selfDestroy <boolean> removes all extra styling on the SVG, and leaves it as original
- *
- * The attribute 'type' is by default on 'delayed'.
- *  - 'delayed'
- *    all paths are draw at the same time but with a
- *    little delay between them before start
- *  - 'sync'
- *    all path are start and finish at the same time
- *  - 'oneByOne'
- *    only one path is draw at the time
- *    the end of the first one will trigger the draw
- *    of the next one
- *
- * All these values can be overwritten individually
- * for each path item in the SVG
- * The value of frames will always take the advantage of
- * the duration value.
- * If you fail somewhere, an error will be thrown.
- * Good luck.
- *
- * @constructor
- * @this {Vivus}
- * @param {DOM|String}   element  Dom element of the SVG or id of it
- * @param {Object}       options  Options about the animation
- * @param {Function}     callback Callback for the end of the animation
- */
-function Vivus (element, options, callback) {
-
-  setupEnv();
-
-  // Setup
-  this.isReady = false;
-  this.setElement(element, options);
-  this.setOptions(options);
-  this.setCallback(callback);
-
-  if (this.isReady) {
-    this.init();
-  }
-}
-
-/**
- * Timing functions
- **************************************
- *
- * Default functions to help developers.
- * It always take a number as parameter (between 0 to 1) then
- * return a number (between 0 and 1)
- */
-Vivus.LINEAR          = function (x) {return x;};
-Vivus.EASE            = function (x) {return -Math.cos(x * Math.PI) / 2 + 0.5;};
-Vivus.EASE_OUT        = function (x) {return 1 - Math.pow(1-x, 3);};
-Vivus.EASE_IN         = function (x) {return Math.pow(x, 3);};
-Vivus.EASE_OUT_BOUNCE = function (x) {
-  var base = -Math.cos(x * (0.5 * Math.PI)) + 1,
-    rate = Math.pow(base,1.5),
-    rateR = Math.pow(1 - x, 2),
-    progress = -Math.abs(Math.cos(rate * (2.5 * Math.PI) )) + 1;
-  return (1- rateR) + (progress * rateR);
-};
-
-
-/**
- * Setters
- **************************************
- */
-
-/**
- * Check and set the element in the instance
- * The method will not return anything, but will throw an
- * error if the parameter is invalid
- *
- * @param {DOM|String}   element  SVG Dom element or id of it
- */
-Vivus.prototype.setElement = function (element, options) {
-  var onLoad, self;
-
-  // Basic check
-  if (typeof element === 'undefined') {
-    throw new Error('Vivus [constructor]: "element" parameter is required');
-  }
-
-  // Set the element
-  if (element.constructor === String) {
-    element = document.getElementById(element);
-    if (!element) {
-      throw new Error('Vivus [constructor]: "element" parameter is not related to an existing ID');
-    }
-  }
-  this.parentEl = element;
-
-  // Load the SVG with XMLHttpRequest and extract the SVG
-  if (options && options.file) {
-    var self = this;
-    onLoad = function (e) {
-      var domSandbox = document.createElement('div');
-      domSandbox.innerHTML = this.responseText;
-
-      var svgTag = domSandbox.querySelector('svg');
-      if (!svgTag) {
-        throw new Error('Vivus [load]: Cannot find the SVG in the loaded file : ' + options.file);
-      }
-
-      self.el = svgTag
-      self.el.setAttribute('width', '100%');
-      self.el.setAttribute('height', '100%');
-      self.parentEl.appendChild(self.el)
-      self.isReady = true;
-      self.init();
-      self = null;
-    }
-    
-    var oReq = new window.XMLHttpRequest();
-    oReq.addEventListener('load', onLoad);
-    oReq.open('GET', options.file);
-    oReq.send();
-    return;
-  }
-
-  switch (element.constructor) {
-  case window.SVGSVGElement:
-  case window.SVGElement:
-  case window.SVGGElement:
-    this.el = element;
-    this.isReady = true;
-    break;
-
-  case window.HTMLObjectElement:
-    self = this;
-    onLoad = function (e) {
-      if (self.isReady) {
-        return;
-      }
-      self.el = element.contentDocument && element.contentDocument.querySelector('svg');
-      if (!self.el && e) {
-        throw new Error('Vivus [constructor]: object loaded does not contain any SVG');
-      }
-      else if (self.el) {
-        if (element.getAttribute('built-by-vivus')) {
-          self.parentEl.insertBefore(self.el, element);
-          self.parentEl.removeChild(element);
-          self.el.setAttribute('width', '100%');
-          self.el.setAttribute('height', '100%');
-        }
-        self.isReady = true;
-        self.init();
-        self = null;
-      }
-    };
-
-    if (!onLoad()) {
-      element.addEventListener('load', onLoad);
-    }
-    break;
-
-  default:
-    throw new Error('Vivus [constructor]: "element" parameter is not valid (or miss the "file" attribute)');
-  }
-};
-
-/**
- * Set up user option to the instance
- * The method will not return anything, but will throw an
- * error if the parameter is invalid
- *
- * @param  {object} options Object from the constructor
- */
-Vivus.prototype.setOptions = function (options) {
-  var allowedTypes = ['delayed', 'sync', 'async', 'nsync', 'oneByOne', 'scenario', 'scenario-sync'];
-  var allowedStarts =  ['inViewport', 'manual', 'autostart'];
-
-  // Basic check
-  if (options !== undefined && options.constructor !== Object) {
-    throw new Error('Vivus [constructor]: "options" parameter must be an object');
-  }
-  else {
-    options = options || {};
-  }
-
-  // Set the animation type
-  if (options.type && allowedTypes.indexOf(options.type) === -1) {
-    throw new Error('Vivus [constructor]: ' + options.type + ' is not an existing animation `type`');
-  }
-  else {
-    this.type = options.type || allowedTypes[0];
-  }
-
-  // Set the start type
-  if (options.start && allowedStarts.indexOf(options.start) === -1) {
-    throw new Error('Vivus [constructor]: ' + options.start + ' is not an existing `start` option');
-  }
-  else {
-    this.start = options.start || allowedStarts[0];
-  }
-
-  this.isIE         = (window.navigator.userAgent.indexOf('MSIE') !== -1 || window.navigator.userAgent.indexOf('Trident/') !== -1 || window.navigator.userAgent.indexOf('Edge/') !== -1 );
-  this.duration     = parsePositiveInt(options.duration, 120);
-  this.delay        = parsePositiveInt(options.delay, null);
-  this.dashGap      = parsePositiveInt(options.dashGap, 1);
-  this.forceRender  = options.hasOwnProperty('forceRender') ? !!options.forceRender : this.isIE;
-  this.reverseStack = !!options.reverseStack;
-  this.selfDestroy  = !!options.selfDestroy;
-  this.onReady      = options.onReady;
-  this.map          = [];
-  this.frameLength  = this.currentFrame = this.delayUnit = this.speed = this.handle = null;
-
-  this.ignoreInvisible = options.hasOwnProperty('ignoreInvisible') ? !!options.ignoreInvisible : false;
-
-  this.animTimingFunction = options.animTimingFunction || Vivus.LINEAR;
-  this.pathTimingFunction = options.pathTimingFunction || Vivus.LINEAR;
-
-  if (this.delay >= this.duration) {
-    throw new Error('Vivus [constructor]: delay must be shorter than duration');
-  }
-};
-
-/**
- * Set up callback to the instance
- * The method will not return enything, but will throw an
- * error if the parameter is invalid
- *
- * @param  {Function} callback Callback for the animation end
- */
-Vivus.prototype.setCallback = function (callback) {
-  // Basic check
-  if (!!callback && callback.constructor !== Function) {
-    throw new Error('Vivus [constructor]: "callback" parameter must be a function');
-  }
-  this.callback = callback || function () {};
-};
-
-
-/**
- * Core
- **************************************
- */
-
-/**
- * Map the svg, path by path.
- * The method return nothing, it just fill the
- * `map` array. Each item in this array represent
- * a path element from the SVG, with informations for
- * the animation.
- *
- * ```
- * [
- *   {
- *     el: <DOMobj> the path element
- *     length: <number> length of the path line
- *     startAt: <number> time start of the path animation (in frames)
- *     duration: <number> path animation duration (in frames)
- *   },
- *   ...
- * ]
- * ```
- *
- */
-Vivus.prototype.mapping = function () {
-  var i, paths, path, pAttrs, pathObj, totalLength, lengthMeter, timePoint;
-  timePoint = totalLength = lengthMeter = 0;
-  paths = this.el.querySelectorAll('path');
-
-  for (i = 0; i < paths.length; i++) {
-    path = paths[i];
-    if (this.isInvisible(path)) {
-      continue;
-    }
-    pathObj = {
-      el: path,
-      length: Math.ceil(path.getTotalLength())
-    };
-    // Test if the path length is correct
-    if (isNaN(pathObj.length)) {
-      if (window.console && console.warn) {
-        console.warn('Vivus [mapping]: cannot retrieve a path element length', path);
-      }
-      continue;
-    }
-    this.map.push(pathObj);
-    path.style.strokeDasharray  = pathObj.length + ' ' + (pathObj.length + this.dashGap * 2);
-    path.style.strokeDashoffset = pathObj.length + this.dashGap;
-    pathObj.length += this.dashGap;
-    totalLength += pathObj.length;
-
-    this.renderPath(i);
-  }
-
-  totalLength = totalLength === 0 ? 1 : totalLength;
-  this.delay = this.delay === null ? this.duration / 3 : this.delay;
-  this.delayUnit = this.delay / (paths.length > 1 ? paths.length - 1 : 1);
-
-  // Reverse stack if asked
-  if (this.reverseStack) {
-    this.map.reverse();
-  }
-
-  for (i = 0; i < this.map.length; i++) {
-    pathObj = this.map[i];
-
-    switch (this.type) {
-    case 'delayed':
-      pathObj.startAt = this.delayUnit * i;
-      pathObj.duration = this.duration - this.delay;
-      break;
-
-    case 'oneByOne':
-      pathObj.startAt = lengthMeter / totalLength * this.duration;
-      pathObj.duration = pathObj.length / totalLength * this.duration;
-      break;
-
-    case 'sync':
-    case 'async':
-    case 'nsync':
-      pathObj.startAt = 0;
-      pathObj.duration = this.duration;
-      break;
-
-    case 'scenario-sync':
-      path = pathObj.el;
-      pAttrs = this.parseAttr(path);
-      pathObj.startAt = timePoint + (parsePositiveInt(pAttrs['data-delay'], this.delayUnit) || 0);
-      pathObj.duration = parsePositiveInt(pAttrs['data-duration'], this.duration);
-      timePoint = pAttrs['data-async'] !== undefined ? pathObj.startAt : pathObj.startAt + pathObj.duration;
-      this.frameLength = Math.max(this.frameLength, (pathObj.startAt + pathObj.duration));
-      break;
-
-    case 'scenario':
-      path = pathObj.el;
-      pAttrs = this.parseAttr(path);
-      pathObj.startAt = parsePositiveInt(pAttrs['data-start'], this.delayUnit) || 0;
-      pathObj.duration = parsePositiveInt(pAttrs['data-duration'], this.duration);
-      this.frameLength = Math.max(this.frameLength, (pathObj.startAt + pathObj.duration));
-      break;
-    }
-    lengthMeter += pathObj.length;
-    this.frameLength = this.frameLength || this.duration;
-  }
-};
-
-/**
- * Interval method to draw the SVG from current
- * position of the animation. It update the value of
- * `currentFrame` and re-trace the SVG.
- *
- * It use this.handle to store the requestAnimationFrame
- * and clear it one the animation is stopped. So this
- * attribute can be used to know if the animation is
- * playing.
- *
- * Once the animation at the end, this method will
- * trigger the Vivus callback.
- *
- */
-Vivus.prototype.drawer = function () {
-  var self = this;
-  this.currentFrame += this.speed;
-
-  if (this.currentFrame <= 0) {
-    this.stop();
-    this.reset();
-  } else if (this.currentFrame >= this.frameLength) {
-    this.stop();
-    this.currentFrame = this.frameLength;
-    this.trace();
-    if (this.selfDestroy) {
-      this.destroy();
-    }
-  } else {
-    this.trace();
-    this.handle = requestAnimFrame(function () {
-      self.drawer();
-    });
-    return;
-  }
-
-  this.callback(this);
-  if (this.instanceCallback) {
-    this.instanceCallback(this);
-    this.instanceCallback = null;
-  }
-};
-
-/**
- * Draw the SVG at the current instant from the
- * `currentFrame` value. Here is where most of the magic is.
- * The trick is to use the `strokeDashoffset` style property.
- *
- * For optimisation reasons, a new property called `progress`
- * is added in each item of `map`. This one contain the current
- * progress of the path element. Only if the new value is different
- * the new value will be applied to the DOM element. This
- * method save a lot of resources to re-render the SVG. And could
- * be improved if the animation couldn't be played forward.
- *
- */
-Vivus.prototype.trace = function () {
-  var i, progress, path, currentFrame;
-  currentFrame = this.animTimingFunction(this.currentFrame / this.frameLength) * this.frameLength;
-  for (i = 0; i < this.map.length; i++) {
-    path = this.map[i];
-    progress = (currentFrame - path.startAt) / path.duration;
-    progress = this.pathTimingFunction(Math.max(0, Math.min(1, progress)));
-    if (path.progress !== progress) {
-      path.progress = progress;
-      path.el.style.strokeDashoffset = Math.floor(path.length * (1 - progress));
-      this.renderPath(i);
-    }
-  }
-};
-
-/**
- * Method forcing the browser to re-render a path element
- * from it's index in the map. Depending on the `forceRender`
- * value.
- * The trick is to replace the path element by it's clone.
- * This practice is not recommended because it's asking more
- * ressources, too much DOM manupulation..
- * but it's the only way to let the magic happen on IE.
- * By default, this fallback is only applied on IE.
- *
- * @param  {Number} index Path index
- */
-Vivus.prototype.renderPath = function (index) {
-  if (this.forceRender && this.map && this.map[index]) {
-    var pathObj = this.map[index],
-        newPath = pathObj.el.cloneNode(true);
-    pathObj.el.parentNode.replaceChild(newPath, pathObj.el);
-    pathObj.el = newPath;
-  }
-};
-
-/**
- * When the SVG object is loaded and ready,
- * this method will continue the initialisation.
- *
- * This this mainly due to the case of passing an
- * object tag in the constructor. It will wait
- * the end of the loading to initialise.
- *
- */
-Vivus.prototype.init = function () {
-  // Set object variables
-  this.frameLength = 0;
-  this.currentFrame = 0;
-  this.map = [];
-
-  // Start
-  new Pathformer(this.el);
-  this.mapping();
-  this.starter();
-
-  if (this.onReady) {
-    this.onReady(this);
-  }
-};
-
-/**
- * Trigger to start of the animation.
- * Depending on the `start` value, a different script
- * will be applied.
- *
- * If the `start` value is not valid, an error will be thrown.
- * Even if technically, this is impossible.
- *
- */
-Vivus.prototype.starter = function () {
-  switch (this.start) {
-  case 'manual':
-    return;
-
-  case 'autostart':
-    this.play();
-    break;
-
-  case 'inViewport':
-    var self = this,
-    listener = function () {
-      if (self.isInViewport(self.parentEl, 1)) {
-        self.play();
-        window.removeEventListener('scroll', listener);
-      }
-    };
-    window.addEventListener('scroll', listener);
-    listener();
-    break;
-  }
-};
-
-
-/**
- * Controls
- **************************************
- */
-
-/**
- * Get the current status of the animation between
- * three different states: 'start', 'progress', 'end'.
- * @return {string} Instance status
- */
-Vivus.prototype.getStatus = function () {
-  return this.currentFrame === 0 ? 'start' : this.currentFrame === this.frameLength ? 'end' : 'progress';
-};
-
-/**
- * Reset the instance to the initial state : undraw
- * Be careful, it just reset the animation, if you're
- * playing the animation, this won't stop it. But just
- * make it start from start.
- *
- */
-Vivus.prototype.reset = function () {
-  return this.setFrameProgress(0);
-};
-
-/**
- * Set the instance to the final state : drawn
- * Be careful, it just set the animation, if you're
- * playing the animation on rewind, this won't stop it.
- * But just make it start from the end.
- *
- */
-Vivus.prototype.finish = function () {
-  return this.setFrameProgress(1);
-};
-
-/**
- * Set the level of progress of the drawing.
- *
- * @param {number} progress Level of progress to set
- */
-Vivus.prototype.setFrameProgress = function (progress) {
-  progress = Math.min(1, Math.max(0, progress));
-  this.currentFrame = Math.round(this.frameLength * progress);
-  this.trace();
-  return this;
-};
-
-/**
- * Play the animation at the desired speed.
- * Speed must be a valid number (no zero).
- * By default, the speed value is 1.
- * But a negative value is accepted to go forward.
- *
- * And works with float too.
- * But don't forget we are in JavaScript, se be nice
- * with him and give him a 1/2^x value.
- *
- * @param  {number} speed Animation speed [optional]
- */
-Vivus.prototype.play = function (speed, callback) {
-  this.instanceCallback = null;
-
-  if (speed && typeof speed === 'function') {
-    this.instanceCallback = speed; // first parameter is actually the callback function
-    speed = null;
-  }
-  else if (speed && typeof speed !== 'number') {
-    throw new Error('Vivus [play]: invalid speed');
-  }
-  // if the first parameter wasn't the callback, check if the seconds was
-  if (callback && typeof(callback) === 'function' && !this.instanceCallback) {
-    this.instanceCallback = callback;
-  }
-
-
-  this.speed = speed || 1;
-  if (!this.handle) {
-    this.drawer();
-  }
-  return this;
-};
-
-/**
- * Stop the current animation, if on progress.
- * Should not trigger any error.
- *
- */
-Vivus.prototype.stop = function () {
-  if (this.handle) {
-    cancelAnimFrame(this.handle);
-    this.handle = null;
-  }
-  return this;
-};
-
-/**
- * Destroy the instance.
- * Remove all bad styling attributes on all
- * path tags
- *
- */
-Vivus.prototype.destroy = function () {
-  this.stop();
-  var i, path;
-  for (i = 0; i < this.map.length; i++) {
-    path = this.map[i];
-    path.el.style.strokeDashoffset = null;
-    path.el.style.strokeDasharray = null;
-    this.renderPath(i);
-  }
-};
-
-
-/**
- * Utils methods
- * include methods from Codrops
- **************************************
- */
-
-/**
- * Method to best guess if a path should added into
- * the animation or not.
- *
- * 1. Use the `data-vivus-ignore` attribute if set
- * 2. Check if the instance must ignore invisible paths
- * 3. Check if the path is visible
- *
- * For now the visibility checking is unstable.
- * It will be used for a beta phase.
- *
- * Other improvments are planned. Like detecting
- * is the path got a stroke or a valid opacity.
- */
-Vivus.prototype.isInvisible = function (el) {
-  var rect,
-    ignoreAttr = el.getAttribute('data-ignore');
-
-  if (ignoreAttr !== null) {
-    return ignoreAttr !== 'false';
-  }
-
-  if (this.ignoreInvisible) {
-    rect = el.getBoundingClientRect();
-    return !rect.width && !rect.height;
-  }
-  else {
-    return false;
-  }
-};
-
-/**
- * Parse attributes of a DOM element to
- * get an object of {attributeName => attributeValue}
- *
- * @param  {object} element DOM element to parse
- * @return {object}         Object of attributes
- */
-Vivus.prototype.parseAttr = function (element) {
-  var attr, output = {};
-  if (element && element.attributes) {
-    for (var i = 0; i < element.attributes.length; i++) {
-      attr = element.attributes[i];
-      output[attr.name] = attr.value;
-    }
-  }
-  return output;
-};
-
-/**
- * Reply if an element is in the page viewport
- *
- * @param  {object} el Element to observe
- * @param  {number} h  Percentage of height
- * @return {boolean}
- */
-Vivus.prototype.isInViewport = function (el, h) {
-  var scrolled   = this.scrollY(),
-    viewed       = scrolled + this.getViewportH(),
-    elBCR        = el.getBoundingClientRect(),
-    elHeight     = elBCR.height,
-    elTop        = scrolled + elBCR.top,
-    elBottom     = elTop + elHeight;
-
-  // if 0, the element is considered in the viewport as soon as it enters.
-  // if 1, the element is considered in the viewport only when it's fully inside
-  // value in percentage (1 >= h >= 0)
-  h = h || 0;
-
-  return (elTop + elHeight * h) <= viewed && (elBottom) >= scrolled;
-};
-
-
-/**
- * Get the viewport height in pixels
- *
- * @return {integer} Viewport height
- */
-Vivus.prototype.getViewportH = function () {
-  var client = this.docElem.clientHeight,
-    inner = window.innerHeight;
-
-  if (client < inner) {
-    return inner;
-  }
-  else {
-    return client;
-  }
-};
-
-/**
- * Get the page Y offset
- *
- * @return {integer} Page Y offset
- */
-Vivus.prototype.scrollY = function () {
-  return window.pageYOffset || this.docElem.scrollTop;
-};
-
-setupEnv = function () {
-
-  if (Vivus.prototype.docElem) {
-    return;
-  }
-
-  /**
-   * Alias for document element
-   *
-   * @type {DOMelement}
-   */
-  Vivus.prototype.docElem = window.document.documentElement;
-
-  /**
-   * Alias for `requestAnimationFrame` or
-   * `setTimeout` function for deprecated browsers.
-   *
-   */
-  requestAnimFrame = (function () {
-    return (
-      window.requestAnimationFrame       ||
-      window.webkitRequestAnimationFrame ||
-      window.mozRequestAnimationFrame    ||
-      window.oRequestAnimationFrame      ||
-      window.msRequestAnimationFrame     ||
-      function(/* function */ callback){
-        return window.setTimeout(callback, 1000 / 60);
-      }
-    );
-  })();
-
-  /**
-   * Alias for `cancelAnimationFrame` or
-   * `cancelTimeout` function for deprecated browsers.
-   *
-   */
-  cancelAnimFrame = (function () {
-    return (
-      window.cancelAnimationFrame       ||
-      window.webkitCancelAnimationFrame ||
-      window.mozCancelAnimationFrame    ||
-      window.oCancelAnimationFrame      ||
-      window.msCancelAnimationFrame     ||
-      function(id){
-        return window.clearTimeout(id);
-      }
-    );
-  })();
-};
-
-/**
- * Parse string to integer.
- * If the number is not positive or null
- * the method will return the default value
- * or 0 if undefined
- *
- * @param {string} value String to parse
- * @param {*} defaultValue Value to return if the result parsed is invalid
- * @return {number}
- *
- */
-parsePositiveInt = function (value, defaultValue) {
-  var output = parseInt(value, 10);
-  return (output >= 0) ? output : defaultValue;
-};
-
-
-  if (typeof define === 'function' && define.amd) {
-    // AMD. Register as an anonymous module.
-    define([], function() {
-      return Vivus;
-    });
-  } else if (typeof exports === 'object') {
-    // Node. Does not work with strict CommonJS, but
-    // only CommonJS-like environments that support module.exports,
-    // like Node.
-    module.exports = Vivus;
-  } else {
-    // Browser globals
-    window.Vivus = Vivus;
-  }
-
-}());
-
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define([], factory);
+	else if(typeof exports === 'object')
+		exports["Typed"] = factory();
+	else
+		root["Typed"] = factory();
+})(this, function() {
+return /******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId])
+/******/ 			return installedModules[moduleId].exports;
+/******/
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			exports: {},
+/******/ 			id: moduleId,
+/******/ 			loaded: false
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(0);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+	
+	var _initializerJs = __webpack_require__(1);
+	
+	var _htmlParserJs = __webpack_require__(3);
+	
+	/**
+	 * Welcome to Typed.js!
+	 * @param {string} elementId HTML element ID _OR_ HTML element
+	 * @param {object} options options object
+	 * @returns {object} a new Typed object
+	 */
+	
+	var Typed = (function () {
+	  function Typed(elementId, options) {
+	    _classCallCheck(this, Typed);
+	
+	    // Initialize it up
+	    _initializerJs.initializer.load(this, options, elementId);
+	    // All systems go!
+	    this.begin();
+	  }
+	
+	  /**
+	   * Toggle start() and stop() of the Typed instance
+	   * @public
+	   */
+	
+	  _createClass(Typed, [{
+	    key: 'toggle',
+	    value: function toggle() {
+	      this.pause.status ? this.start() : this.stop();
+	    }
+	
+	    /**
+	     * Stop typing / backspacing and enable cursor blinking
+	     * @public
+	     */
+	  }, {
+	    key: 'stop',
+	    value: function stop() {
+	      if (this.typingComplete) return;
+	      if (this.pause.status) return;
+	      this.toggleBlinking(true);
+	      this.pause.status = true;
+	      this.options.onStop(this.arrayPos, this);
+	    }
+	
+	    /**
+	     * Start typing / backspacing after being stopped
+	     * @public
+	     */
+	  }, {
+	    key: 'start',
+	    value: function start() {
+	      if (this.typingComplete) return;
+	      if (!this.pause.status) return;
+	      this.pause.status = false;
+	      if (this.pause.typewrite) {
+	        this.typewrite(this.pause.curString, this.pause.curStrPos);
+	      } else {
+	        this.backspace(this.pause.curString, this.pause.curStrPos);
+	      }
+	      this.options.onStart(this.arrayPos, this);
+	    }
+	
+	    /**
+	     * Destroy this instance of Typed
+	     * @public
+	     */
+	  }, {
+	    key: 'destroy',
+	    value: function destroy() {
+	      this.reset(false);
+	      this.options.onDestroy(this);
+	    }
+	
+	    /**
+	     * Reset Typed and optionally restarts
+	     * @param {boolean} restart
+	     * @public
+	     */
+	  }, {
+	    key: 'reset',
+	    value: function reset() {
+	      var restart = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+	
+	      clearInterval(this.timeout);
+	      this.replaceText('');
+	      if (this.cursor && this.cursor.parentNode) {
+	        this.cursor.parentNode.removeChild(this.cursor);
+	        this.cursor = null;
+	      }
+	      this.strPos = 0;
+	      this.arrayPos = 0;
+	      this.curLoop = 0;
+	      if (restart) {
+	        this.insertCursor();
+	        this.options.onReset(this);
+	        this.begin();
+	      }
+	    }
+	
+	    /**
+	     * Begins the typing animation
+	     * @private
+	     */
+	  }, {
+	    key: 'begin',
+	    value: function begin() {
+	      var _this = this;
+	
+	      this.typingComplete = false;
+	      this.shuffleStringsIfNeeded(this);
+	      this.insertCursor();
+	      if (this.bindInputFocusEvents) this.bindFocusEvents();
+	      this.timeout = setTimeout(function () {
+	        // Check if there is some text in the element, if yes start by backspacing the default message
+	        if (!_this.currentElContent || _this.currentElContent.length === 0) {
+	          _this.typewrite(_this.strings[_this.sequence[_this.arrayPos]], _this.strPos);
+	        } else {
+	          // Start typing
+	          _this.backspace(_this.currentElContent, _this.currentElContent.length);
+	        }
+	      }, this.startDelay);
+	    }
+	
+	    /**
+	     * Called for each character typed
+	     * @param {string} curString the current string in the strings array
+	     * @param {number} curStrPos the current position in the curString
+	     * @private
+	     */
+	  }, {
+	    key: 'typewrite',
+	    value: function typewrite(curString, curStrPos) {
+	      var _this2 = this;
+	
+	      if (this.fadeOut && this.el.classList.contains(this.fadeOutClass)) {
+	        this.el.classList.remove(this.fadeOutClass);
+	        if (this.cursor) this.cursor.classList.remove(this.fadeOutClass);
+	      }
+	
+	      var humanize = this.humanizer(this.typeSpeed);
+	      var numChars = 1;
+	
+	      if (this.pause.status === true) {
+	        this.setPauseStatus(curString, curStrPos, true);
+	        return;
+	      }
+	
+	      // contain typing function in a timeout humanize'd delay
+	      this.timeout = setTimeout(function () {
+	        // skip over any HTML chars
+	        curStrPos = _htmlParserJs.htmlParser.typeHtmlChars(curString, curStrPos, _this2);
+	
+	        var pauseTime = 0;
+	        var substr = curString.substr(curStrPos);
+	        // check for an escape character before a pause value
+	        // format: \^\d+ .. eg: ^1000 .. should be able to print the ^ too using ^^
+	        // single ^ are removed from string
+	        if (substr.charAt(0) === '^') {
+	          if (/^\^\d+/.test(substr)) {
+	            var skip = 1; // skip at least 1
+	            substr = /\d+/.exec(substr)[0];
+	            skip += substr.length;
+	            pauseTime = parseInt(substr);
+	            _this2.temporaryPause = true;
+	            _this2.options.onTypingPaused(_this2.arrayPos, _this2);
+	            // strip out the escape character and pause value so they're not printed
+	            curString = curString.substring(0, curStrPos) + curString.substring(curStrPos + skip);
+	            _this2.toggleBlinking(true);
+	          }
+	        }
+	
+	        // check for skip characters formatted as
+	        // "this is a `string to print NOW` ..."
+	        if (substr.charAt(0) === '`') {
+	          while (curString.substr(curStrPos + numChars).charAt(0) !== '`') {
+	            numChars++;
+	            if (curStrPos + numChars > curString.length) break;
+	          }
+	          // strip out the escape characters and append all the string in between
+	          var stringBeforeSkip = curString.substring(0, curStrPos);
+	          var stringSkipped = curString.substring(stringBeforeSkip.length + 1, curStrPos + numChars);
+	          var stringAfterSkip = curString.substring(curStrPos + numChars + 1);
+	          curString = stringBeforeSkip + stringSkipped + stringAfterSkip;
+	          numChars--;
+	        }
+	
+	        // timeout for any pause after a character
+	        _this2.timeout = setTimeout(function () {
+	          // Accounts for blinking while paused
+	          _this2.toggleBlinking(false);
+	
+	          // We're done with this sentence!
+	          if (curStrPos === curString.length) {
+	            _this2.doneTyping(curString, curStrPos);
+	          } else {
+	            _this2.keepTyping(curString, curStrPos, numChars);
+	          }
+	          // end of character pause
+	          if (_this2.temporaryPause) {
+	            _this2.temporaryPause = false;
+	            _this2.options.onTypingResumed(_this2.arrayPos, _this2);
+	          }
+	        }, pauseTime);
+	
+	        // humanized value for typing
+	      }, humanize);
+	    }
+	
+	    /**
+	     * Continue to the next string & begin typing
+	     * @param {string} curString the current string in the strings array
+	     * @param {number} curStrPos the current position in the curString
+	     * @private
+	     */
+	  }, {
+	    key: 'keepTyping',
+	    value: function keepTyping(curString, curStrPos, numChars) {
+	      // call before functions if applicable
+	      if (curStrPos === 0) {
+	        this.toggleBlinking(false);
+	        this.options.preStringTyped(this.arrayPos, this);
+	      }
+	      // start typing each new char into existing string
+	      // curString: arg, this.el.html: original text inside element
+	      curStrPos += numChars;
+	      var nextString = curString.substr(0, curStrPos);
+	      this.replaceText(nextString);
+	      // loop the function
+	      this.typewrite(curString, curStrPos);
+	    }
+	
+	    /**
+	     * We're done typing all strings
+	     * @param {string} curString the current string in the strings array
+	     * @param {number} curStrPos the current position in the curString
+	     * @private
+	     */
+	  }, {
+	    key: 'doneTyping',
+	    value: function doneTyping(curString, curStrPos) {
+	      var _this3 = this;
+	
+	      // fires callback function
+	      this.options.onStringTyped(this.arrayPos, this);
+	      this.toggleBlinking(true);
+	      // is this the final string
+	      if (this.arrayPos === this.strings.length - 1) {
+	        // callback that occurs on the last typed string
+	        this.complete();
+	        // quit if we wont loop back
+	        if (this.loop === false || this.curLoop === this.loopCount) {
+	          return;
+	        }
+	      }
+	      this.timeout = setTimeout(function () {
+	        _this3.backspace(curString, curStrPos);
+	      }, this.backDelay);
+	    }
+	
+	    /**
+	     * Backspaces 1 character at a time
+	     * @param {string} curString the current string in the strings array
+	     * @param {number} curStrPos the current position in the curString
+	     * @private
+	     */
+	  }, {
+	    key: 'backspace',
+	    value: function backspace(curString, curStrPos) {
+	      var _this4 = this;
+	
+	      if (this.pause.status === true) {
+	        this.setPauseStatus(curString, curStrPos, true);
+	        return;
+	      }
+	      if (this.fadeOut) return this.initFadeOut();
+	
+	      this.toggleBlinking(false);
+	      var humanize = this.humanizer(this.backSpeed);
+	
+	      this.timeout = setTimeout(function () {
+	        curStrPos = _htmlParserJs.htmlParser.backSpaceHtmlChars(curString, curStrPos, _this4);
+	        // replace text with base text + typed characters
+	        var curStringAtPosition = curString.substr(0, curStrPos);
+	        _this4.replaceText(curStringAtPosition);
+	
+	        // if smartBack is enabled
+	        if (_this4.smartBackspace) {
+	          // the remaining part of the current string is equal of the same part of the new string
+	          var nextString = _this4.strings[_this4.arrayPos + 1];
+	          if (nextString && curStringAtPosition === nextString.substr(0, curStrPos)) {
+	            _this4.stopNum = curStrPos;
+	          } else {
+	            _this4.stopNum = 0;
+	          }
+	        }
+	
+	        // if the number (id of character in current string) is
+	        // less than the stop number, keep going
+	        if (curStrPos > _this4.stopNum) {
+	          // subtract characters one by one
+	          curStrPos--;
+	          // loop the function
+	          _this4.backspace(curString, curStrPos);
+	        } else if (curStrPos <= _this4.stopNum) {
+	          // if the stop number has been reached, increase
+	          // array position to next string
+	          _this4.arrayPos++;
+	          // When looping, begin at the beginning after backspace complete
+	          if (_this4.arrayPos === _this4.strings.length) {
+	            _this4.arrayPos = 0;
+	            _this4.options.onLastStringBackspaced();
+	            _this4.shuffleStringsIfNeeded();
+	            _this4.begin();
+	          } else {
+	            _this4.typewrite(_this4.strings[_this4.sequence[_this4.arrayPos]], curStrPos);
+	          }
+	        }
+	        // humanized value for typing
+	      }, humanize);
+	    }
+	
+	    /**
+	     * Full animation is complete
+	     * @private
+	     */
+	  }, {
+	    key: 'complete',
+	    value: function complete() {
+	      this.options.onComplete(this);
+	      if (this.loop) {
+	        this.curLoop++;
+	      } else {
+	        this.typingComplete = true;
+	      }
+	    }
+	
+	    /**
+	     * Has the typing been stopped
+	     * @param {string} curString the current string in the strings array
+	     * @param {number} curStrPos the current position in the curString
+	     * @param {boolean} isTyping
+	     * @private
+	     */
+	  }, {
+	    key: 'setPauseStatus',
+	    value: function setPauseStatus(curString, curStrPos, isTyping) {
+	      this.pause.typewrite = isTyping;
+	      this.pause.curString = curString;
+	      this.pause.curStrPos = curStrPos;
+	    }
+	
+	    /**
+	     * Toggle the blinking cursor
+	     * @param {boolean} isBlinking
+	     * @private
+	     */
+	  }, {
+	    key: 'toggleBlinking',
+	    value: function toggleBlinking(isBlinking) {
+	      if (!this.cursor) return;
+	      // if in paused state, don't toggle blinking a 2nd time
+	      if (this.pause.status) return;
+	      if (this.cursorBlinking === isBlinking) return;
+	      this.cursorBlinking = isBlinking;
+	      if (isBlinking) {
+	        this.cursor.classList.add('typed-cursor--blink');
+	      } else {
+	        this.cursor.classList.remove('typed-cursor--blink');
+	      }
+	    }
+	
+	    /**
+	     * Speed in MS to type
+	     * @param {number} speed
+	     * @private
+	     */
+	  }, {
+	    key: 'humanizer',
+	    value: function humanizer(speed) {
+	      return Math.round(Math.random() * speed / 2) + speed;
+	    }
+	
+	    /**
+	     * Shuffle the sequence of the strings array
+	     * @private
+	     */
+	  }, {
+	    key: 'shuffleStringsIfNeeded',
+	    value: function shuffleStringsIfNeeded() {
+	      if (!this.shuffle) return;
+	      this.sequence = this.sequence.sort(function () {
+	        return Math.random() - 0.5;
+	      });
+	    }
+	
+	    /**
+	     * Adds a CSS class to fade out current string
+	     * @private
+	     */
+	  }, {
+	    key: 'initFadeOut',
+	    value: function initFadeOut() {
+	      var _this5 = this;
+	
+	      this.el.className += ' ' + this.fadeOutClass;
+	      if (this.cursor) this.cursor.className += ' ' + this.fadeOutClass;
+	      return setTimeout(function () {
+	        _this5.arrayPos++;
+	        _this5.replaceText('');
+	
+	        // Resets current string if end of loop reached
+	        if (_this5.strings.length > _this5.arrayPos) {
+	          _this5.typewrite(_this5.strings[_this5.sequence[_this5.arrayPos]], 0);
+	        } else {
+	          _this5.typewrite(_this5.strings[0], 0);
+	          _this5.arrayPos = 0;
+	        }
+	      }, this.fadeOutDelay);
+	    }
+	
+	    /**
+	     * Replaces current text in the HTML element
+	     * depending on element type
+	     * @param {string} str
+	     * @private
+	     */
+	  }, {
+	    key: 'replaceText',
+	    value: function replaceText(str) {
+	      if (this.attr) {
+	        this.el.setAttribute(this.attr, str);
+	      } else {
+	        if (this.isInput) {
+	          this.el.value = str;
+	        } else if (this.contentType === 'html') {
+	          this.el.innerHTML = str;
+	        } else {
+	          this.el.textContent = str;
+	        }
+	      }
+	    }
+	
+	    /**
+	     * If using input elements, bind focus in order to
+	     * start and stop the animation
+	     * @private
+	     */
+	  }, {
+	    key: 'bindFocusEvents',
+	    value: function bindFocusEvents() {
+	      var _this6 = this;
+	
+	      if (!this.isInput) return;
+	      this.el.addEventListener('focus', function (e) {
+	        _this6.stop();
+	      });
+	      this.el.addEventListener('blur', function (e) {
+	        if (_this6.el.value && _this6.el.value.length !== 0) {
+	          return;
+	        }
+	        _this6.start();
+	      });
+	    }
+	
+	    /**
+	     * On init, insert the cursor element
+	     * @private
+	     */
+	  }, {
+	    key: 'insertCursor',
+	    value: function insertCursor() {
+	      if (!this.showCursor) return;
+	      if (this.cursor) return;
+	      this.cursor = document.createElement('span');
+	      this.cursor.className = 'typed-cursor';
+	      this.cursor.innerHTML = this.cursorChar;
+	      this.el.parentNode && this.el.parentNode.insertBefore(this.cursor, this.el.nextSibling);
+	    }
+	  }]);
+	
+	  return Typed;
+	})();
+	
+	exports['default'] = Typed;
+	module.exports = exports['default'];
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+	
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+	
+	var _defaultsJs = __webpack_require__(2);
+	
+	var _defaultsJs2 = _interopRequireDefault(_defaultsJs);
+	
+	/**
+	 * Initialize the Typed object
+	 */
+	
+	var Initializer = (function () {
+	  function Initializer() {
+	    _classCallCheck(this, Initializer);
+	  }
+	
+	  _createClass(Initializer, [{
+	    key: 'load',
+	
+	    /**
+	     * Load up defaults & options on the Typed instance
+	     * @param {Typed} self instance of Typed
+	     * @param {object} options options object
+	     * @param {string} elementId HTML element ID _OR_ instance of HTML element
+	     * @private
+	     */
+	
+	    value: function load(self, options, elementId) {
+	      // chosen element to manipulate text
+	      if (typeof elementId === 'string') {
+	        self.el = document.querySelector(elementId);
+	      } else {
+	        self.el = elementId;
+	      }
+	
+	      self.options = _extends({}, _defaultsJs2['default'], options);
+	
+	      // attribute to type into
+	      self.isInput = self.el.tagName.toLowerCase() === 'input';
+	      self.attr = self.options.attr;
+	      self.bindInputFocusEvents = self.options.bindInputFocusEvents;
+	
+	      // show cursor
+	      self.showCursor = self.isInput ? false : self.options.showCursor;
+	
+	      // custom cursor
+	      self.cursorChar = self.options.cursorChar;
+	
+	      // Is the cursor blinking
+	      self.cursorBlinking = true;
+	
+	      // text content of element
+	      self.elContent = self.attr ? self.el.getAttribute(self.attr) : self.el.textContent;
+	
+	      // html or plain text
+	      self.contentType = self.options.contentType;
+	
+	      // typing speed
+	      self.typeSpeed = self.options.typeSpeed;
+	
+	      // add a delay before typing starts
+	      self.startDelay = self.options.startDelay;
+	
+	      // backspacing speed
+	      self.backSpeed = self.options.backSpeed;
+	
+	      // only backspace what doesn't match the previous string
+	      self.smartBackspace = self.options.smartBackspace;
+	
+	      // amount of time to wait before backspacing
+	      self.backDelay = self.options.backDelay;
+	
+	      // Fade out instead of backspace
+	      self.fadeOut = self.options.fadeOut;
+	      self.fadeOutClass = self.options.fadeOutClass;
+	      self.fadeOutDelay = self.options.fadeOutDelay;
+	
+	      // variable to check whether typing is currently paused
+	      self.isPaused = false;
+	
+	      // input strings of text
+	      self.strings = self.options.strings.map(function (s) {
+	        return s.trim();
+	      });
+	
+	      // div containing strings
+	      if (typeof self.options.stringsElement === 'string') {
+	        self.stringsElement = document.querySelector(self.options.stringsElement);
+	      } else {
+	        self.stringsElement = self.options.stringsElement;
+	      }
+	
+	      if (self.stringsElement) {
+	        self.strings = [];
+	        self.stringsElement.style.display = 'none';
+	        var strings = Array.prototype.slice.apply(self.stringsElement.children);
+	        var stringsLength = strings.length;
+	
+	        if (stringsLength) {
+	          for (var i = 0; i < stringsLength; i += 1) {
+	            var stringEl = strings[i];
+	            self.strings.push(stringEl.innerHTML.trim());
+	          }
+	        }
+	      }
+	
+	      // character number position of current string
+	      self.strPos = 0;
+	
+	      // current array position
+	      self.arrayPos = 0;
+	
+	      // index of string to stop backspacing on
+	      self.stopNum = 0;
+	
+	      // Looping logic
+	      self.loop = self.options.loop;
+	      self.loopCount = self.options.loopCount;
+	      self.curLoop = 0;
+	
+	      // shuffle the strings
+	      self.shuffle = self.options.shuffle;
+	      // the order of strings
+	      self.sequence = [];
+	
+	      self.pause = {
+	        status: false,
+	        typewrite: true,
+	        curString: '',
+	        curStrPos: 0
+	      };
+	
+	      // When the typing is complete (when not looped)
+	      self.typingComplete = false;
+	
+	      // Set the order in which the strings are typed
+	      for (var i in self.strings) {
+	        self.sequence[i] = i;
+	      }
+	
+	      // If there is some text in the element
+	      self.currentElContent = this.getCurrentElContent(self);
+	
+	      self.autoInsertCss = self.options.autoInsertCss;
+	
+	      this.appendAnimationCss(self);
+	    }
+	  }, {
+	    key: 'getCurrentElContent',
+	    value: function getCurrentElContent(self) {
+	      var elContent = '';
+	      if (self.attr) {
+	        elContent = self.el.getAttribute(self.attr);
+	      } else if (self.isInput) {
+	        elContent = self.el.value;
+	      } else if (self.contentType === 'html') {
+	        elContent = self.el.innerHTML;
+	      } else {
+	        elContent = self.el.textContent;
+	      }
+	      return elContent;
+	    }
+	  }, {
+	    key: 'appendAnimationCss',
+	    value: function appendAnimationCss(self) {
+	      var cssDataName = 'data-typed-js-css';
+	      if (!self.autoInsertCss) {
+	        return;
+	      }
+	      if (!self.showCursor && !self.fadeOut) {
+	        return;
+	      }
+	      if (document.querySelector('[' + cssDataName + ']')) {
+	        return;
+	      }
+	
+	      var css = document.createElement('style');
+	      css.type = 'text/css';
+	      css.setAttribute(cssDataName, true);
+	
+	      var innerCss = '';
+	      if (self.showCursor) {
+	        innerCss += '\n        .typed-cursor{\n          opacity: 1;\n        }\n        .typed-cursor.typed-cursor--blink{\n          animation: typedjsBlink 0.7s infinite;\n          -webkit-animation: typedjsBlink 0.7s infinite;\n                  animation: typedjsBlink 0.7s infinite;\n        }\n        @keyframes typedjsBlink{\n          50% { opacity: 0.0; }\n        }\n        @-webkit-keyframes typedjsBlink{\n          0% { opacity: 1; }\n          50% { opacity: 0.0; }\n          100% { opacity: 1; }\n        }\n      ';
+	      }
+	      if (self.fadeOut) {
+	        innerCss += '\n        .typed-fade-out{\n          opacity: 0;\n          transition: opacity .25s;\n        }\n        .typed-cursor.typed-cursor--blink.typed-fade-out{\n          -webkit-animation: 0;\n          animation: 0;\n        }\n      ';
+	      }
+	      if (css.length === 0) {
+	        return;
+	      }
+	      css.innerHTML = innerCss;
+	      document.body.appendChild(css);
+	    }
+	  }]);
+	
+	  return Initializer;
+	})();
+	
+	exports['default'] = Initializer;
+	var initializer = new Initializer();
+	exports.initializer = initializer;
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports) {
+
+	/**
+	 * Defaults & options
+	 * @returns {object} Typed defaults & options
+	 * @public
+	 */
+	
+	'use strict';
+	
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	var defaults = {
+	  /**
+	   * @property {array} strings strings to be typed
+	   * @property {string} stringsElement ID of element containing string children
+	   */
+	  strings: ['These are the default values...', 'You know what you should do?', 'Use your own!', 'Have a great day!'],
+	  stringsElement: null,
+	
+	  /**
+	   * @property {number} typeSpeed type speed in milliseconds
+	   */
+	  typeSpeed: 0,
+	
+	  /**
+	   * @property {number} startDelay time before typing starts in milliseconds
+	   */
+	  startDelay: 0,
+	
+	  /**
+	   * @property {number} backSpeed backspacing speed in milliseconds
+	   */
+	  backSpeed: 0,
+	
+	  /**
+	   * @property {boolean} smartBackspace only backspace what doesn't match the previous string
+	   */
+	  smartBackspace: true,
+	
+	  /**
+	   * @property {boolean} shuffle shuffle the strings
+	   */
+	  shuffle: false,
+	
+	  /**
+	   * @property {number} backDelay time before backspacing in milliseconds
+	   */
+	  backDelay: 700,
+	
+	  /**
+	   * @property {boolean} fadeOut Fade out instead of backspace
+	   * @property {string} fadeOutClass css class for fade animation
+	   * @property {boolean} fadeOutDelay Fade out delay in milliseconds
+	   */
+	  fadeOut: false,
+	  fadeOutClass: 'typed-fade-out',
+	  fadeOutDelay: 500,
+	
+	  /**
+	   * @property {boolean} loop loop strings
+	   * @property {number} loopCount amount of loops
+	   */
+	  loop: false,
+	  loopCount: Infinity,
+	
+	  /**
+	   * @property {boolean} showCursor show cursor
+	   * @property {string} cursorChar character for cursor
+	   * @property {boolean} autoInsertCss insert CSS for cursor and fadeOut into HTML <head>
+	   */
+	  showCursor: true,
+	  cursorChar: '|',
+	  autoInsertCss: true,
+	
+	  /**
+	   * @property {string} attr attribute for typing
+	   * Ex: input placeholder, value, or just HTML text
+	   */
+	  attr: null,
+	
+	  /**
+	   * @property {boolean} bindInputFocusEvents bind to focus and blur if el is text input
+	   */
+	  bindInputFocusEvents: false,
+	
+	  /**
+	   * @property {string} contentType 'html' or 'null' for plaintext
+	   */
+	  contentType: 'html',
+	
+	  /**
+	   * All typing is complete
+	   * @param {Typed} self
+	   */
+	  onComplete: function onComplete(self) {},
+	
+	  /**
+	   * Before each string is typed
+	   * @param {number} arrayPos
+	   * @param {Typed} self
+	   */
+	  preStringTyped: function preStringTyped(arrayPos, self) {},
+	
+	  /**
+	   * After each string is typed
+	   * @param {number} arrayPos
+	   * @param {Typed} self
+	   */
+	  onStringTyped: function onStringTyped(arrayPos, self) {},
+	
+	  /**
+	   * During looping, after last string is typed
+	   * @param {Typed} self
+	   */
+	  onLastStringBackspaced: function onLastStringBackspaced(self) {},
+	
+	  /**
+	   * Typing has been stopped
+	   * @param {number} arrayPos
+	   * @param {Typed} self
+	   */
+	  onTypingPaused: function onTypingPaused(arrayPos, self) {},
+	
+	  /**
+	   * Typing has been started after being stopped
+	   * @param {number} arrayPos
+	   * @param {Typed} self
+	   */
+	  onTypingResumed: function onTypingResumed(arrayPos, self) {},
+	
+	  /**
+	   * After reset
+	   * @param {Typed} self
+	   */
+	  onReset: function onReset(self) {},
+	
+	  /**
+	   * After stop
+	   * @param {number} arrayPos
+	   * @param {Typed} self
+	   */
+	  onStop: function onStop(arrayPos, self) {},
+	
+	  /**
+	   * After start
+	   * @param {number} arrayPos
+	   * @param {Typed} self
+	   */
+	  onStart: function onStart(arrayPos, self) {},
+	
+	  /**
+	   * After destroy
+	   * @param {Typed} self
+	   */
+	  onDestroy: function onDestroy(self) {}
+	};
+	
+	exports['default'] = defaults;
+	module.exports = exports['default'];
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports) {
+
+	
+	/**
+	 * TODO: These methods can probably be combined somehow
+	 * Parse HTML tags & HTML Characters
+	 */
+	
+	'use strict';
+	
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+	
+	var HTMLParser = (function () {
+	  function HTMLParser() {
+	    _classCallCheck(this, HTMLParser);
+	  }
+	
+	  _createClass(HTMLParser, [{
+	    key: 'typeHtmlChars',
+	
+	    /**
+	     * Type HTML tags & HTML Characters
+	     * @param {string} curString Current string
+	     * @param {number} curStrPos Position in current string
+	     * @param {Typed} self instance of Typed
+	     * @returns {number} a new string position
+	     * @private
+	     */
+	
+	    value: function typeHtmlChars(curString, curStrPos, self) {
+	      if (self.contentType !== 'html') return curStrPos;
+	      var curChar = curString.substr(curStrPos).charAt(0);
+	      if (curChar === '<' || curChar === '&') {
+	        var endTag = '';
+	        if (curChar === '<') {
+	          endTag = '>';
+	        } else {
+	          endTag = ';';
+	        }
+	        while (curString.substr(curStrPos + 1).charAt(0) !== endTag) {
+	          curStrPos++;
+	          if (curStrPos + 1 > curString.length) {
+	            break;
+	          }
+	        }
+	        curStrPos++;
+	      }
+	      return curStrPos;
+	    }
+	
+	    /**
+	     * Backspace HTML tags and HTML Characters
+	     * @param {string} curString Current string
+	     * @param {number} curStrPos Position in current string
+	     * @param {Typed} self instance of Typed
+	     * @returns {number} a new string position
+	     * @private
+	     */
+	  }, {
+	    key: 'backSpaceHtmlChars',
+	    value: function backSpaceHtmlChars(curString, curStrPos, self) {
+	      if (self.contentType !== 'html') return curStrPos;
+	      var curChar = curString.substr(curStrPos).charAt(0);
+	      if (curChar === '>' || curChar === ';') {
+	        var endTag = '';
+	        if (curChar === '>') {
+	          endTag = '<';
+	        } else {
+	          endTag = '&';
+	        }
+	        while (curString.substr(curStrPos - 1).charAt(0) !== endTag) {
+	          curStrPos--;
+	          if (curStrPos < 0) {
+	            break;
+	          }
+	        }
+	        curStrPos--;
+	      }
+	      return curStrPos;
+	    }
+	  }]);
+	
+	  return HTMLParser;
+	})();
+	
+	exports['default'] = HTMLParser;
+	var htmlParser = new HTMLParser();
+	exports.htmlParser = htmlParser;
+
+/***/ })
+/******/ ])
+});
+;
 },{}],2:[function(require,module,exports){
 /**
 * Copyright (c) 2018--present, Yash Patel and Peter DeLong
 * All rights reserved.
 */
 
-const Vivus = require('vivus');
-new Vivus('monitor', {
-	start: 'autostart',
-	type: 'delayed',
-	duration: 150
+const Typed = require('typed.js');
+var typed = new Typed('.element', {
+  strings: ["First sentence.", "Second sentence."],
+  typeSpeed: 30
 });
-},{"vivus":1}]},{},[2]);
+},{"typed.js":1}]},{},[2]);

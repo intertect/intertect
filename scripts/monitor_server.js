@@ -3,9 +3,8 @@
 * All rights reserved.
 */
 
-const Vivus = require('vivus');
-new Vivus('monitor', {
-	start: 'autostart',
-	type: 'delayed',
-	duration: 150
+const Typed = require('typed.js');
+var typed = new Typed('.element', {
+  strings: ["Holy shit.", "This is so cool."],
+  typeSpeed: 30
 });
