@@ -16,57 +16,77 @@
 <body>
     <div class="shell-wrap">
       <p class="shell-top-bar">/Users/ypatel5400/intertect/</p>
-      <ul class="shell-body" id="terminal"></ul>
+      <ul class="shell-body" >
+        <li id="cat_main"></li>
+        <div id="cat_main_output" style="display:none">
+            #include &lt;stdio.h&gt; 
+            <br>int main() {
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;printf("Hello, World!");
+            <br>&nbsp;&nbsp;&nbsp;&nbsp;return 0;
+            <br>}
+        </div>
+        <li id="ls"></li>
+        <div id="ls_output" style="display:none">
+            main.c main.s
+        </div>
+        <li id="cat_main_s"></li>
+        <div id="cat_main_s_output" style="display:none">
+            &nbsp;&nbsp;&nbsp;&nbsp;.file&nbsp;&nbsp;&nbsp;"main.c"
+            <br> &nbsp;&nbsp;&nbsp;&nbsp;.text
+            <br> &nbsp;&nbsp;&nbsp;&nbsp;.globl&nbsp;&nbsp;main
+            <br> &nbsp;&nbsp;&nbsp;&nbsp;.type&nbsp;&nbsp;&nbsp;main,&nbsp;@function
+            <br> main:
+            <br> .LFB0:
+            <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_startproc
+            <br> &nbsp;&nbsp;&nbsp;&nbsp;pushq&nbsp;&nbsp;&nbsp;%rbp
+            <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa_offset&nbsp;16
+            <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_offset&nbsp;6,&nbsp;-16
+            <br> &nbsp;&nbsp;&nbsp;&nbsp;movq&nbsp;&nbsp;&nbsp;&nbsp;%rsp,&nbsp;%rbp
+            <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa_register&nbsp;6
+            <br> &nbsp;&nbsp;&nbsp;&nbsp;movl&nbsp;&nbsp;&nbsp;&nbsp;$0,&nbsp;%eax
+            <br> &nbsp;&nbsp;&nbsp;&nbsp;popq&nbsp;&nbsp;&nbsp;&nbsp;%rbp
+            <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa&nbsp;7,&nbsp;8
+            <br> &nbsp;&nbsp;&nbsp;&nbsp;ret
+            <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_endproc
+            <br> .LFE0:
+            <br> &nbsp;&nbsp;&nbsp;&nbsp;.size&nbsp;&nbsp;&nbsp;main,&nbsp;.-main
+            <br> &nbsp;&nbsp;&nbsp;&nbsp;.ident&nbsp;&nbsp;"GCC:&nbsp;(Ubuntu&nbsp;7.2.0-1ubuntu1~16.04)&nbsp;7.2.0"
+            <br> &nbsp;&nbsp;&nbsp;&nbsp;.section&nbsp;&nbsp;&nbsp;&nbsp;.note.GNU-stack,"",@progbits
+        </div>
+      </ul>
     </div>
 
     <footer>
         <p>&copy;2018 Yash Patel and Peter DeLong. All rights reserved.</p>
     </footer>
     
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.9/typed.min.js"></script>
     <script>
-        var typed = new Typed('#terminal', {
-          strings: [
-            // "Hello there!",
-            // "We hope you're excited to learn about computer architecture!",
-            // "Let's get started!",
-            `
-              <li>cat main.c</li>
-              <br>#include &lt;stdio.h&gt; 
-              <br>int main() {
-              <br>&nbsp;&nbsp;&nbsp;&nbsp;printf("Hello, World!");
-              <br>&nbsp;&nbsp;&nbsp;&nbsp;return 0;
-              <br>}
-              <li>gcc -S main.c</li>
-              <li>ls</li>
-              main.c main.s
-              <li>cat main.s</li>
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;.file&nbsp;&nbsp;&nbsp;"main.c"
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;.text
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;.globl&nbsp;&nbsp;main
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;.type&nbsp;&nbsp;&nbsp;main,&nbsp;@function
-              <br> main:
-              <br> .LFB0:
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_startproc
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;pushq&nbsp;&nbsp;&nbsp;%rbp
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa_offset&nbsp;16
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_offset&nbsp;6,&nbsp;-16
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;movq&nbsp;&nbsp;&nbsp;&nbsp;%rsp,&nbsp;%rbp
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa_register&nbsp;6
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;movl&nbsp;&nbsp;&nbsp;&nbsp;$0,&nbsp;%eax
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;popq&nbsp;&nbsp;&nbsp;&nbsp;%rbp
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa&nbsp;7,&nbsp;8
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;ret
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_endproc
-              <br> .LFE0:
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;.size&nbsp;&nbsp;&nbsp;main,&nbsp;.-main
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;.ident&nbsp;&nbsp;"GCC:&nbsp;(Ubuntu&nbsp;7.2.0-1ubuntu1~16.04)&nbsp;7.2.0"
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;.section&nbsp;&nbsp;&nbsp;&nbsp;.note.GNU-stack,"",@progbits
-              <li></li>
-            `
-            ],
-          typeSpeed: 30,
-          smartBackspace: true
+        var typed = new Typed('#cat_main', {
+          strings: ["cat main.c"],
+          typeSpeed: 50,
+          onComplete: function(self) {
+            $('.typed-cursor').hide();
+            $("#cat_main_output").css('display','inline');
+            var typed = new Typed('#ls', {
+              strings: ["ls"],
+              typeSpeed: 200,
+              onComplete: function(self) {
+                $('.typed-cursor').hide();
+                $("#ls_output").css('display','inline');
+                var typed = new Typed('#cat_main_s', {
+                  strings: ["cat main.s"],
+                  typeSpeed: 100,
+                  onComplete: function(self) {
+                    $('.typed-cursor').hide();
+                    $("#cat_main_s_output").css('display','inline');
+                  }
+                });
+              }
+            });
+          }
         });
+        
     </script>
 </body>
