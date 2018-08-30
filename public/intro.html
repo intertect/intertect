@@ -17,21 +17,21 @@
     <div class="shell-wrap">
       <p class="shell-top-bar">/Users/ypatel5400/intertect/</p>
       <ul class="shell-body" >
-        <li id="cat_main"></li>
+        <li id="cat_main" style="display:inline;"></li>
         <div id="cat_main_output" style="display:none">
-            #include &lt;stdio.h&gt; 
+            <br> #include &lt;stdio.h&gt; 
             <br>int main() {
             <br>&nbsp;&nbsp;&nbsp;&nbsp;printf("Hello, World!");
             <br>&nbsp;&nbsp;&nbsp;&nbsp;return 0;
             <br>}
         </div>
-        <li id="ls"></li>
+        <li id="ls" style="display:none;"></li>
         <div id="ls_output" style="display:none">
-            main.c main.s
+            <br> main.c main.s <br> 
         </div>
-        <li id="cat_main_s"></li>
+        <li id="cat_main_s" style="display:none;"></li>
         <div id="cat_main_s_output" style="display:none">
-            &nbsp;&nbsp;&nbsp;&nbsp;.file&nbsp;&nbsp;&nbsp;"main.c"
+            <br> &nbsp;&nbsp;&nbsp;&nbsp;.file&nbsp;&nbsp;&nbsp;"main.c"
             <br> &nbsp;&nbsp;&nbsp;&nbsp;.text
             <br> &nbsp;&nbsp;&nbsp;&nbsp;.globl&nbsp;&nbsp;main
             <br> &nbsp;&nbsp;&nbsp;&nbsp;.type&nbsp;&nbsp;&nbsp;main,&nbsp;@function
@@ -69,12 +69,14 @@
           onComplete: function(self) {
             $('.typed-cursor').hide();
             $("#cat_main_output").css('display','inline');
+            $("#ls").css('display','inline');
             var typed = new Typed('#ls', {
               strings: ["ls"],
-              typeSpeed: 200,
+              typeSpeed: 150,
               onComplete: function(self) {
                 $('.typed-cursor').hide();
                 $("#ls_output").css('display','inline');
+                $("#cat_main_s").css('display','inline');
                 var typed = new Typed('#cat_main_s', {
                   strings: ["cat main.s"],
                   typeSpeed: 100,
