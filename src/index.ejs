@@ -21,13 +21,13 @@
   <nav class="navbar navbar-inverse" role="navigation" id="header" style="background-color:#428BCA;border:0px;border-radius:0px;display:none;">
     <div class="container col-sm-12">
       <div class="navbar-header col-sm-12">
-        <button type="button" class="btn btn-success navbar-btn col-sm-3" ng-click="run()" ng-hide="isRunning">
+        <button type="button" class="btn btn-success navbar-btn col-sm-3">
           <span class="glyphicon glyphicon-play"></span> Run
         </button>
-        <button type="button" class="btn btn-info navbar-btn col-sm-4 col-sm-offset-1" ng-click="executeStep()" ng-disabled="isRunning">
+        <button type="button" class="btn btn-info navbar-btn col-sm-4 col-sm-offset-1" onclick="executeStep()">
           <span class="glyphicon glyphicon-forward"></span> Step
         </button>
-        <button type="button" class="btn btn-danger navbar-btn col-sm-3 col-sm-offset-1" ng-click="stop()" ng-show="isRunning">
+        <button type="button" class="btn btn-danger navbar-btn col-sm-3 col-sm-offset-1">
           <span class="glyphicon glyphicon-stop"></span> Stop
         </button>
       </div>
@@ -87,27 +87,27 @@
           </div>
           <div class="panel-body" style="background: #141414;">
             <ul class="shell-body" >
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;.file&nbsp;&nbsp;&nbsp;"main.c"
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;.text
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;.globl&nbsp;&nbsp;main
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;.type&nbsp;&nbsp;&nbsp;main,&nbsp;@function
-              <br> main:
-              <br> .LFB0:
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_startproc
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;pushq&nbsp;&nbsp;&nbsp;%rbp
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa_offset&nbsp;16
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_offset&nbsp;6,&nbsp;-16
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;movq&nbsp;&nbsp;&nbsp;&nbsp;%rsp,&nbsp;%rbp
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa_register&nbsp;6
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;movl&nbsp;&nbsp;&nbsp;&nbsp;$0,&nbsp;%eax
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;popq&nbsp;&nbsp;&nbsp;&nbsp;%rbp
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa&nbsp;7,&nbsp;8
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;ret
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_endproc
-              <br> .LFE0:
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;.size&nbsp;&nbsp;&nbsp;main,&nbsp;.-main
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;.ident&nbsp;&nbsp;"GCC:&nbsp;(Ubuntu&nbsp;7.2.0-1ubuntu1~16.04)&nbsp;7.2.0"
-              <br> &nbsp;&nbsp;&nbsp;&nbsp;.section&nbsp;&nbsp;&nbsp;&nbsp;.note.GNU-stack,"",@progbits
+              <span style="background-color:#ffa;" id="assembly_1"> &nbsp;&nbsp;&nbsp;&nbsp;.file&nbsp;&nbsp;&nbsp;"main.c" </span> 
+              <span id="assembly_2"> <br> &nbsp;&nbsp;&nbsp;&nbsp;.text </span> 
+              <span id="assembly_3"> <br> &nbsp;&nbsp;&nbsp;&nbsp;.globl&nbsp;&nbsp;main </span> 
+              <span id="assembly_4"> <br> &nbsp;&nbsp;&nbsp;&nbsp;.type&nbsp;&nbsp;&nbsp;main,&nbsp;@function </span> 
+              <span id="assembly_5"> <br> main: </span> 
+              <span id="assembly_6"> <br> .LFB0: </span> 
+              <span id="assembly_7"> <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_startproc </span> 
+              <span id="assembly_8"> <br> &nbsp;&nbsp;&nbsp;&nbsp;pushq&nbsp;&nbsp;&nbsp;%rbp </span> 
+              <span id="assembly_9"> <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa_offset&nbsp;16 </span> 
+              <span id="assembly_10"> <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_offset&nbsp;6,&nbsp;-16 </span> 
+              <span id="assembly_11"> <br> &nbsp;&nbsp;&nbsp;&nbsp;movq&nbsp;&nbsp;&nbsp;&nbsp;%rsp,&nbsp;%rbp </span> 
+              <span id="assembly_12"> <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa_register&nbsp;6 </span> 
+              <span id="assembly_13"> <br> &nbsp;&nbsp;&nbsp;&nbsp;movl&nbsp;&nbsp;&nbsp;&nbsp;$0,&nbsp;%eax </span> 
+              <span id="assembly_14"> <br> &nbsp;&nbsp;&nbsp;&nbsp;popq&nbsp;&nbsp;&nbsp;&nbsp;%rbp </span> 
+              <span id="assembly_15"> <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa&nbsp;7,&nbsp;8 </span> 
+              <span id="assembly_16"> <br> &nbsp;&nbsp;&nbsp;&nbsp;ret </span> 
+              <span id="assembly_17"> <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_endproc </span> 
+              <span id="assembly_18"> <br> .LFE0: </span> 
+              <span id="assembly_19"> <br> &nbsp;&nbsp;&nbsp;&nbsp;.size&nbsp;&nbsp;&nbsp;main,&nbsp;.-main </span> 
+              <span id="assembly_20"> <br> &nbsp;&nbsp;&nbsp;&nbsp;.ident&nbsp;&nbsp;"GCC:&nbsp;(Ubuntu&nbsp;7.2.0-1ubuntu1~16.04)&nbsp;7.2.0" </span>
+              <span id="assembly_21"> <br> &nbsp;&nbsp;&nbsp;&nbsp;.section&nbsp;&nbsp;&nbsp;&nbsp;.note.GNU-stack,"",@progbits </span>
             </ul>
           </div>
         </div>
@@ -197,6 +197,16 @@
         }
         frameCount--;
       }
+    }
+
+    var currentStep = 1;
+    function executeStep() {
+      stepId = "#assembly_" + currentStep;
+      currentStep++;
+      newStepId = "#assembly_" + currentStep;
+
+      $(stepId).css('background-color','#141414');
+      $(newStepId).css('background-color','#ffa');
     }
 
     new Typed('#cat_main', {
