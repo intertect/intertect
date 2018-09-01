@@ -1,1 +1,3 @@
-// Must have at least one test file in this directory or Mocha will throw an error.
+test('adds 1 + 2 to equal 3', () => {
+	expect(1 + 2).toBe(3); // you better believe it
+});
