@@ -15,7 +15,7 @@
 
 <body>
     <div class="shell-wrap">
-      <p class="shell-top-bar">/Users/ypatel5400/intertect/</p>
+      <p class="shell-top-bar">/Users/intertect/</p>
       <ul class="shell-body" >
         <li id="cat_main" style="display:inline;"></li>
         <div id="cat_main_output" style="display:none">
@@ -24,10 +24,12 @@
             <br>&nbsp;&nbsp;&nbsp;&nbsp;printf("Hello, World!");
             <br>&nbsp;&nbsp;&nbsp;&nbsp;return 0;
             <br>}
+            <br> 
         </div>
         <li id="ls" style="display:none;"></li>
         <div id="ls_output" style="display:none">
-            <br> main.c main.s <br> 
+            <br> main.c main.s 
+            <br> 
         </div>
         <li id="cat_main_s" style="display:none;"></li>
         <div id="cat_main_s_output" style="display:none">
@@ -66,6 +68,7 @@
         var typed = new Typed('#cat_main', {
           strings: ["cat main.c"],
           typeSpeed: 50,
+          startDelay: 500,
           onComplete: function(self) {
             $('.typed-cursor').hide();
             $("#cat_main_output").css('display','inline');
@@ -73,6 +76,7 @@
             var typed = new Typed('#ls', {
               strings: ["ls"],
               typeSpeed: 150,
+              startDelay: 500,
               onComplete: function(self) {
                 $('.typed-cursor').hide();
                 $("#ls_output").css('display','inline');
@@ -80,6 +84,7 @@
                 var typed = new Typed('#cat_main_s', {
                   strings: ["cat main.s"],
                   typeSpeed: 100,
+                  startDelay: 500,
                   onComplete: function(self) {
                     $('.typed-cursor').hide();
                     $("#cat_main_s_output").css('display','inline');
