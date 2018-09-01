@@ -15,7 +15,7 @@
 </head>
 
 <body>
-    <div class="shell-wrap">
+    <div class="shell-wrap col-sm-6 col-sm-offset-3" id="shell">
       <p class="shell-top-bar">/Users/intertect/</p>
       <ul class="shell-body" >
         <li id="cat_main" style="display:inline;"></li>
@@ -66,35 +66,50 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.9/typed.min.js"></script>
     <script>
-        var typed = new Typed('#cat_main', {
-          strings: ["cat main.c"],
-          typeSpeed: 50,
-          startDelay: 500,
-          onComplete: function(self) {
-            $('.typed-cursor').hide();
-            $("#cat_main_output").css('display','inline');
-            $("#ls").css('display','inline');
-            var typed = new Typed('#ls', {
-              strings: ["ls"],
-              typeSpeed: 150,
-              startDelay: 500,
-              onComplete: function(self) {
-                $('.typed-cursor').hide();
-                $("#ls_output").css('display','inline');
-                $("#cat_main_s").css('display','inline');
-                var typed = new Typed('#cat_main_s', {
-                  strings: ["cat main.s"],
-                  typeSpeed: 100,
-                  startDelay: 500,
-                  onComplete: function(self) {
-                    $('.typed-cursor').hide();
-                    $("#cat_main_s_output").css('display','inline');
-                  }
-                });
-              }
-            });
+      function move() {
+        shell = $("#shell")[0]
+        var pos = 0;
+        var id = setInterval(frame, 5);
+        function frame() {
+          if (pos == 350) {
+            clearInterval(id);
+          } else {
+            pos++; 
+            shell.style.right = pos + 'px'; 
           }
-        });
+        }
+      }
+
+      var typed = new Typed('#cat_main', {
+        strings: ["cat main.c"],
+        typeSpeed: 50,
+        startDelay: 500,
+        onComplete: function(self) {
+          $('.typed-cursor').hide();
+          $("#cat_main_output").css('display','inline');
+          $("#ls").css('display','inline');
+          var typed = new Typed('#ls', {
+            strings: ["ls"],
+            typeSpeed: 150,
+            startDelay: 500,
+            onComplete: function(self) {
+              $('.typed-cursor').hide();
+              $("#ls_output").css('display','inline');
+              $("#cat_main_s").css('display','inline');
+              var typed = new Typed('#cat_main_s', {
+                strings: ["cat main.s"],
+                typeSpeed: 100,
+                startDelay: 500,
+                onComplete: function(self) {
+                  $('.typed-cursor').hide();
+                  $("#cat_main_s_output").css('display','inline');
+                  move();
+                }
+              });
+            }
+          });
+        }
+      });
     </script>
 </body>
 
