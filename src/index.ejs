@@ -19,19 +19,22 @@
 
 <body>
   <nav class="navbar navbar-inverse" role="navigation" id="header" style="background-color:#428BCA;border:0px;border-radius:0px;display:none;">
-    <div class="container">
-      <div class="navbar-header">
-        <div class="btn-group">
-          <button type="button" class="btn btn-success navbar-btn" ng-click="run()" ng-hide="isRunning"><span class="glyphicon glyphicon-play"></span> Run</button>
-          <button type="button" class="btn btn-default navbar-btn" ng-click="stop()" ng-show="isRunning"><span class="glyphicon glyphicon-stop"></span> Stop</button>
-          <button type="button" class="btn btn-default navbar-btn" ng-click="executeStep()" ng-disabled="isRunning"><span class="glyphicon glyphicon-forward"></span> Step</button>
-        </div>
-        <button type="button" class="btn btn-default navbar-btn" ng-click="reset()">Reset</button>
+    <div class="container col-sm-12">
+      <div class="navbar-header col-sm-12">
+        <button type="button" class="btn btn-success navbar-btn col-sm-3" ng-click="run()" ng-hide="isRunning">
+          <span class="glyphicon glyphicon-play"></span> Run
+        </button>
+        <button type="button" class="btn btn-info navbar-btn col-sm-4 col-sm-offset-1" ng-click="executeStep()" ng-disabled="isRunning">
+          <span class="glyphicon glyphicon-forward"></span> Step
+        </button>
+        <button type="button" class="btn btn-danger navbar-btn col-sm-3 col-sm-offset-1" ng-click="stop()" ng-show="isRunning">
+          <span class="glyphicon glyphicon-stop"></span> Stop
+        </button>
       </div>
     </div>
   </nav>
 
-  <div class="shell-wrap col-sm-6" id="shell">
+  <div class="shell-wrap col-sm-6" id="shell" style="left: 25%;">
     <p class="shell-top-bar">/Users/intertect/</p>
     <ul class="shell-body" >
       <li id="cat_main" style="display:inline;"></li>
@@ -77,18 +80,40 @@
 
   <div class="container" id="studio" style="display:none;">
     <div class="row">
-      <div class="col-lg-7 col-md-6">
+      <div class="col-sm-5">
         <div class="panel panel-default">
           <div class="panel-heading">
             <h4 class="panel-title">Code</h4>
           </div>
-          <div class="panel-body">
-
+          <div class="panel-body" style="background: #141414;">
+            <ul class="shell-body" >
+              <br> &nbsp;&nbsp;&nbsp;&nbsp;.file&nbsp;&nbsp;&nbsp;"main.c"
+              <br> &nbsp;&nbsp;&nbsp;&nbsp;.text
+              <br> &nbsp;&nbsp;&nbsp;&nbsp;.globl&nbsp;&nbsp;main
+              <br> &nbsp;&nbsp;&nbsp;&nbsp;.type&nbsp;&nbsp;&nbsp;main,&nbsp;@function
+              <br> main:
+              <br> .LFB0:
+              <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_startproc
+              <br> &nbsp;&nbsp;&nbsp;&nbsp;pushq&nbsp;&nbsp;&nbsp;%rbp
+              <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa_offset&nbsp;16
+              <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_offset&nbsp;6,&nbsp;-16
+              <br> &nbsp;&nbsp;&nbsp;&nbsp;movq&nbsp;&nbsp;&nbsp;&nbsp;%rsp,&nbsp;%rbp
+              <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa_register&nbsp;6
+              <br> &nbsp;&nbsp;&nbsp;&nbsp;movl&nbsp;&nbsp;&nbsp;&nbsp;$0,&nbsp;%eax
+              <br> &nbsp;&nbsp;&nbsp;&nbsp;popq&nbsp;&nbsp;&nbsp;&nbsp;%rbp
+              <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa&nbsp;7,&nbsp;8
+              <br> &nbsp;&nbsp;&nbsp;&nbsp;ret
+              <br> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_endproc
+              <br> .LFE0:
+              <br> &nbsp;&nbsp;&nbsp;&nbsp;.size&nbsp;&nbsp;&nbsp;main,&nbsp;.-main
+              <br> &nbsp;&nbsp;&nbsp;&nbsp;.ident&nbsp;&nbsp;"GCC:&nbsp;(Ubuntu&nbsp;7.2.0-1ubuntu1~16.04)&nbsp;7.2.0"
+              <br> &nbsp;&nbsp;&nbsp;&nbsp;.section&nbsp;&nbsp;&nbsp;&nbsp;.note.GNU-stack,"",@progbits
+            </ul>
           </div>
         </div>
       </div>
-      <div class="clearfix visible-xs visible-sm"></div>
-      <div class="col-lg-5 col-md-6">
+      <div class="clearfix visible-sm"></div>
+      <div class="col-sm-6">
         <div class="panel panel-default">
           <div class="panel-heading">
             <h4 class="panel-title">Implement</h4>
@@ -155,13 +180,14 @@
   <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.9/typed.min.js"></script>
   <script>
-    function finishIntro() {
+    function transitionToWorkspace() {
       shell = $("#shell")[0]
       var frameCount = 250;
       var id = setInterval(frame, 5);
       function frame() {
         if (frameCount == 0) {
           clearInterval(id);
+          $("#shell").css('display','none');
           $("#header").css('display','block');
           $("#header").addClass('animated fadeIn');
           $("#studio").css('display','inline');
@@ -173,7 +199,7 @@
       }
     }
 
-    var typed = new Typed('#cat_main', {
+    new Typed('#cat_main', {
       strings: ["cat main.c"],
       typeSpeed: 50,
       startDelay: 500,
@@ -181,7 +207,7 @@
         $('.typed-cursor').hide();
         $("#cat_main_output").css('display','inline');
         $("#ls").css('display','inline');
-        var typed = new Typed('#ls', {
+        new Typed('#ls', {
           strings: ["ls"],
           typeSpeed: 150,
           startDelay: 500,
@@ -189,14 +215,14 @@
             $('.typed-cursor').hide();
             $("#ls_output").css('display','inline');
             $("#cat_main_s").css('display','inline');
-            var typed = new Typed('#cat_main_s', {
+            new Typed('#cat_main_s', {
               strings: ["cat main.s"],
               typeSpeed: 100,
               startDelay: 500,
               onComplete: function(self) {
                 $('.typed-cursor').hide();
                 $("#cat_main_s_output").css('display','inline');
-                finishIntro();
+                transitionToWorkspace();
               }
             });
           }
