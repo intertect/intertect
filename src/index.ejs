@@ -15,7 +15,7 @@
 </head>
 
 <body>
-    <div class="shell-wrap col-sm-6 col-sm-offset-3" id="shell">
+    <div class="shell-wrap col-sm-6" id="shell">
       <p class="shell-top-bar">/Users/intertect/</p>
       <ul class="shell-body" >
         <li id="cat_main" style="display:inline;"></li>
@@ -68,15 +68,15 @@
     <script>
       function move() {
         shell = $("#shell")[0]
-        var pos = 0;
+        var frameCount = 125;
         var id = setInterval(frame, 5);
         function frame() {
-          if (pos == 350) {
+          if (frameCount == 0) {
             clearInterval(id);
-          } else {
-            pos++; 
-            shell.style.right = pos + 'px'; 
+          } else if (frameCount % 5 == 0) {
+            shell.style.left = frameCount / 5 + '%'; 
           }
+          frameCount--;
         }
       }
 
@@ -103,7 +103,7 @@
                 onComplete: function(self) {
                   $('.typed-cursor').hide();
                   $("#cat_main_s_output").css('display','inline');
-                  move();
+                  move()
                 }
               });
             }
