@@ -29,6 +29,7 @@
   "author": "Yash Patel, Peter DeLong",
   "license": "None",
   "dependencies": {
+    "babel-core": "6.26.3",
     "object-assign": "4.1.1",
     "react": "16.4.2",
     "react-dom": "16.4.2",
