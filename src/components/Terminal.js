@@ -71,6 +71,27 @@ class Terminal extends Component {
             <Col sm={6}>
               <Panel>
                 <Panel.Heading>
+                  <Panel.Title componentClass="h4">Instructions</Panel.Title>
+                </Panel.Heading>
+                <Panel.Body>
+                  <div className="shell-wrap">
+                    <ul className="shell-body">
+                      <Typist>
+                      <Typist.Delay ms={500} />
+
+                      <li>Hey there!</li>
+                      <li>
+                        In this lesson, we gonna learn about computer <a href="http://www.google.com">architecture</a>
+                      </li>
+
+                      </Typist>
+                    </ul>
+                  </div>
+                </Panel.Body>
+              </Panel>
+
+              <Panel>
+                <Panel.Heading>
                   <Panel.Title componentClass="h4">Code</Panel.Title>
                 </Panel.Heading>
                 <Panel.Body>
@@ -169,7 +190,7 @@ class Terminal extends Component {
         <TransitionTerminal className="shell-wrap col-sm-6" pose={this.state.completedAssembly ? 'end' : 'start'}>
           <p className="shell-top-bar">/Users/intertect/</p>
           <ul className="shell-body" >
-            <li id="cat_main" >
+            <li>
               <Typist cursor={{
                 hideWhenDone: true,
                 hideWhenDoneDelay: 200
