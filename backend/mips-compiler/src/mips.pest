@@ -1,0 +1,15 @@
+whitespace = _{" " | "\t"}
+newline = _{"\r\n" | "\n"}
+non_newline = _{ !newline ~ any }
+alpha = {'a'..'z' | 'A'..'Z'}
+num = {'0'..'9'}
+alpha_num = { alpha | num}
+name = {alpha ~ alpha_num*}
+comment = _{"#" ~ non_newline*}
+register = {"$" ~ alpha ~ num}
+opcode = {alpha_num+}
+r_instruction = { opcode ~ register ~ "," ~ register ~ "," ~ register }
+i_instruction = { opcode ~ register ~ "," ~ register ~ "," ~ num+ }
+instruction = { r_instruction | i_instruction }
+line = _{ (instruction)?  ~ (comment)?}
+program = { soi ~ ((line)? ~ newline)* ~ eoi } // Maybe need to make newline optional for eof

@@ -1,0 +1,17 @@
+[package]
+name = "mips-compiler"
+version = "0.1.0"
+authors = ["Peter DeLong <petersdelong@gmail.com>"]
+
+[lib]
+name = "mips"
+path = "src/lib.rs"
+
+[[bin]]
+name = "cli_runner"
+path = "src/main.rs"
+
+[dependencies]
+clap = "2.32"
+pest = "^1.0"
+pest_derive = "^1.0"
