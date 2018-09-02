@@ -31,7 +31,8 @@ class Terminal extends Component {
       completedCat: false,
       completedLs: false,
       completedAssembly: false,
-      completedIntro: false
+      completedIntro: false,
+      assemblyStep: 1
     }
   }
 
@@ -45,7 +46,9 @@ class Terminal extends Component {
                 <Col sm={4}> <Button bsStyle="success">
                   <span className="glyphicon glyphicon-play"></span> Run
                 </Button> </Col>
-                <Col sm={4}> <Button bsStyle="info">
+                <Col sm={4}> <Button bsStyle="info" onClick={() =>
+                  this.setState({ assemblyStep: this.state.assemblyStep + 1 })
+                }>
                   <span className="glyphicon glyphicon-forward"></span> Step
                 </Button> </Col>
                 <Col sm={4}> <Button bsStyle="danger">
@@ -65,27 +68,27 @@ class Terminal extends Component {
                 </Panel.Heading>
                 <Panel.Body>
                   <ul className="shell-body" >
-                    <span> &nbsp;&nbsp;&nbsp;&nbsp;.file&nbsp;&nbsp;&nbsp;{"main.c"} </span>
-                    <span> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.text </span>
-                    <span> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.globl&nbsp;&nbsp;main </span>
-                    <span> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.type&nbsp;&nbsp;&nbsp;main,&nbsp;@function </span>
-                    <span> <br /> main: </span>
-                    <span> <br /> .LFB0: </span>
-                    <span> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_startproc </span>
-                    <span> <br /> &nbsp;&nbsp;&nbsp;&nbsp;pushq&nbsp;&nbsp;&nbsp;%rbp </span>
-                    <span> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa_offset&nbsp;16 </span>
-                    <span> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_offset&nbsp;6,&nbsp;-16 </span>
-                    <span> <br /> &nbsp;&nbsp;&nbsp;&nbsp;movq&nbsp;&nbsp;&nbsp;&nbsp;%rsp,&nbsp;%rbp </span>
-                    <span> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa_register&nbsp;6 </span>
-                    <span> <br /> &nbsp;&nbsp;&nbsp;&nbsp;movl&nbsp;&nbsp;&nbsp;&nbsp;$0,&nbsp;%eax </span>
-                    <span> <br /> &nbsp;&nbsp;&nbsp;&nbsp;popq&nbsp;&nbsp;&nbsp;&nbsp;%rbp </span>
-                    <span> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa&nbsp;7,&nbsp;8 </span>
-                    <span> <br /> &nbsp;&nbsp;&nbsp;&nbsp;ret </span>
-                    <span> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_endproc </span>
-                    <span> <br /> .LFE0: </span>
-                    <span> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.size&nbsp;&nbsp;&nbsp;main,&nbsp;.-main </span>
-                    <span> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.ident&nbsp;&nbsp;{'"GCC:&nbsp;(Ubuntu&nbsp;7.2.0-1ubuntu1~16.04)&nbsp;7.2.0"'} </span>
-                    <span> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.section&nbsp;&nbsp;&nbsp;&nbsp;.note.GNU-stack,{'""'},@progbits </span>
+                    <span className={this.state.assemblyStep == 1 ? "active" : "inactive"}> &nbsp;&nbsp;&nbsp;&nbsp;.file&nbsp;&nbsp;&nbsp;{"main.c"} </span>
+                    <span className={this.state.assemblyStep == 2 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.text </span>
+                    <span className={this.state.assemblyStep == 3 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.globl&nbsp;&nbsp;main </span>
+                    <span className={this.state.assemblyStep == 4 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.type&nbsp;&nbsp;&nbsp;main,&nbsp;@function </span>
+                    <span className={this.state.assemblyStep == 5 ? "active" : "inactive"}> <br /> main: </span>
+                    <span className={this.state.assemblyStep == 6 ? "active" : "inactive"}> <br /> .LFB0: </span>
+                    <span className={this.state.assemblyStep == 7 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_startproc </span>
+                    <span className={this.state.assemblyStep == 8 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;pushq&nbsp;&nbsp;&nbsp;%rbp </span>
+                    <span className={this.state.assemblyStep == 9 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa_offset&nbsp;16 </span>
+                    <span className={this.state.assemblyStep == 10 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_offset&nbsp;6,&nbsp;-16 </span>
+                    <span className={this.state.assemblyStep == 11 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;movq&nbsp;&nbsp;&nbsp;&nbsp;%rsp,&nbsp;%rbp </span>
+                    <span className={this.state.assemblyStep == 12 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa_register&nbsp;6 </span>
+                    <span className={this.state.assemblyStep == 13 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;movl&nbsp;&nbsp;&nbsp;&nbsp;$0,&nbsp;%eax </span>
+                    <span className={this.state.assemblyStep == 14 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;popq&nbsp;&nbsp;&nbsp;&nbsp;%rbp </span>
+                    <span className={this.state.assemblyStep == 15 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa&nbsp;7,&nbsp;8 </span>
+                    <span className={this.state.assemblyStep == 16 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;ret </span>
+                    <span className={this.state.assemblyStep == 17 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_endproc </span>
+                    <span className={this.state.assemblyStep == 18 ? "active" : "inactive"}> <br /> .LFE0: </span>
+                    <span className={this.state.assemblyStep == 19 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.size&nbsp;&nbsp;&nbsp;main,&nbsp;.-main </span>
+                    <span className={this.state.assemblyStep == 20 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.ident&nbsp;&nbsp;{'"GCC:&nbsp;(Ubuntu&nbsp;7.2.0-1ubuntu1~16.04)&nbsp;7.2.0"'} </span>
+                    <span className={this.state.assemblyStep == 21 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.section&nbsp;&nbsp;&nbsp;&nbsp;.note.GNU-stack,{'""'},@progbits </span>
                   </ul>
                 </Panel.Body>
               </Panel>
