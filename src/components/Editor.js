@@ -1,11 +1,11 @@
 /* eslint-disable import/no-named-as-default */
-import React from "react";
+import React, {Component} from "react";
 import '../styles/intro.css';
 
-class Editor extends React.Component {
+class Editor extends Component {
   render() {
     return (
-      <div className="container" id="studio">
+      <div className="container">
         <div className="row">
           <div className="col-sm-5">
             <div className="panel panel-default">
@@ -14,25 +14,25 @@ class Editor extends React.Component {
               </div>
               <div className="panel-body" style={{background: '#141414'}}>
                 <ul className="shell-body" >
-                  <span style={{backgroundColor: '#ffa'}} id="assembly_1"> &nbsp;&nbsp;&nbsp;&nbsp;.file&nbsp;&nbsp;&nbsp;{"main.c"} </span> 
-                  <span id="assembly_2"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.text </span> 
-                  <span id="assembly_3"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.globl&nbsp;&nbsp;main </span> 
-                  <span id="assembly_4"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.type&nbsp;&nbsp;&nbsp;main,&nbsp;@function </span> 
-                  <span id="assembly_5"> <br /> main: </span> 
-                  <span id="assembly_6"> <br /> .LFB0: </span> 
-                  <span id="assembly_7"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_startproc </span> 
-                  <span id="assembly_8"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;pushq&nbsp;&nbsp;&nbsp;%rbp </span> 
-                  <span id="assembly_9"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa_offset&nbsp;16 </span> 
-                  <span id="assembly_10"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_offset&nbsp;6,&nbsp;-16 </span> 
-                  <span id="assembly_11"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;movq&nbsp;&nbsp;&nbsp;&nbsp;%rsp,&nbsp;%rbp </span> 
-                  <span id="assembly_12"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa_register&nbsp;6 </span> 
-                  <span id="assembly_13"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;movl&nbsp;&nbsp;&nbsp;&nbsp;$0,&nbsp;%eax </span> 
-                  <span id="assembly_14"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;popq&nbsp;&nbsp;&nbsp;&nbsp;%rbp </span> 
-                  <span id="assembly_15"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa&nbsp;7,&nbsp;8 </span> 
-                  <span id="assembly_16"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;ret </span> 
-                  <span id="assembly_17"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_endproc </span> 
-                  <span id="assembly_18"> <br /> .LFE0: </span> 
-                  <span id="assembly_19"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.size&nbsp;&nbsp;&nbsp;main,&nbsp;.-main </span> 
+                  <span style={{backgroundColor: '#ffa'}} id="assembly_1"> &nbsp;&nbsp;&nbsp;&nbsp;.file&nbsp;&nbsp;&nbsp;{"main.c"} </span>
+                  <span id="assembly_2"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.text </span>
+                  <span id="assembly_3"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.globl&nbsp;&nbsp;main </span>
+                  <span id="assembly_4"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.type&nbsp;&nbsp;&nbsp;main,&nbsp;@function </span>
+                  <span id="assembly_5"> <br /> main: </span>
+                  <span id="assembly_6"> <br /> .LFB0: </span>
+                  <span id="assembly_7"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_startproc </span>
+                  <span id="assembly_8"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;pushq&nbsp;&nbsp;&nbsp;%rbp </span>
+                  <span id="assembly_9"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa_offset&nbsp;16 </span>
+                  <span id="assembly_10"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_offset&nbsp;6,&nbsp;-16 </span>
+                  <span id="assembly_11"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;movq&nbsp;&nbsp;&nbsp;&nbsp;%rsp,&nbsp;%rbp </span>
+                  <span id="assembly_12"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa_register&nbsp;6 </span>
+                  <span id="assembly_13"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;movl&nbsp;&nbsp;&nbsp;&nbsp;$0,&nbsp;%eax </span>
+                  <span id="assembly_14"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;popq&nbsp;&nbsp;&nbsp;&nbsp;%rbp </span>
+                  <span id="assembly_15"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa&nbsp;7,&nbsp;8 </span>
+                  <span id="assembly_16"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;ret </span>
+                  <span id="assembly_17"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_endproc </span>
+                  <span id="assembly_18"> <br /> .LFE0: </span>
+                  <span id="assembly_19"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.size&nbsp;&nbsp;&nbsp;main,&nbsp;.-main </span>
                   <span id="assembly_20"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.ident&nbsp;&nbsp;{'"GCC:&nbsp;(Ubuntu&nbsp;7.2.0-1ubuntu1~16.04)&nbsp;7.2.0"'} </span>
                   <span id="assembly_21"> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.section&nbsp;&nbsp;&nbsp;&nbsp;.note.GNU-stack,{'""'},@progbits </span>
                 </ul>

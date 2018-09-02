@@ -1,6 +1,19 @@
 /* eslint-disable import/no-named-as-default */
 import React, {Component} from 'react';
 import Typist from 'react-typist';
+import posed from 'react-pose';
+
+const TransitionTerminal = posed.div({
+  start: {
+    x: "50%"
+  },
+  end: {
+    x: "0%",
+    transition: {
+      duration: 2500
+    }
+  }
+});
 
 class Terminal extends Component {
   constructor(props) {
@@ -14,7 +27,7 @@ class Terminal extends Component {
 
   render() {
     return (
-      <div className="shell-wrap col-sm-6" id="shell" style={{left: "25%"}}>
+      <TransitionTerminal className="shell-wrap col-sm-6" pose={this.state.completedIntro ? 'end' : 'start'}>
         <p className="shell-top-bar">/Users/intertect/</p>
         <ul className="shell-body" >
           <li id="cat_main" >
@@ -48,7 +61,7 @@ class Terminal extends Component {
                     completedLs: true
                   })
                 }}>
-                <Typist.Delay ms={1000} />
+                <Typist.Delay ms={500} />
                   ls
                 </Typist>
               </li>
@@ -72,7 +85,7 @@ class Terminal extends Component {
                     completedIntro: true
                   })
                 }}>
-                  <Typist.Delay ms={1500} />
+                  <Typist.Delay ms={500} />
                   cat main.s
                 </Typist>
               </li>
@@ -104,7 +117,7 @@ class Terminal extends Component {
               <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_endproc
               <br /> .LFE0:
               <br /> &nbsp;&nbsp;&nbsp;&nbsp;.size&nbsp;&nbsp;&nbsp;main,&nbsp;.-main
-              <br /> &nbsp;&nbsp;&nbsp;&nbsp;.ident&nbsp;&nbsp;{'"GCC:&nbsp;(Ubuntu&nbsp;7.2.0-1ubuntu1~16.04)&nbsp;7.2.0"'}
+              <br /> &nbsp;&nbsp;&nbsp;&nbsp;.ident&nbsp;&nbsp;{'"GCC: (Ubuntu 7.2.0-1ubuntu1~16.04) 7.2.0"'}
               <br /> &nbsp;&nbsp;&nbsp;&nbsp;.section&nbsp;&nbsp;&nbsp;&nbsp;.note.GNU-stack,{'""'},@progbits
             </div>
 
@@ -113,7 +126,7 @@ class Terminal extends Component {
             <div></div>
           }
         </ul>
-      </div>
+      </TransitionTerminal>
     );
   }
 }
