@@ -8,7 +8,7 @@ import React, {Component} from 'react';
 import Typist from 'react-typist';
 import posed from 'react-pose';
 
-import {Navbar, Nav, Button, Grid, Row, Col, Panel, Table} from 'react-bootstrap';
+import {Navbar, Nav, NavItem, Button, Grid, Row, Col, Panel, Table} from 'react-bootstrap';
 
 import '../styles/intro.css';
 
@@ -42,19 +42,22 @@ class Terminal extends Component {
         <Navbar>
           <Nav>
             <Grid>
-              <Row>
-                <Col sm={4}> <Button bsStyle="success">
-                  <span className="glyphicon glyphicon-play"></span> Run
-                </Button> </Col>
-                <Col sm={4}> <Button bsStyle="info" onClick={() =>
-                  this.setState({ assemblyStep: this.state.assemblyStep + 1 })
-                }>
-                  <span className="glyphicon glyphicon-forward"></span> Step
-                </Button> </Col>
-                <Col sm={4}> <Button bsStyle="danger">
-                  <span className="glyphicon glyphicon-stop"></span> Stop
-                </Button> </Col>
-              </Row>
+              <NavItem>
+                <Row>
+                  <Col sm={4}> <Button bsStyle="success" style={{width:"100%"}}>
+                    <span className="glyphicon glyphicon-play"></span> Run
+                  </Button> </Col>
+                  <Col sm={4}> <Button bsStyle="info" style={{width:"100%"}}
+                  onClick={() =>
+                    this.setState({ assemblyStep: this.state.assemblyStep + 1 })
+                  }>
+                    <span className="glyphicon glyphicon-forward"></span> Step
+                  </Button> </Col>
+                  <Col sm={4}> <Button bsStyle="danger" style={{width:"100%"}}>
+                    <span className="glyphicon glyphicon-stop"></span> Stop
+                  </Button> </Col>
+                </Row>
+              </NavItem>
             </Grid>
           </Nav>
         </Navbar>
