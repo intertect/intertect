@@ -62,6 +62,10 @@ class Terminal extends Component {
           </Nav>
         </Navbar>
 
+        <Navbar fixedBottom>
+          <p>&copy; 2018 Yash Patel and Peter DeLong. All rights reserved.</p>
+        </Navbar>
+
         <Grid>
           <Row>
             <Col sm={6}>
@@ -157,6 +161,10 @@ class Terminal extends Component {
 
       <div>
         <Navbar></Navbar>
+
+        <Navbar fixedBottom>
+          <p>&copy; 2018 Yash Patel and Peter DeLong. All rights reserved.</p>
+        </Navbar>
 
         <TransitionTerminal className="shell-wrap col-sm-6" pose={this.state.completedAssembly ? 'end' : 'start'}>
           <p className="shell-top-bar">/Users/intertect/</p>
