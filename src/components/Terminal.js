@@ -81,7 +81,7 @@ class Terminal extends Component {
 
                       <li>Hey there!</li>
                       <li>
-                        In this lesson, we gonna learn about computer <a href="http://www.google.com">architecture</a>
+                        In this lesson, we gonna learn about computer <a href="#" data-placement="top" data-toggle="tooltip" title="Blah blah more info">architecture</a>
                       </li>
 
                       </Typist>

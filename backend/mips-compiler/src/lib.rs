@@ -21,7 +21,7 @@ struct Mips;
 enum Operation {
     Add,
     Addi,
-    // TODO: etc...
+    Beq,
 }
 
 // Instruction contains all the information that a given instruction could possibly need when it is
@@ -38,7 +38,38 @@ enum Instruction {
         rt: Register,
         imm: Immediate16,
     },
-    // TODO: etc...
+    Beq {
+        rs: Register,
+        rt: Register,
+        imm: Immediate16
+    },
+    // TODO Addu {},
+    // TODO Addiu {},
+    // TODO Sub {},
+    // TODO Subu {},
+    // TODO And {},
+    // TODO Andi {},
+    // TODO Or {},
+    // TODO Ori {},
+    // TODO Nor {},
+    // TODO Xor {},
+    // TODO Xori {},
+    // TODO Sll {},
+    // TODO Srl {},
+    // TODO Sra {},
+    // TODO Blt {},
+    // TODO J {},
+    // TODO Jal {},
+    // TODO Jr {},
+    // TODO Lbu {},
+    // TODO Lhu {},
+    // TODO Lw {},
+    // TODO Lui {},
+    // TODO Li {},
+    // TODO Sb {},
+    // TODO Sh {},
+    // TODO Sw {},
+    // TODO Noop
 }
 
 // Register represents a single register in the system
@@ -251,6 +282,7 @@ fn lookup_operation(operation: &str) -> Option<Operation> {
     let oper = match operation.to_lowercase().as_ref() {
         "add" => Operation::Add,
         "addi" => Operation::Addi,
+        "beq" => Operation::Beq,
         _ => return None,
     };
 
@@ -356,6 +388,11 @@ fn construct_i_instruction(
             rt: rt,
             imm: imm,
         },
+        Operation::Beq => Instruction::Beq {
+            rs: rs,
+            rt: rt,
+            imm: imm,
+        },
         _ => return None,
     };
 
@@ -381,7 +418,11 @@ fn compile_vr(vr: VirtualRepresentation) -> Option<Vec<u8>> {
             Instruction::Addi { rs, rt, imm } => {
                 let (opcode, rs, rt, imm) = compile_addi(rs, rt, imm);
                 compile_i_format(opcode, rs, rt, imm)
-            }
+            },
+            Instruction::Beq { rs, rt, imm } => {
+                let (opcode, rs, rt, imm) = compile_beq(rs, rt, imm);
+                compile_i_format(opcode, rs, rt, imm)
+            },
         };
 
         program.extend_from_slice(&transform_u32_to_array_of_u8(machine_code));
@@ -467,6 +508,18 @@ fn compile_add(rs: Register, rt: Register, rd: Register) -> (u8, u8, u8, u8, u8,
 
 fn compile_addi(rs: Register, rt: Register, imm: Immediate16) -> (u8, u8, u8, u16) {
     let opcode = 0x8;
+    let rs_val = rs as u8;
+    let rt_val = rt as u8;
+    let imm_val = match imm {
+        Immediate16::Value(val) => val,
+        Immediate16::Label(_) => panic!("Label still present at codegen time"),
+    };
+
+    (opcode, rs_val, rt_val, imm_val)
+}
+
+fn compile_beq(rs: Register, rt: Register, imm: Immediate16) -> (u8, u8, u8, u16) {
+    let opcode = 0x4;
     let rs_val = rs as u8;
     let rt_val = rt as u8;
     let imm_val = match imm {
