@@ -9,7 +9,11 @@ path = "src/lib.rs"
 
 [[bin]]
 name = "cli_runner"
-path = "src/main.rs"
+path = "src/bin/cli_runner.rs"
+
+[[bin]]
+name = "instruction_printer"
+path = "src/bin/instruction_printer.rs"
 
 [dependencies]
 clap = "2.32"

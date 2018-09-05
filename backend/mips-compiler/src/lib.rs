@@ -377,11 +377,11 @@ fn compile_vr(vr: VirtualRepresentation) -> Option<Vec<u8>> {
             Instruction::Add { rs, rt, rd } => {
                 let (opcode, rs, rt, rd, shamt, funct) = compile_add(rs, rt, rd);
                 compile_r_format(opcode, rs, rt, rd, shamt, funct)
-            },
+            }
             Instruction::Addi { rs, rt, imm } => {
                 let (opcode, rs, rt, imm) = compile_addi(rs, rt, imm);
                 compile_i_format(opcode, rs, rt, imm)
-            },
+            }
         };
 
         program.extend_from_slice(&transform_u32_to_array_of_u8(machine_code));
@@ -390,12 +390,12 @@ fn compile_vr(vr: VirtualRepresentation) -> Option<Vec<u8>> {
     Some(program)
 }
 
-fn transform_u32_to_array_of_u8(x:u32) -> [u8;4] {
-    let b1 : u8 = ((x >> 24) & 0xff) as u8;
-    let b2 : u8 = ((x >> 16) & 0xff) as u8;
-    let b3 : u8 = ((x >> 8) & 0xff) as u8;
-    let b4 : u8 = (x & 0xff) as u8;
-    return [b1, b2, b3, b4]
+fn transform_u32_to_array_of_u8(x: u32) -> [u8; 4] {
+    let b1: u8 = ((x >> 24) & 0xff) as u8;
+    let b2: u8 = ((x >> 16) & 0xff) as u8;
+    let b3: u8 = ((x >> 8) & 0xff) as u8;
+    let b4: u8 = (x & 0xff) as u8;
+    return [b1, b2, b3, b4];
 }
 
 fn compile_r_format(opcode: u8, rs: u8, rt: u8, rd: u8, shamt: u8, funct: u8) -> u32 {
