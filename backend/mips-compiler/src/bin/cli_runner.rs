@@ -1,6 +1,3 @@
-extern crate clap;
-extern crate mips;
-
 use clap::{App, Arg};
 
 use std::error::Error;

@@ -1,7 +1,10 @@
+cargo-features = ["edition"]
+
 [package]
 name = "mips-compiler"
 version = "0.1.0"
 authors = ["Peter DeLong <petersdelong@gmail.com>"]
+edition = "2018"
 
 [lib]
 name = "mips"
@@ -15,7 +18,14 @@ path = "src/bin/cli_runner.rs"
 name = "instruction_printer"
 path = "src/bin/instruction_printer.rs"
 
+[[bin]]
+name = "extract_from_reference"
+path = "src/bin/extract_from_reference.rs"
+
 [dependencies]
-clap = "2.32"
+clap = "^2"
 pest = "^1.0"
 pest_derive = "^1.0"
+goblin = "^0.0"
+simple-error = "^0.1"
+

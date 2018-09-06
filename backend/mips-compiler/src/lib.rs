@@ -1,9 +1,7 @@
-extern crate pest;
 #[macro_use]
 extern crate pest_derive;
 
 use pest::iterators::Pair;
-use pest::iterators::Pairs;
 use pest::Parser;
 
 use std::collections::HashMap;
@@ -189,7 +187,7 @@ fn parse_program(program: String) -> Option<VirtualRepresentation> {
     };
 
     let mut pairs = match Mips::parse(Rule::program, &program) {
-        Ok(mut pairs) => pairs,
+        Ok(pairs) => pairs,
         Err(_) => return None, //TODO(peterdelong)
     };
 
@@ -209,7 +207,7 @@ fn parse_program(program: String) -> Option<VirtualRepresentation> {
     Some(vr)
 }
 
-fn handle_instruction(instruction: Pair<Rule>) -> Option<Line> {
+fn handle_instruction(instruction: Pair<'_, Rule>) -> Option<Line> {
     return match instruction.as_rule() {
         Rule::r_instruction => {
             let mut pairs = instruction.into_inner();
@@ -328,7 +326,7 @@ fn construct_r_instruction(
     rs: Register,
     rt: Register,
     rd: Register,
-    shamt: u8,
+    _shamt: u8,
 ) -> Option<Instruction> {
     let instruction = match operation {
         Operation::Add => Instruction::Add {
