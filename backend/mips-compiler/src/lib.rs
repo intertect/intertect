@@ -13,16 +13,6 @@ const _GRAMMAR: &'static str = include_str!("mips.pest");
 #[grammar = "mips.pest"]
 struct Mips;
 
-// Operation contains structured names of all the instructions we implement
-// These don't necessarily correspond 1:1 with opcodes, since there is also a
-// "func" field on some instructions
-#[derive(Debug)]
-enum Operation {
-    Add,
-    Addi,
-    Beq,
-}
-
 // Instruction contains all the information that a given instruction could possibly need when it is
 // being compiled
 #[derive(Debug)]
@@ -37,15 +27,17 @@ enum Instruction {
         rt: Register,
         imm: Immediate16,
     },
+    // TODO Addu {}
+    // TODO Addiu {},
+
+    // TODO Sub {},
+    // TODO Subu {},
+
     Beq {
         rs: Register,
         rt: Register,
         imm: Immediate16
     },
-    // TODO Addu {},
-    // TODO Addiu {},
-    // TODO Sub {},
-    // TODO Subu {},
     // TODO And {},
     // TODO Andi {},
     // TODO Or {},
@@ -277,23 +269,7 @@ fn lookup_register(register: &str) -> Option<Register> {
     Some(reg)
 }
 
-fn lookup_operation(operation: &str) -> Option<Operation> {
-    let oper = match operation.to_lowercase().as_ref() {
-        "add" => Operation::Add,
-        "addi" => Operation::Addi,
-        "beq" => Operation::Beq,
-        _ => return None,
-    };
-
-    Some(oper)
-}
-
-fn handle_r_instruction(name: &str, rd_str: &str, rs_str: &str, rt_str: &str) -> Option<Line> {
-    let operation = match lookup_operation(name) {
-        Some(operation) => operation,
-        None => return None,
-    };
-
+fn handle_r_instruction(operation: &str, rd_str: &str, rs_str: &str, rt_str: &str) -> Option<Line> {
     let rd = match lookup_register(rd_str) {
         Some(reg) => reg,
         None => return None,
@@ -323,14 +299,14 @@ fn handle_r_instruction(name: &str, rd_str: &str, rs_str: &str, rt_str: &str) ->
 }
 
 fn construct_r_instruction(
-    operation: Operation,
+    operation: &str,
     rs: Register,
     rt: Register,
     rd: Register,
     _shamt: u8,
 ) -> Option<Instruction> {
     let instruction = match operation {
-        Operation::Add => Instruction::Add {
+        "add" => Instruction::Add {
             rs: rs,
             rt: rt,
             rd: rd,
@@ -341,12 +317,7 @@ fn construct_r_instruction(
     Some(instruction)
 }
 
-fn handle_i_instruction(name: &str, rt_str: &str, rs_str: &str, imm_str: &str) -> Option<Line> {
-    let operation = match lookup_operation(name) {
-        Some(operation) => operation,
-        None => return None,
-    };
-
+fn handle_i_instruction(operation: &str, rt_str: &str, rs_str: &str, imm_str: &str) -> Option<Line> {
     let rs = match lookup_register(rs_str) {
         Some(reg) => reg,
         None => return None,
@@ -376,18 +347,18 @@ fn handle_i_instruction(name: &str, rt_str: &str, rs_str: &str, imm_str: &str) -
 }
 
 fn construct_i_instruction(
-    operation: Operation,
+    operation: &str,
     rs: Register,
     rt: Register,
     imm: Immediate16,
 ) -> Option<Instruction> {
     let instruction = match operation {
-        Operation::Addi => Instruction::Addi {
+        "addi" => Instruction::Addi {
             rs: rs,
             rt: rt,
             imm: imm,
         },
-        Operation::Beq => Instruction::Beq {
+        "beq" => Instruction::Beq {
             rs: rs,
             rt: rt,
             imm: imm,
@@ -490,23 +461,6 @@ fn compile_i_format(opcode: u8, rs: u8, rt: u8, imm: u16) -> u32 {
 
     // 16 bits immediate
     instruction |= imm as u32;
-
-    instruction
-}
-
-fn compile_j_format(opcode: u8, address: u32) -> u32 {
-    // Make sure arguments use the appropriate number of bits
-    assert!(opcode < 64);
-    assert!(address < 67108864);
-    // imm is exactly 16 bits which is enforced by rust
-
-    let mut instruction: u32 = 0;
-
-    // 6 bits opcode
-    instruction |= (opcode as u32) << 26;
-
-    // 26 bits address
-    instruction |= address as u32;
 
     instruction
 }
