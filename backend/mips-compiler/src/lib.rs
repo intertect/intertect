@@ -1,3 +1,4 @@
+extern crate pest;
 #[macro_use]
 extern crate pest_derive;
 
@@ -489,6 +490,23 @@ fn compile_i_format(opcode: u8, rs: u8, rt: u8, imm: u16) -> u32 {
 
     // 16 bits immediate
     instruction |= imm as u32;
+
+    instruction
+}
+
+fn compile_j_format(opcode: u8, address: u32) -> u32 {
+    // Make sure arguments use the appropriate number of bits
+    assert!(opcode < 64);
+    assert!(address < 67108864);
+    // imm is exactly 16 bits which is enforced by rust
+
+    let mut instruction: u32 = 0;
+
+    // 6 bits opcode
+    instruction |= (opcode as u32) << 26;
+
+    // 26 bits address
+    instruction |= address as u32;
 
     instruction
 }

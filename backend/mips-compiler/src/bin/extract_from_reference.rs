@@ -1,3 +1,5 @@
+extern crate goblin;
+extern crate clap;
 #[macro_use]
 extern crate simple_error;
 

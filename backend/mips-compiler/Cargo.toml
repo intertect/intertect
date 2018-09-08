@@ -1,10 +1,7 @@
-cargo-features = ["edition"]
-
 [package]
 name = "mips-compiler"
 version = "0.1.0"
 authors = ["Peter DeLong <petersdelong@gmail.com>"]
-edition = "2018"
 
 [lib]
 name = "mips"
