@@ -418,6 +418,67 @@ fn construct_r_instruction(
             rt: rt,
             rd: rd,
         },
+
+        "addu" => Instruction::Addu {
+            rs: rs,
+            rt: rt,
+            rd: rd,
+        },
+
+        "sub" => Instruction::Sub {
+            rs: rs,
+            rt: rt,
+            rd: rd
+        },
+
+        "subu" => Instruction::Subu {
+            rs: rs,
+            rt: rt,
+            rd: rd
+        },
+
+        "and" => Instruction::And {
+            rs: rs,
+            rt: rt,
+            rd: rd
+        },
+
+        "or" => Instruction::Or {
+            rs: rs,
+            rt: rt,
+            rd: rd
+        },
+
+        "nor" => Instruction::Nor {
+            rs: rs,
+            rt: rt,
+            rd: rd
+        },
+
+        "xor" => Instruction::Xor {
+            rs: rs,
+            rt: rt,
+            rd: rd
+        },
+
+        "sll" => Instruction::Sll {
+          rt: rt,
+          rd: rd,
+          shamt: _shamt
+        },
+
+        "srl" => Instruction::Srl {
+          rt: rt,
+          rd: rd,
+          shamt: _shamt
+        },
+
+        "sra" => Instruction::Sra {
+          rt: rt,
+          rd: rd,
+          shamt: _shamt
+        },
+
         _ => return None,
     };
 
@@ -463,13 +524,74 @@ fn construct_i_instruction(
         "addi" => Instruction::Addi {
             rs: rs,
             rt: rt,
-            imm: imm,
+            imm: imm
         },
+
+        "addiu" => Instruction::Addiu {
+            rs: rs,
+            rt: rt,
+            imm: imm
+        },
+
+        "ori" => Instruction::Ori {
+            rs: rs,
+            rt: rt,
+            imm: imm
+        },
+
+        "xori" => Instruction::Xori {
+            rs: rs,
+            rt: rt,
+            imm: imm
+        },
+
+        "lbu" => Instruction::Lbu {
+            rs: rs,
+            rt: rt,
+            imm: imm
+        },
+
+        "lhu" => Instruction::Lhu {
+            rs: rs,
+            rt: rt,
+            imm: imm
+        },
+
+        "lw" => Instruction::Lw {
+            rs: rs,
+            rt: rt,
+            imm: imm
+        },
+
+        "lui" => Instruction::Lui {
+            rt: rt,
+            imm: imm
+        },
+
+        "sb" => Instruction::Sb {
+            rs: rs,
+            rt: rt,
+            imm: imm
+        },
+
+        "sh" => Instruction::Sh {
+            rs: rs,
+            rt: rt,
+            imm: imm
+        },
+
+        "sw" => Instruction::Sw {
+            rs: rs,
+            rt: rt,
+            imm: imm
+        },
+
         "beq" => Instruction::Beq {
             rs: rs,
             rt: rt,
-            imm: imm,
+            imm: imm
         },
+
         _ => return None,
     };
 
