@@ -610,18 +610,103 @@ fn compile_vr(vr: VirtualRepresentation) -> Option<Vec<u8>> {
     // TODO(peterdelong): Might be better as a map
     for instruction in vr.instructions {
         let machine_code = match instruction.instruction {
-            Instruction::Add { rs, rt, rd } => {
+            /* ------------------------ Register Operations ------------------------ */
+            Instruction::Add   { rs, rt, rd } => {
                 let (opcode, rs, rt, rd, shamt, funct) = compile_add(rs, rt, rd);
                 compile_r_format(opcode, rs, rt, rd, shamt, funct)
-            }
-            Instruction::Addi { rs, rt, imm } => {
+            },
+            Instruction::Addu  { rs, rt, rd } => {
+                let (opcode, rs, rt, rd, shamt, funct) = compile_add(rs, rt, rd);
+                compile_r_format(opcode, rs, rt, rd, shamt, funct)
+            },
+            Instruction::Sub   { rs, rt, rd } => {
+                let (opcode, rs, rt, rd, shamt, funct) = compile_add(rs, rt, rd);
+                compile_r_format(opcode, rs, rt, rd, shamt, funct)
+            },
+            Instruction::Subu  { rs, rt, rd } => {
+                let (opcode, rs, rt, rd, shamt, funct) = compile_add(rs, rt, rd);
+                compile_r_format(opcode, rs, rt, rd, shamt, funct)
+            },
+            Instruction::And   { rs, rt, rd } => {
+                let (opcode, rs, rt, rd, shamt, funct) = compile_add(rs, rt, rd);
+                compile_r_format(opcode, rs, rt, rd, shamt, funct)
+            },
+            Instruction::Or    { rs, rt, rd } => {
+                let (opcode, rs, rt, rd, shamt, funct) = compile_add(rs, rt, rd);
+                compile_r_format(opcode, rs, rt, rd, shamt, funct)
+            },
+            Instruction::Nor   { rs, rt, rd } => {
+                let (opcode, rs, rt, rd, shamt, funct) = compile_add(rs, rt, rd);
+                compile_r_format(opcode, rs, rt, rd, shamt, funct)
+            },
+            Instruction::Xor   { rs, rt, rd } => {
+                let (opcode, rs, rt, rd, shamt, funct) = compile_add(rs, rt, rd);
+                compile_r_format(opcode, rs, rt, rd, shamt, funct)
+            },
+            /* Instruction::Sll   { rs, rt, shamt } => {
+                let (opcode, rs, rt, rd, shamt, funct) = compile_add(rs, rt, shamt);
+                compile_r_format(opcode, rs, rt, rd, shamt, funct)
+            },
+            Instruction::Srl   { rs, rt, shamt } => {
+                let (opcode, rs, rt, rd, shamt, funct) = compile_add(rs, rt, shamt);
+                compile_r_format(opcode, rs, rt, rd, shamt, funct)
+            },
+            Instruction::Sra   { rs, rt, shamt } => {
+                let (opcode, rs, rt, rd, shamt, funct) = compile_add(rs, rt, shamt);
+                compile_r_format(opcode, rs, rt, rd, shamt, funct)
+            }, */
+
+            /* --------------------- Immediate Operations -------------------------- */
+            Instruction::Addi  { rs, rt, imm } => {
                 let (opcode, rs, rt, imm) = compile_addi(rs, rt, imm);
                 compile_i_format(opcode, rs, rt, imm)
             },
-            Instruction::Beq { rs, rt, imm } => {
-                let (opcode, rs, rt, imm) = compile_beq(rs, rt, imm);
+            Instruction::Addiu { rs, rt, imm } => {
+                let (opcode, rs, rt, imm) = compile_addi(rs, rt, imm);
                 compile_i_format(opcode, rs, rt, imm)
             },
+            Instruction::Ori   { rs, rt, imm } => {
+                let (opcode, rs, rt, imm) = compile_addi(rs, rt, imm);
+                compile_i_format(opcode, rs, rt, imm)
+            },
+            Instruction::Xori  { rs, rt, imm } => {
+                let (opcode, rs, rt, imm) = compile_addi(rs, rt, imm);
+                compile_i_format(opcode, rs, rt, imm)
+            },
+            Instruction::Lbu   { rs, rt, imm } => {
+                let (opcode, rs, rt, imm) = compile_addi(rs, rt, imm);
+                compile_i_format(opcode, rs, rt, imm)
+            },
+            Instruction::Lhu   { rs, rt, imm } => {
+                let (opcode, rs, rt, imm) = compile_addi(rs, rt, imm);
+                compile_i_format(opcode, rs, rt, imm)
+            },
+            Instruction::Lw    { rs, rt, imm } => {
+                let (opcode, rs, rt, imm) = compile_addi(rs, rt, imm);
+                compile_i_format(opcode, rs, rt, imm)
+            },
+            /* Instruction::Lui   { rt, imm } => {
+                let (opcode, rs, rt, imm) = compile_addi(rt, imm);
+                compile_i_format(opcode, rs, rt, imm)
+            }, */
+            Instruction::Sb    { rs, rt, imm } => {
+                let (opcode, rs, rt, imm) = compile_addi(rs, rt, imm);
+                compile_i_format(opcode, rs, rt, imm)
+            },
+            Instruction::Sh    { rs, rt, imm } => {
+                let (opcode, rs, rt, imm) = compile_addi(rs, rt, imm);
+                compile_i_format(opcode, rs, rt, imm)
+            },
+            Instruction::Sw    { rs, rt, imm } => {
+                let (opcode, rs, rt, imm) = compile_addi(rs, rt, imm);
+                compile_i_format(opcode, rs, rt, imm)
+            },
+            Instruction::Beq   { rs, rt, imm } => {
+                let (opcode, rs, rt, imm) = compile_addi(rs, rt, imm);
+                compile_i_format(opcode, rs, rt, imm)
+            },
+
+            /* -------------------------- Jump Operations -------------------------- */
             _ => return None,
         };
 
