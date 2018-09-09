@@ -3,9 +3,18 @@
 * All rights reserved.
 */
 
+#[cfg(test)]
+mod tests;
+pub mod reference_extractor;
+
 extern crate pest;
 #[macro_use]
 extern crate pest_derive;
+extern crate clap;
+extern crate goblin;
+#[macro_use]
+extern crate simple_error;
+extern crate tempfile;
 
 use pest::iterators::Pair;
 use pest::Parser;
@@ -255,7 +264,7 @@ struct VirtualRepresentation {
 
 // The main entry point. Pass in a string containing assembly code and return an array
 // containing the complete program image
-pub fn compile_string(program: String) -> Option<Vec<u8>> {
+pub fn compile_string(program: &str) -> Option<(Vec<u8>, Vec<u8>)> {
     let vr = match parse_program(program) {
         Some(vr) => vr,
         None => {
@@ -280,7 +289,7 @@ pub fn compile_string(program: String) -> Option<Vec<u8>> {
         }
     };
 
-    Some(compiled)
+    Some((compiled, vec![]))
 }
 
 fn resolve_labels(vr: VirtualRepresentation) -> Option<VirtualRepresentation> {
@@ -293,15 +302,21 @@ fn resolve_labels(vr: VirtualRepresentation) -> Option<VirtualRepresentation> {
 // about the program
 //
 // Takes ownership of and consumes `program` in the process
-fn parse_program(program: String) -> Option<VirtualRepresentation> {
+fn parse_program(program: &str) -> Option<VirtualRepresentation> {
     let mut vr = VirtualRepresentation {
         labels: HashMap::new(),
         instructions: Vec::new(),
     };
 
-    let mut pairs = match Mips::parse(Rule::program, &program) {
+    // FIXME This is disgusting
+    let program_hack = format!("{}\n", &program);
+    let mut pairs = match Mips::parse(Rule::program, &program_hack) {
         Ok(pairs) => pairs,
-        Err(_) => return None, //TODO(peterdelong)
+        // TODO
+        Err(err) => {
+            println!("{:?}", err);
+            return None
+        }
     };
 
     let program_pair = pairs.next().unwrap();
