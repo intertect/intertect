@@ -457,6 +457,12 @@ fn construct_r_instruction(
             rd: rd
         },
 
+        "nor" => Instruction::Nor {
+            rs: rs,
+            rt: rt,
+            rd: rd
+        },
+
         "xor" => Instruction::Xor {
             rs: rs,
             rt: rt,
@@ -530,6 +536,12 @@ fn construct_i_instruction(
         },
 
         "addiu" => Instruction::Addiu {
+            rs: rs,
+            rt: rt,
+            imm: imm
+        },
+
+        "andi" => Instruction::Andi {
             rs: rs,
             rt: rt,
             imm: imm
