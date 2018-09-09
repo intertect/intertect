@@ -17,49 +17,156 @@ struct Mips;
 // being compiled
 #[derive(Debug)]
 enum Instruction {
+    /* ------------------------ Register Operations ------------------------ */
     Add {
         rs: Register,
         rt: Register,
         rd: Register,
     },
+
+    Addu {
+        rs: Register,
+        rt: Register,
+        rd: Register,
+    },
+
+    Sub {
+        rs: Register,
+        rt: Register,
+        rd: Register,
+    },
+
+    Subu {
+        rs: Register,
+        rt: Register,
+        rd: Register,
+    },
+
+    And {
+        rs: Register,
+        rt: Register,
+        rd: Register,
+    },
+
+    Or {
+        rs: Register,
+        rt: Register,
+        rd: Register,
+    },
+
+    Nor {
+        rs: Register,
+        rt: Register,
+        rd: Register,
+    },
+
+    Xor {
+        rs: Register,
+        rt: Register,
+        rd: Register,
+    },
+
+    Sll {
+      rt: Register,
+      rd: Register,
+      shamt: u8
+    },
+
+    Srl {
+      rt: Register,
+      rd: Register,
+      shamt: u8
+    },
+
+    Sra {
+      rt: Register,
+      rd: Register,
+      shamt: u8
+    },
+
+    /* --------------------- Immediate Operations -------------------------- */
     Addi {
         rs: Register,
         rt: Register,
         imm: Immediate16,
     },
-    // TODO Addu {}
-    // TODO Addiu {},
 
-    // TODO Sub {},
-    // TODO Subu {},
+    Addiu {
+        rs: Register,
+        rt: Register,
+        imm: Immediate16,
+    },
+
+    Ori {
+        rs: Register,
+        rt: Register,
+        imm: Immediate16
+    },
+
+    Xori {
+        rs: Register,
+        rt: Register,
+        imm: Immediate16
+    },
+
+    Lbu {
+        rs: Register,
+        rt: Register,
+        imm: Immediate16
+    },
+
+    Lhu {
+        rs: Register,
+        rt: Register,
+        imm: Immediate16
+    },
+
+    Lw {
+        rs: Register,
+        rt: Register,
+        imm: Immediate16
+    },
+
+    Lui {
+        rt: Register,
+        imm: Immediate16
+    },
+
+    Sb {
+        rs: Register,
+        rt: Register,
+        imm: Immediate16
+    },
+
+    Sh {
+        rs: Register,
+        rt: Register,
+        imm: Immediate16
+    },
+
+    Sw {
+        rs: Register,
+        rt: Register,
+        imm: Immediate16
+    },
 
     Beq {
         rs: Register,
         rt: Register,
         imm: Immediate16
     },
-    // TODO And {},
-    // TODO Andi {},
-    // TODO Or {},
-    // TODO Ori {},
-    // TODO Nor {},
-    // TODO Xor {},
-    // TODO Xori {},
-    // TODO Sll {},
-    // TODO Srl {},
-    // TODO Sra {},
-    // TODO Blt {},
+
+    /* -------------------------- Jump Operations -------------------------- */
     // TODO J {},
     // TODO Jal {},
     // TODO Jr {},
-    // TODO Lbu {},
-    // TODO Lhu {},
-    // TODO Lw {},
-    // TODO Lui {},
-    // TODO Li {},
-    // TODO Sb {},
-    // TODO Sh {},
-    // TODO Sw {},
+
+    /* ------------------------ Non-existent Operations -------------------- */
+    /* TODO: @peterdelong: The below instructions are not in MIPS page. We   */
+    /* should probably remove them from implementation details               */
+
+    // TODO Li {}
+    // TODO Blt <== apparently you can check equliaty first, subtract 1, and then recheck
     // TODO Noop
 }
 
@@ -393,6 +500,7 @@ fn compile_vr(vr: VirtualRepresentation) -> Option<Vec<u8>> {
                 let (opcode, rs, rt, imm) = compile_beq(rs, rt, imm);
                 compile_i_format(opcode, rs, rt, imm)
             },
+            _ => return None,
         };
 
         program.extend_from_slice(&transform_u32_to_array_of_u8(machine_code));
