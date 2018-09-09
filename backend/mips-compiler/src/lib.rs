@@ -3,6 +3,9 @@
 * All rights reserved.
 */
 
+extern crate wasm_bindgen;
+use wasm_bindgen::prelude::*;
+
 #[cfg(test)]
 mod tests;
 pub mod reference_extractor;
@@ -14,7 +17,6 @@ extern crate clap;
 extern crate goblin;
 #[macro_use]
 extern crate simple_error;
-extern crate tempfile;
 
 use pest::iterators::Pair;
 use pest::Parser;
@@ -263,6 +265,7 @@ struct VirtualRepresentation {
 
 // The main entry point. Pass in a string containing assembly code and return an array
 // containing the complete program image
+#[wasm_bindgen]
 pub fn compile_string(program: &str) -> Option<Vec<u8>> {
     let vr = match parse_program(program) {
         Some(vr) => vr,
