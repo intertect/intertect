@@ -5,6 +5,7 @@
 
 #[cfg(test)]
 mod tests;
+pub mod instruction_printer;
 pub mod reference_extractor;
 
 extern crate pest;
@@ -98,6 +99,10 @@ enum Instruction {
       shamt: u8
     },
 
+    Jr {
+        rs: Register
+    },
+
     /* --------------------- Immediate Operations -------------------------- */
     Addi {
         rs: Register,
@@ -177,12 +182,15 @@ enum Instruction {
     },
 
     /* -------------------------- Jump Operations -------------------------- */
-    // TODO J {},
-    // TODO Jal {},
-    // TODO Jr {},
+    J {
+        target: Immediate28
+    },
+    Jal {
+        target: Immediate28
+    },
 
     /* -------------------------- Special Operations ----------------------- */
-    Noop {}
+    Nop {}
 
     /* ------------------------ Non-existent Operations -------------------- */
     /* TODO: @peterdelong: The below instructions are not in MIPS page. We   */
@@ -241,7 +249,7 @@ enum Immediate16 {
 }
 
 #[derive(Debug)]
-enum Immediate30 {
+enum Immediate28 {
     Value(u32),
     Label(Label),
 }
@@ -340,12 +348,21 @@ fn handle_instruction(instruction: Pair<'_, Rule>) -> Option<Line> {
             let mut pairs = instruction.into_inner();
 
             let name = pairs.next().unwrap().as_str();
-            let rd_str = pairs.next().unwrap().as_str();
-            let rs_str = pairs.next().unwrap().as_str();
-            let rt_str = pairs.next().unwrap().as_str();
+            let (rd_str, rs_str, rt_str) = if name == "jr" {
+                let rs_str = pairs.next().unwrap().as_str();
+                ("", rs_str, "")
+            } else {
+                let rd_str = pairs.next().unwrap().as_str();
+                let rs_str = pairs.next().unwrap().as_str();
+                let rt_str = pairs.next().unwrap().as_str();
 
-            handle_r_instruction(name, rd_str, rs_str, rt_str)
-        }
+                (rd_str, rs_str, rt_str)
+            };
+
+            // Shamt always 0 since shifts are handled below
+            handle_r_instruction(name, rd_str, rs_str, rt_str, "0")
+        },
+
         Rule::i_instruction => {
             let mut pairs = instruction.into_inner();
 
@@ -354,7 +371,26 @@ fn handle_instruction(instruction: Pair<'_, Rule>) -> Option<Line> {
             let rs_str = pairs.next().unwrap().as_str();
             let imm_str = pairs.next().unwrap().as_str();
 
-            handle_i_instruction(name, rt_str, rs_str, imm_str)
+            // These look like I format instructions but are really R format
+            if name == "srl" || name == "sra" || name == "sll" {
+                handle_r_instruction(name, /*rd_str=*/rt_str, /*rs_str=*/"$at", /*rt_str=*/rs_str, /*shamt_str=*/ imm_str)
+            } else {
+                handle_i_instruction(name, rt_str, rs_str, imm_str)
+            }
+        },
+        Rule::j_instruction => {
+            let mut pairs = instruction.into_inner();
+
+            let name = pairs.next().unwrap().as_str();
+            let target = pairs.next().unwrap().as_str();
+
+            handle_j_instruction(name, target)
+        },
+        Rule::nop => {
+            Some(Line {
+                labels: vec![],
+                instruction: Instruction::Nop{}
+            })
         }
         _ => unreachable!(),
     };
@@ -362,7 +398,7 @@ fn handle_instruction(instruction: Pair<'_, Rule>) -> Option<Line> {
 
 fn lookup_register(register: &str) -> Option<Register> {
     let reg = match register.to_lowercase().as_ref() {
-        "$zero" => Register::Zero,
+        "$zero" | "" => Register::Zero,
         "$at" => Register::At,
         "$v0" => Register::V0,
         "$v1" => Register::V1,
@@ -403,7 +439,7 @@ fn lookup_register(register: &str) -> Option<Register> {
     Some(reg)
 }
 
-fn handle_r_instruction(operation: &str, rd_str: &str, rs_str: &str, rt_str: &str) -> Option<Line> {
+fn handle_r_instruction(operation: &str, rd_str: &str, rs_str: &str, rt_str: &str, shamt_str: &str) -> Option<Line> {
     let rd = match lookup_register(rd_str) {
         Some(reg) => reg,
         None => return None,
@@ -419,7 +455,14 @@ fn handle_r_instruction(operation: &str, rd_str: &str, rs_str: &str, rt_str: &st
         None => return None,
     };
 
-    let instruction = match construct_r_instruction(operation, rs, rt, rd, /*shamt=*/ 0) {
+    let (radix, shamt_str) = if shamt_str.to_lowercase().starts_with("0x") { (16, &shamt_str[2..])} else { (10, shamt_str) };
+
+    let shamt = match u8::from_str_radix(shamt_str, radix) {
+        Ok(val) => val,
+        Err(_) => return None,
+    };
+
+    let instruction = match construct_r_instruction(operation, rs, rt, rd, shamt) {
         Some(instruction) => instruction,
         None => return None,
     };
@@ -506,6 +549,10 @@ fn construct_r_instruction(
           shamt: _shamt
         },
 
+        "jr" => Instruction::Jr {
+            rs: rs
+        },
+
         _ => return None,
     };
 
@@ -523,7 +570,9 @@ fn handle_i_instruction(operation: &str, rt_str: &str, rs_str: &str, imm_str: &s
         None => return None,
     };
 
-    let imm = match imm_str.parse() {
+    let (radix, imm_str) = if imm_str.to_lowercase().starts_with("0x") { (16, &imm_str[2..])} else { (10, imm_str) };
+
+    let imm = match u16::from_str_radix(imm_str, radix) {
         Ok(val) => Immediate16::Value(val),
         Err(_) => return None,
     };
@@ -631,6 +680,48 @@ fn construct_i_instruction(
     Some(instruction)
 }
 
+fn handle_j_instruction(operation: &str, target_str: &str) -> Option<Line> {
+    let (radix, imm_str) = if target_str.to_lowercase().starts_with("0x") { (16, &target_str[2..])} else { (10, target_str) };
+
+    println!("{}", target_str);
+
+    let target = match u32::from_str_radix(imm_str, radix) {
+        Ok(val) => Immediate28::Value(val >> 2),
+        Err(_) => Immediate28::Label(Label{name: imm_str.to_string()}),
+    };
+
+    let instruction = match construct_j_instruction(operation, target) {
+        Some(instruction) => instruction,
+        None => return None,
+    };
+
+    let line = Line {
+        labels: Vec::new(),
+        instruction: instruction,
+    };
+
+    Some(line)
+}
+
+fn construct_j_instruction(
+    operation: &str,
+    target: Immediate28,
+) -> Option<Instruction> {
+    let instruction = match operation {
+        "j" => Instruction::J {
+            target: target
+        },
+
+        "jal" => Instruction::Jal {
+            target: target
+        },
+
+        _ => return None,
+    };
+
+    Some(instruction)
+}
+
 // Take `vr` containing the complete program state and return the corresponding machine code
 // representing the compiled program
 // Returns None if labels can't be resolved
@@ -639,6 +730,7 @@ fn construct_i_instruction(
 // separate out the label resoulution into a different function which will make maintenance easier.
 fn compile_vr(vr: VirtualRepresentation) -> Option<Vec<u8>> {
     let mut program: Vec<u8> = Vec::new();
+    let mut current_address: u32 = 0;
 
     // TODO(peterdelong): Might be better as a map
     // all material was pulled from: http://www2.engr.arizona.edu/~ece369/Resources/spim/MIPSReference.pdf
@@ -646,38 +738,41 @@ fn compile_vr(vr: VirtualRepresentation) -> Option<Vec<u8>> {
         let machine_code = match instruction.instruction {
             /* ------------------------ Register Operations ------------------------ */
             Instruction::Add   { rs, rt, rd } => {
-                compile_r_format(Some(rs), rt, rd, 0x0, 0x20)
+                compile_r_format(Some(rs), Some(rt), Some(rd), 0x0, 0x20)
             },
             Instruction::Addu  { rs, rt, rd } => {
-                compile_r_format(Some(rs), rt, rd, 0x0, 0x21)
+                compile_r_format(Some(rs), Some(rt), Some(rd), 0x0, 0x21)
             },
             Instruction::Sub   { rs, rt, rd } => {
-                compile_r_format(Some(rs), rt, rd, 0x0, 0x22)
+                compile_r_format(Some(rs), Some(rt), Some(rd), 0x0, 0x22)
             },
             Instruction::Subu  { rs, rt, rd } => {
-                compile_r_format(Some(rs), rt, rd, 0x0, 0x23)
+                compile_r_format(Some(rs), Some(rt), Some(rd), 0x0, 0x23)
             },
             Instruction::And   { rs, rt, rd } => {
-                compile_r_format(Some(rs), rt, rd, 0x0, 0x24)
+                compile_r_format(Some(rs), Some(rt), Some(rd), 0x0, 0x24)
             },
             Instruction::Or    { rs, rt, rd } => {
-                compile_r_format(Some(rs), rt, rd, 0x0, 0x25)
+                compile_r_format(Some(rs), Some(rt), Some(rd), 0x0, 0x25)
             },
             Instruction::Xor   { rs, rt, rd } => {
-                compile_r_format(Some(rs), rt, rd, 0x0, 0x26)
+                compile_r_format(Some(rs), Some(rt), Some(rd), 0x0, 0x26)
             },
             Instruction::Nor   { rs, rt, rd } => {
-                compile_r_format(Some(rs), rt, rd, 0x0, 0x27)
+                compile_r_format(Some(rs), Some(rt), Some(rd), 0x0, 0x27)
             },
             Instruction::Sll   { rt, rd, shamt } => {
-                compile_r_format(None, rt, rd, shamt, 0x0)
+                compile_r_format(None, Some(rt), Some(rd), shamt, 0x0)
             },
             Instruction::Srl   { rt, rd, shamt } => {
-                compile_r_format(None, rt, rd, shamt, 0x2)
+                compile_r_format(None, Some(rt), Some(rd), shamt, 0x2)
             },
             Instruction::Sra   { rt, rd, shamt } => {
-                compile_r_format(None, rt, rd, shamt, 0x3)
+                compile_r_format(None, Some(rt), Some(rd), shamt, 0x3)
             },
+            Instruction::Jr { rs } => {
+                compile_r_format(Some(rs), None, None, 0, 0x8)
+            }
 
             /* --------------------- Immediate Operations -------------------------- */
             Instruction::Addi  { rs, rt, imm } => {
@@ -696,6 +791,10 @@ fn compile_vr(vr: VirtualRepresentation) -> Option<Vec<u8>> {
                 compile_i_format(0xe, Some(rs), rt, imm)
             },
             Instruction::Beq   { rs, rt, imm } => {
+                let imm = match imm {
+                    Immediate16::Value(val) => Immediate16::Value((((val as u32) - current_address*4) >> 2) as u16),
+                    Immediate16::Label(_) => panic!("Label somehow made it into codegen"),
+                };
                 compile_i_format(0x4, Some(rs), rt, imm)
             },
             Instruction::Lbu   { rs, rt, imm } => {
@@ -719,12 +818,21 @@ fn compile_vr(vr: VirtualRepresentation) -> Option<Vec<u8>> {
             Instruction::Sw    { rs, rt, imm } => {
                 compile_i_format(0x2b, Some(rs), rt, imm)
             },
+            Instruction::Nop {} => {
+                0
+            },
 
             /* -------------------------- Jump Operations -------------------------- */
-            _ => return None,
+            Instruction::J {target} => {
+                compile_j_format(0x2, target)
+            },
+            Instruction::Jal {target} => {
+                compile_j_format(0x3, target)
+            },
         };
 
         program.extend_from_slice(&transform_u32_to_array_of_u8(machine_code));
+        current_address += 4;
     }
 
     Some(program)
@@ -738,13 +846,38 @@ fn transform_u32_to_array_of_u8(x: u32) -> [u8; 4] {
     return [b1, b2, b3, b4];
 }
 
-fn compile_r_format(rs: Option<Register>, rt: Register, rd: Register, shamt: u8, funct: u8) -> u32 {
+fn compile_j_format(opcode: u8, target: Immediate28) -> u32 {
+    let target = match target {
+        Immediate28::Value(val) => val,
+        Immediate28::Label(_) => panic!("Label somehow made it into final codegen step"),
+    };
+
+    assert!(opcode < 64);
+    assert!(target < 0x10000000);
+    assert!(target % 4 == 0);
+
+    let mut instruction: u32 = 0;
+
+    instruction |= (opcode as u32) << 26;
+    // Already shifted earlier
+    instruction |= target;
+
+    instruction
+}
+
+fn compile_r_format(rs: Option<Register>, rt: Option<Register>, rd: Option<Register>, shamt: u8, funct: u8) -> u32 {
     let rs_val = match rs {
         Some(rs_value) => rs_value as u8,
         None => 0x0,
     };
-    let rt_val = rt as u8;
-    let rd_val = rd as u8;
+    let rt_val = match rt {
+        Some(rt_value) => rt_value as u8,
+        None => 0x0,
+    };
+    let rd_val = match rd {
+        Some(rd_value) => rd_value as u8,
+        None => 0x0,
+    };
 
     // Make sure arguments use the appropriate number of bits
     assert!(rs_val < 32);
