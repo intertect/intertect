@@ -31,7 +31,6 @@ fn main() {
     let mut buffer = Vec::new();
     file.read_to_end(&mut buffer).unwrap();
 
-    let (text, data) = mips::reference_extractor::get_text_and_data(buffer).unwrap();
+    let text = mips::reference_extractor::get_text(buffer).unwrap();
     println!("Text segment: {:?}", text);
-    println!("Data segment: {:?}", data);
 }

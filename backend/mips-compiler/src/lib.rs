@@ -257,14 +257,13 @@ struct Line {
 // Any label that refers to it
 #[derive(Debug)]
 struct VirtualRepresentation {
-    // TODO: Data
     labels: HashMap<Label, u32>,
     instructions: Vec<Line>,
 }
 
 // The main entry point. Pass in a string containing assembly code and return an array
 // containing the complete program image
-pub fn compile_string(program: &str) -> Option<(Vec<u8>, Vec<u8>)> {
+pub fn compile_string(program: &str) -> Option<Vec<u8>> {
     let vr = match parse_program(program) {
         Some(vr) => vr,
         None => {
@@ -289,7 +288,7 @@ pub fn compile_string(program: &str) -> Option<(Vec<u8>, Vec<u8>)> {
         }
     };
 
-    Some((compiled, vec![]))
+    Some(compiled)
 }
 
 fn resolve_labels(vr: VirtualRepresentation) -> Option<VirtualRepresentation> {

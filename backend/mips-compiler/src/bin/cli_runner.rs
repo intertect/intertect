@@ -69,8 +69,7 @@ fn main() {
     let file_contents = read_file(input_filename);
 
     match mips::compile_string(&file_contents) {
-        // TODO: figure out how best to output text and data
-        Some((compiled_text, _compiled_data)) => write_file(output_filename, compiled_text),
+        Some(compiled_output) => write_file(output_filename, compiled_output),
         None => {}
     };
 }
