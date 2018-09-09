@@ -1,3 +1,8 @@
+/**
+* Copyright (c) 2018--present, Yash Patel and Peter DeLong
+* All rights reserved.
+*/
+
 extern crate pest;
 #[macro_use]
 extern crate pest_derive;

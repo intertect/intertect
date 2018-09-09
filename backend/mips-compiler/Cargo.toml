@@ -1,7 +1,9 @@
 [package]
 name = "mips-compiler"
 version = "0.1.0"
-authors = ["Peter DeLong <petersdelong@gmail.com>"]
+authors = [
+    "Peter DeLong <petersdelong@gmail.com>",
+    "Yash Patel <ypatel5400@gmail.com>"]
 
 [lib]
 name = "mips"
