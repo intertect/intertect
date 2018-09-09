@@ -97,6 +97,12 @@ enum Instruction {
         imm: Immediate16,
     },
 
+    Andi {
+        rs: Register,
+        rt: Register,
+        imm: Immediate16,
+    },
+
     Ori {
         rs: Register,
         rt: Register,
@@ -161,13 +167,15 @@ enum Instruction {
     // TODO Jal {},
     // TODO Jr {},
 
+    /* -------------------------- Special Operations ----------------------- */
+    Noop {}
+
     /* ------------------------ Non-existent Operations -------------------- */
     /* TODO: @peterdelong: The below instructions are not in MIPS page. We   */
     /* should probably remove them from implementation details               */
 
-    // TODO Li {}
-    // TODO Blt <== apparently you can check equliaty first, subtract 1, and then recheck
-    // TODO Noop
+    // Li
+    // Blt <== apparently you can check equliaty first, subtract 1, and then recheck
 }
 
 // Register represents a single register in the system
@@ -449,12 +457,6 @@ fn construct_r_instruction(
             rd: rd
         },
 
-        "nor" => Instruction::Nor {
-            rs: rs,
-            rt: rt,
-            rd: rd
-        },
-
         "xor" => Instruction::Xor {
             rs: rs,
             rt: rt,
@@ -608,102 +610,83 @@ fn compile_vr(vr: VirtualRepresentation) -> Option<Vec<u8>> {
     let mut program: Vec<u8> = Vec::new();
 
     // TODO(peterdelong): Might be better as a map
+    // all material was pulled from: http://www2.engr.arizona.edu/~ece369/Resources/spim/MIPSReference.pdf
     for instruction in vr.instructions {
         let machine_code = match instruction.instruction {
             /* ------------------------ Register Operations ------------------------ */
             Instruction::Add   { rs, rt, rd } => {
-                let (opcode, rs, rt, rd, shamt, funct) = compile_add(rs, rt, rd);
-                compile_r_format(opcode, rs, rt, rd, shamt, funct)
+                compile_r_format(Some(rs), rt, rd, 0x0, 0x20)
             },
             Instruction::Addu  { rs, rt, rd } => {
-                let (opcode, rs, rt, rd, shamt, funct) = compile_add(rs, rt, rd);
-                compile_r_format(opcode, rs, rt, rd, shamt, funct)
+                compile_r_format(Some(rs), rt, rd, 0x0, 0x21)
             },
             Instruction::Sub   { rs, rt, rd } => {
-                let (opcode, rs, rt, rd, shamt, funct) = compile_add(rs, rt, rd);
-                compile_r_format(opcode, rs, rt, rd, shamt, funct)
+                compile_r_format(Some(rs), rt, rd, 0x0, 0x22)
             },
             Instruction::Subu  { rs, rt, rd } => {
-                let (opcode, rs, rt, rd, shamt, funct) = compile_add(rs, rt, rd);
-                compile_r_format(opcode, rs, rt, rd, shamt, funct)
+                compile_r_format(Some(rs), rt, rd, 0x0, 0x23)
             },
             Instruction::And   { rs, rt, rd } => {
-                let (opcode, rs, rt, rd, shamt, funct) = compile_add(rs, rt, rd);
-                compile_r_format(opcode, rs, rt, rd, shamt, funct)
+                compile_r_format(Some(rs), rt, rd, 0x0, 0x24)
             },
             Instruction::Or    { rs, rt, rd } => {
-                let (opcode, rs, rt, rd, shamt, funct) = compile_add(rs, rt, rd);
-                compile_r_format(opcode, rs, rt, rd, shamt, funct)
-            },
-            Instruction::Nor   { rs, rt, rd } => {
-                let (opcode, rs, rt, rd, shamt, funct) = compile_add(rs, rt, rd);
-                compile_r_format(opcode, rs, rt, rd, shamt, funct)
+                compile_r_format(Some(rs), rt, rd, 0x0, 0x25)
             },
             Instruction::Xor   { rs, rt, rd } => {
-                let (opcode, rs, rt, rd, shamt, funct) = compile_add(rs, rt, rd);
-                compile_r_format(opcode, rs, rt, rd, shamt, funct)
+                compile_r_format(Some(rs), rt, rd, 0x0, 0x26)
             },
-            /* Instruction::Sll   { rs, rt, shamt } => {
-                let (opcode, rs, rt, rd, shamt, funct) = compile_add(rs, rt, shamt);
-                compile_r_format(opcode, rs, rt, rd, shamt, funct)
+            Instruction::Nor   { rs, rt, rd } => {
+                compile_r_format(Some(rs), rt, rd, 0x0, 0x27)
             },
-            Instruction::Srl   { rs, rt, shamt } => {
-                let (opcode, rs, rt, rd, shamt, funct) = compile_add(rs, rt, shamt);
-                compile_r_format(opcode, rs, rt, rd, shamt, funct)
+            Instruction::Sll   { rt, rd, shamt } => {
+                compile_r_format(None, rt, rd, shamt, 0x0)
             },
-            Instruction::Sra   { rs, rt, shamt } => {
-                let (opcode, rs, rt, rd, shamt, funct) = compile_add(rs, rt, shamt);
-                compile_r_format(opcode, rs, rt, rd, shamt, funct)
-            }, */
+            Instruction::Srl   { rt, rd, shamt } => {
+                compile_r_format(None, rt, rd, shamt, 0x2)
+            },
+            Instruction::Sra   { rt, rd, shamt } => {
+                compile_r_format(None, rt, rd, shamt, 0x3)
+            },
 
             /* --------------------- Immediate Operations -------------------------- */
             Instruction::Addi  { rs, rt, imm } => {
-                let (opcode, rs, rt, imm) = compile_addi(rs, rt, imm);
-                compile_i_format(opcode, rs, rt, imm)
+                compile_i_format(0x8, Some(rs), rt, imm)
             },
             Instruction::Addiu { rs, rt, imm } => {
-                let (opcode, rs, rt, imm) = compile_addi(rs, rt, imm);
-                compile_i_format(opcode, rs, rt, imm)
+                compile_i_format(0x9, Some(rs), rt, imm)
+            },
+            Instruction::Andi  { rs, rt, imm } => {
+                compile_i_format(0xc, Some(rs), rt, imm)
             },
             Instruction::Ori   { rs, rt, imm } => {
-                let (opcode, rs, rt, imm) = compile_addi(rs, rt, imm);
-                compile_i_format(opcode, rs, rt, imm)
+                compile_i_format(0xd, Some(rs), rt, imm)
             },
             Instruction::Xori  { rs, rt, imm } => {
-                let (opcode, rs, rt, imm) = compile_addi(rs, rt, imm);
-                compile_i_format(opcode, rs, rt, imm)
-            },
-            Instruction::Lbu   { rs, rt, imm } => {
-                let (opcode, rs, rt, imm) = compile_addi(rs, rt, imm);
-                compile_i_format(opcode, rs, rt, imm)
-            },
-            Instruction::Lhu   { rs, rt, imm } => {
-                let (opcode, rs, rt, imm) = compile_addi(rs, rt, imm);
-                compile_i_format(opcode, rs, rt, imm)
-            },
-            Instruction::Lw    { rs, rt, imm } => {
-                let (opcode, rs, rt, imm) = compile_addi(rs, rt, imm);
-                compile_i_format(opcode, rs, rt, imm)
-            },
-            /* Instruction::Lui   { rt, imm } => {
-                let (opcode, rs, rt, imm) = compile_addi(rt, imm);
-                compile_i_format(opcode, rs, rt, imm)
-            }, */
-            Instruction::Sb    { rs, rt, imm } => {
-                let (opcode, rs, rt, imm) = compile_addi(rs, rt, imm);
-                compile_i_format(opcode, rs, rt, imm)
-            },
-            Instruction::Sh    { rs, rt, imm } => {
-                let (opcode, rs, rt, imm) = compile_addi(rs, rt, imm);
-                compile_i_format(opcode, rs, rt, imm)
-            },
-            Instruction::Sw    { rs, rt, imm } => {
-                let (opcode, rs, rt, imm) = compile_addi(rs, rt, imm);
-                compile_i_format(opcode, rs, rt, imm)
+                compile_i_format(0xe, Some(rs), rt, imm)
             },
             Instruction::Beq   { rs, rt, imm } => {
-                let (opcode, rs, rt, imm) = compile_addi(rs, rt, imm);
-                compile_i_format(opcode, rs, rt, imm)
+                compile_i_format(0x4, Some(rs), rt, imm)
+            },
+            Instruction::Lbu   { rs, rt, imm } => {
+                compile_i_format(0x24, Some(rs), rt, imm)
+            },
+            Instruction::Lhu   { rs, rt, imm } => {
+                compile_i_format(0x25, Some(rs), rt, imm)
+            },
+            Instruction::Lw    { rs, rt, imm } => {
+                compile_i_format(0x23, Some(rs), rt, imm)
+            },
+            Instruction::Lui   { rt, imm } => {
+                compile_i_format(0xf, None, rt, imm)
+            },
+            Instruction::Sb    { rs, rt, imm } => {
+                compile_i_format(0x28, Some(rs), rt, imm)
+            },
+            Instruction::Sh    { rs, rt, imm } => {
+                compile_i_format(0x29, Some(rs), rt, imm)
+            },
+            Instruction::Sw    { rs, rt, imm } => {
+                compile_i_format(0x2b, Some(rs), rt, imm)
             },
 
             /* -------------------------- Jump Operations -------------------------- */
@@ -724,93 +707,58 @@ fn transform_u32_to_array_of_u8(x: u32) -> [u8; 4] {
     return [b1, b2, b3, b4];
 }
 
-fn compile_r_format(opcode: u8, rs: u8, rt: u8, rd: u8, shamt: u8, funct: u8) -> u32 {
+fn compile_r_format(rs: Option<Register>, rt: Register, rd: Register, shamt: u8, funct: u8) -> u32 {
+    let rs_val = match rs {
+        Some(rs_value) => rs_value as u8,
+        None => 0x0,
+    };
+    let rt_val = rt as u8;
+    let rd_val = rd as u8;
+
     // Make sure arguments use the appropriate number of bits
-    assert!(opcode < 64);
-    assert!(rs < 32);
-    assert!(rt < 32);
-    assert!(rd < 32);
+    assert!(rs_val < 32);
+    assert!(rt_val < 32);
+    assert!(rd_val < 32);
     assert!(shamt < 32);
     assert!(funct < 64);
 
     let mut instruction: u32 = 0;
 
-    // 6 bits opcode
-    instruction |= (opcode as u32) << 26;
-
-    // 5 bits rs
-    instruction |= (rs as u32) << 21;
-
-    // 5 bits rt
-    instruction |= (rt as u32) << 16;
-
-    // 5 bits rd
-    instruction |= (rd as u32) << 11;
-
-    // 5 bits shamt
+    // R format: 000000ss sssttttt dddddaaa aaffffff
+    instruction |= (0x0 as u32) << 26; // 6 bits opcode
+    instruction |= (rs_val as u32) << 21;
+    instruction |= (rt_val as u32) << 16;
+    instruction |= (rd_val as u32) << 11;
     instruction |= (shamt as u32) << 6;
-
-    // 6 bits funct
     instruction |= funct as u32;
 
     instruction
 }
 
-fn compile_i_format(opcode: u8, rs: u8, rt: u8, imm: u16) -> u32 {
+fn compile_i_format(opcode: u8, rs: Option<Register>, rt: Register, imm: Immediate16) -> u32 {
+    let rs_val = match rs {
+        Some(rs_value) => rs_value as u8,
+        None => 0x0,
+    };
+    let rt_val = rt as u8;
+    let imm_val = match imm {
+        Immediate16::Value(val) => val,
+        Immediate16::Label(_) => panic!("Label still present at codegen time"),
+    };
+
     // Make sure arguments use the appropriate number of bits
     assert!(opcode < 64);
-    assert!(rs < 32);
-    assert!(rt < 32);
+    assert!(rs_val < 32);
+    assert!(rt_val < 32);
     // imm is exactly 16 bits which is enforced by rust
 
     let mut instruction: u32 = 0;
 
-    // 6 bits opcode
+    // I format: ooooooss sssttttt iiiiiiii iiiiiiii
     instruction |= (opcode as u32) << 26;
-
-    // 5 bits rs
-    instruction |= (rs as u32) << 21;
-
-    // 5 bits rt
-    instruction |= (rt as u32) << 16;
-
-    // 16 bits immediate
-    instruction |= imm as u32;
+    instruction |= (rs_val as u32) << 21;
+    instruction |= (rt_val as u32) << 16;
+    instruction |= imm_val as u32;
 
     instruction
-}
-
-fn compile_add(rs: Register, rt: Register, rd: Register) -> (u8, u8, u8, u8, u8, u8) {
-    let opcode = 0x0;
-    let rs_val = rs as u8;
-    let rt_val = rt as u8;
-    let rd_val = rd as u8;
-    let shamt = 0x0;
-    let funct = 0x20;
-
-    (opcode, rs_val, rt_val, rd_val, shamt, funct)
-}
-
-fn compile_addi(rs: Register, rt: Register, imm: Immediate16) -> (u8, u8, u8, u16) {
-    let opcode = 0x8;
-    let rs_val = rs as u8;
-    let rt_val = rt as u8;
-    let imm_val = match imm {
-        Immediate16::Value(val) => val,
-        Immediate16::Label(_) => panic!("Label still present at codegen time"),
-    };
-
-    (opcode, rs_val, rt_val, imm_val)
-}
-
-fn compile_beq(rs: Register, rt: Register, imm: Immediate16) -> (u8, u8, u8, u16) {
-    let opcode = 0x4;
-    let rs_val = rs as u8;
-    let rt_val = rt as u8;
-    let imm_val = match imm {
-        Immediate16::Value(val) => val,
-        Immediate16::Label(_) => panic!("Label still present at codegen time"),
-    };
-
-    (opcode, rs_val, rt_val, imm_val)
 }
