@@ -1,5 +1,5 @@
-bne $t1, $t0, done
+beq $t1, $t0, done
 nop
 nop
 
-done:
+done: beq $t1, $t0, 100

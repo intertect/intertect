@@ -445,18 +445,21 @@ fn sw_test() {
         "#);
     check_test_and_reference(&test_text, &reference_text);
 }
+*/
 
 #[test]
 // Tests that the beq instruction is properly encoded
 fn beq_test() {
     let (test_text, reference_text) = compile_test_and_reference(
         r#"
-        beq $t0, $t1, 0xFAF0
-        beq $t1, $t0, 0xFAF0
+        beq $t0, $t1, done
+        nop
+        beq $t1, $t0, done
+        nop
+        done: nop
         "#);
     check_test_and_reference(&test_text, &reference_text);
 }
-*/
 
 #[test]
 // Tests that the j instruction is properly encoded when not using labels
