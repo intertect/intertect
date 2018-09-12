@@ -193,7 +193,7 @@ enum Instruction {
 
     /* -------------------------- Special Operations ----------------------- */
     Nop {},
-    
+
     /* ------------------------ Non-existent Operations -------------------- */
     /* TODO: @peterdelong: The below instructions are not in MIPS page. We   */
     /* should probably remove them from implementation details               */

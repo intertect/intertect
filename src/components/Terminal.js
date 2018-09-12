@@ -4,11 +4,11 @@
 */
 
 /* eslint-disable import/no-named-as-default */
+
 import React, {Component} from 'react';
+import {Navbar, Nav, NavItem, Button, Grid, Row, Col, Panel, Table} from 'react-bootstrap';
 import Typist from 'react-typist';
 import posed from 'react-pose';
-
-import {Navbar, Nav, NavItem, Button, Grid, Row, Col, Panel, Table} from 'react-bootstrap';
 
 import '../styles/intro.css';
 
@@ -38,6 +38,7 @@ class Terminal extends Component {
 
   render() {
     return (this.state.completedIntro ?
+
       <div>
         <Navbar>
           <Nav>
@@ -64,6 +65,7 @@ class Terminal extends Component {
 
         <Navbar fixedBottom>
           <p>&copy; 2018 Yash Patel and Peter DeLong. All rights reserved.</p>
+          <h1></h1>
         </Navbar>
 
         <Grid>
