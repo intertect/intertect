@@ -1,12 +1,13 @@
+extern crate tempfile;
+
 use compile_string;
 use reference_extractor;
 use instruction_printer;
 
 use reference_extractor::Segment;
-use std::fs::File;
-use std::io::{Read, Write};
+use std::io::prelude::*;
 use std::process::{Command, Stdio};
-use tempfile::NamedTempFile;
+use self::tempfile::NamedTempFile;
 
 fn reference_compile_string(program: &str) -> Segment {
     let output_file = NamedTempFile::new().unwrap();
