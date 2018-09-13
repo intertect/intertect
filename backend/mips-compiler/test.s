@@ -1,5 +1,1 @@
-beq $t1, $t0, done
-nop
-nop
-
-done: beq $t1, $t0, 100
+lw $t0, 10($t0)

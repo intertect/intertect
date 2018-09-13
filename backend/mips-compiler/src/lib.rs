@@ -312,6 +312,7 @@ fn handle_instruction(instruction: Pair<'_, Rule>, current_address: u32) -> Opti
                 handle_i_instruction(name, rt_str, rs_str, imm_str, current_address)
             }
         }
+
         Rule::j_instruction => {
             let mut pairs = instruction.into_inner();
 
@@ -320,7 +321,29 @@ fn handle_instruction(instruction: Pair<'_, Rule>, current_address: u32) -> Opti
 
             handle_j_instruction(name, target)
         }
+
+        Rule::mem_instruction => {
+            let mut pairs = instruction.into_inner();
+
+            let name = pairs.next().unwrap().as_str();
+            let rt_str = pairs.next().unwrap().as_str();
+            let imm_str = pairs.next().unwrap().as_str();
+            let rs_str = pairs.next().unwrap().as_str();
+
+            handle_i_instruction(name, rt_str, rs_str, imm_str, current_address)
+        }
+
+        Rule::lui => {
+            let mut pairs = instruction.into_inner();
+
+            let rt_str = pairs.next().unwrap().as_str();
+            let imm_str = pairs.next().unwrap().as_str();
+
+            handle_i_instruction("lui", rt_str, "$zero", imm_str, current_address)
+        }
+
         Rule::nop => Some(Instruction::Nop),
+
         _ => unreachable!(),
     };
 }
@@ -728,4 +751,3 @@ fn compile_j_format(op: Operation, target: JumpTarget) -> u32 {
 
     instruction
 }
-

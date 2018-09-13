@@ -369,14 +369,15 @@ fn xori_test() {
     check_test_and_reference(&test_text, &reference_text);
 }
 
-/*
 #[test]
 // Tests that the lbu instruction is properly encoded
 fn lbu_test() {
     let (test_text, reference_text) = compile_test_and_reference(
         r#"
-        lbu $t0, $t1, 0xFAFA
-        lbu $t1, $t0, 0xFAFA
+        lbu $t0, 0xFA($t1)
+        nop
+        lbu $t1, 0xFA($t0)
+        nop
         "#);
     check_test_and_reference(&test_text, &reference_text);
 }
@@ -386,8 +387,10 @@ fn lbu_test() {
 fn lhu_test() {
     let (test_text, reference_text) = compile_test_and_reference(
         r#"
-        lhu $t0, $t1, 0xFAFA
-        lhu $t1, $t0, 0xFAFA
+        lhu $t0, 0xFA($t1)
+        nop
+        lhu $t1, 0xFA($t0)
+        nop
         "#);
     check_test_and_reference(&test_text, &reference_text);
 }
@@ -397,19 +400,10 @@ fn lhu_test() {
 fn lw_test() {
     let (test_text, reference_text) = compile_test_and_reference(
         r#"
-        lw $t0, $t1, 0xFAFA
-        lw $t1, $t0, 0xFAFA
-        "#);
-    check_test_and_reference(&test_text, &reference_text);
-}
-
-#[test]
-// Tests that the lui instruction is properly encoded
-fn lui_test() {
-    let (test_text, reference_text) = compile_test_and_reference(
-        r#"
-        lui $t0, $t1, 0xFAFA
-        lui $t1, $t0, 0xFAFA
+        lw $t0, 0xFA($t1)
+        nop
+        lw $t1, 0xFA($t0)
+        nop
         "#);
     check_test_and_reference(&test_text, &reference_text);
 }
@@ -419,8 +413,10 @@ fn lui_test() {
 fn sb_test() {
     let (test_text, reference_text) = compile_test_and_reference(
         r#"
-        sb $t0, $t1, 0xFAFA
-        sb $t1, $t0, 0xFAFA
+        sb $t0, 0xFA($t1)
+        nop
+        sb $t1, 0xFA($t0)
+        nop
         "#);
     check_test_and_reference(&test_text, &reference_text);
 }
@@ -430,8 +426,10 @@ fn sb_test() {
 fn sh_test() {
     let (test_text, reference_text) = compile_test_and_reference(
         r#"
-        sh $t0, $t1, 0xFAFA
-        sh $t1, $t0, 0xFAFA
+        sh $t0, 0xFA($t1)
+        nop
+        sh $t1, 0xFA($t0)
+        nop
         "#);
     check_test_and_reference(&test_text, &reference_text);
 }
@@ -441,12 +439,13 @@ fn sh_test() {
 fn sw_test() {
     let (test_text, reference_text) = compile_test_and_reference(
         r#"
-        sw $t0, $t1, 0xFAFA
-        sw $t1, $t0, 0xFAFA
+        sw $t0, 0xFA($t1)
+        nop
+        sw $t1, 0xFA($t0)
+        nop
         "#);
     check_test_and_reference(&test_text, &reference_text);
 }
-*/
 
 #[test]
 // Tests that the beq instruction is properly encoded
@@ -491,3 +490,15 @@ fn nop_test() {
         "#);
     check_test_and_reference(&test_text, &reference_text);
 }
+
+#[test]
+// Tests that the lui instruction is properly encoded
+fn lui_test() {
+    let (test_text, reference_text) = compile_test_and_reference(
+        r#"
+        lui $t0, 0xFA
+        lui $t1, 0xFA
+        "#);
+    check_test_and_reference(&test_text, &reference_text);
+}
+
