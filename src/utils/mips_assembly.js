@@ -42,22 +42,15 @@ const opcodeToNameFormat = {
 
 const styleToFormatter = {
   "ArithLog": (opname, rd, rs, rt) => `${opname} $${rd} $${rs} $${rt}`,
-  "DivMult": (opname, rs, rt) => `${opname} $${rs} $${rt}`,
   "Shift": (opname, rd, rt, shamt) => `${opname} $${rd} $${rt} ${shamt}`,
-  "ShiftV": (opname, rd, rt, rs) => `${opname} $${rd} $${rt} $${rs}`,
   "JumpR": (opname, rs) => `${opname} $${rs}`,
-  "MoveFrom": (opname, rd) => `${opname} $${rd}`,
-  "MoveTo": (opname, rs) => `${opname} $${rs}`,
 
   "ArithLogI": (opname, rt, rs, i) => `${opname} $${rt} $${rs} ${i}`,
   "LoadImm": (opname, rt, imm) => `${opname} $${rt} ${imm}`,
-  "LoadI": (opname, rt, i) => `${opname} $${rt} ${i}`,
   "Branch": (opname, rs, rt, label) => `${opname} $${rs} $${rt} ${label}`,
-  "BranchZ": (opname, rs, label) => `${opname} $${rs} ${label}`,
   "LoadStore": (opname, rt, rs) => `${opname} $${rt} i($${rs})`,
 
-  "Jump": (opname, label) => `${opname} ${label}`,
-  "Trap": (opname, i) => `${opname} ${i}`
+  "Jump": (opname, label) => `${opname} ${label}`
 }
 
 /* We assume the inputs will be decimal numbers that are to be converted to
@@ -87,17 +80,9 @@ export function disassembleMips(decimalOperations) {
     switch(formatter) {
       case "ArithLog":
         return styleToFormatter[formatter](opname, rd, rs, rt);
-      case "DivMult":
-        return styleToFormatter[formatter](opname, rs, rt);
       case "Shift":
         return styleToFormatter[formatter](opname, rd, rt, shamt);
-      case "ShiftV":
-        return styleToFormatter[formatter](opname, rd, rt, rs);
       case "JumpR":
-        return styleToFormatter[formatter](opname, rs);
-      case "MoveFrom":
-        return styleToFormatter[formatter](opname, rd);
-      case "MoveTo":
         return styleToFormatter[formatter](opname, rs);
       default:
         return;
@@ -115,12 +100,8 @@ export function disassembleMips(decimalOperations) {
     switch(formatter) {
       case "ArithLogI":
         return styleToFormatter[formatter](opname, rt, rs, i);
-      case "LoadI":
-        return styleToFormatter[formatter](opname, rt, i);
       case "Branch":
         return styleToFormatter[formatter](opname, rs, rt, label);
-      case "BranchZ":
-        return styleToFormatter[formatter](opname, rs, label);
       case "LoadStore":
         return styleToFormatter[formatter](opname, rt, rs);
       default:
@@ -140,8 +121,6 @@ export function disassembleMips(decimalOperations) {
     switch(formatter) {
       case "Jump":
         return styleToFormatter[formatter](opname, label);
-      case "Trap":
-        return styleToFormatter[formatter](opname, i);
       default:
         return;
     }
