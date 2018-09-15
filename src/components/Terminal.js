@@ -195,7 +195,6 @@ class Terminal extends Component {
                     editorProps={{$blockScrolling: true}}
                     defaultValue={this.state.program}
                   />
-                  {this.state.program}
                 </Panel.Body>
               </Panel>
 
