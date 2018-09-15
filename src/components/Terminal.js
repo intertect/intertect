@@ -13,7 +13,6 @@ import posed from 'react-pose';
 import AceEditor from 'react-ace';
 
 import 'brace/mode/javascript';
-
 import 'brace/theme/chrome';
 import 'brace/theme/dracula';
 import 'brace/theme/eclipse';
@@ -24,6 +23,7 @@ import 'brace/theme/solarized_light';
 import 'brace/theme/twilight';
 
 import '../styles/intro.css';
+import {Memory, Registers, nameToRegisterMap} from '../utils/util.js';
 
 const TransitionTerminal = posed.div({
   start: {
@@ -65,7 +65,9 @@ class Terminal extends Component {
       completedIntro: false,
       assemblyStep: 1,
       theme: "monokai",
-      program: ""
+      program: "",
+      memory: new Memory(),
+      registers: new Registers()
     }
 
     fetch('../utils/starter.js')
@@ -211,131 +213,131 @@ class Terminal extends Component {
                     <tbody>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>Zero</td>
-                        <td><div><small>this.registers.Zero</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$zero"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>At</td>
-                        <td><div><small>this.registers.At</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$at"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>V0</td>
-                        <td><div><small>this.registers.V0</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$v0"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>V1</td>
-                        <td><div><small>this.registers.V1</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$v1"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>A0</td>
-                        <td><div><small>this.registers.A0</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$a0"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>A1</td>
-                        <td><div><small>this.registers.A1</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$a1"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>A2</td>
-                        <td><div><small>this.registers.A2</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$a2"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>A3</td>
-                        <td><div><small>this.registers.A3</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$a3"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>T0</td>
-                        <td><div><small>this.registers.T0</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$t0"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>T1</td>
-                        <td><div><small>this.registers.T1</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$t1"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>T2</td>
-                        <td><div><small>this.registers.T2</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$t2"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>T3</td>
-                        <td><div><small>this.registers.T3</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$t3"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>T4</td>
-                        <td><div><small>this.registers.T4</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$t4"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>T5</td>
-                        <td><div><small>this.registers.T5</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$t5"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>T6</td>
-                        <td><div><small>this.registers.T6</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$t6"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>T7</td>
-                        <td><div><small>this.registers.T7</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$t7"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>S0</td>
-                        <td><div><small>this.registers.S0</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$s0"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>S1</td>
-                        <td><div><small>this.registers.S1</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$s1"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>S2</td>
-                        <td><div><small>this.registers.S2</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$s2"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>S3</td>
-                        <td><div><small>this.registers.S3</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$s3"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>S4</td>
-                        <td><div><small>this.registers.S4</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$s4"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>S5</td>
-                        <td><div><small>this.registers.S5</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$s5"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>S6</td>
-                        <td><div><small>this.registers.S6</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$s6"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>S7</td>
-                        <td><div><small>this.registers.S7</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$s7"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>T8</td>
-                        <td><div><small>this.registers.T8</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$t8"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>T9</td>
-                        <td><div><small>this.registers.T9</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$t9"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>K0</td>
-                        <td><div><small>this.registers.K0</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$k0"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>K1</td>
-                        <td><div><small>this.registers.K1</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$k1"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>Gp</td>
-                        <td><div><small>this.registers.Gp</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$gp"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>Sp</td>
-                        <td><div><small>this.registers.Sp</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$sp"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>Fp</td>
-                        <td><div><small>this.registers.Fp</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$fp"])}</small></div></td>
                       </tr>
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>Ra</td>
-                        <td><div><small>this.registers.Ra</small></div></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$ra"])}</small></div></td>
                       </tr>
                     </tbody>
                   </Table>
