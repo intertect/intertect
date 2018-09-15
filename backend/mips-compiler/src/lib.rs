@@ -342,6 +342,15 @@ fn handle_instruction(instruction: Pair<'_, Rule>, current_address: u32) -> Opti
             handle_i_instruction("lui", rt_str, "$zero", imm_str, current_address)
         }
 
+        Rule::data => {
+            let mut pairs = instruction.into_inner();
+
+            let type_str = pairs.next().unwrap().as_str();
+            let data_str = pairs.next().unwrap().as_str();
+
+            None
+        }
+
         Rule::nop => Some(Instruction::Nop),
 
         _ => unreachable!(),
