@@ -7,7 +7,7 @@
 
 import React, {Component} from 'react';
 import {Navbar, Nav, NavItem, Button, Grid, Row, Col,
-  Panel, Table, DropdownButton, MenuItem} from 'react-bootstrap';
+  Panel, Table, DropdownButton, MenuItem, Tooltip, OverlayTrigger} from 'react-bootstrap';
 import Typist from 'react-typist';
 import posed from 'react-pose';
 import AceEditor from 'react-ace';
@@ -39,6 +39,19 @@ const TransitionTerminal = posed.div({
 
 function onChange(newValue) {
   console.log('change',newValue);
+}
+
+function LinkWithTooltip({ id, children, href, tooltip }) {
+  return (
+    <OverlayTrigger
+      overlay={<Tooltip id={id}>{tooltip}</Tooltip>}
+      placement="top"
+      delayShow={300}
+      delayHide={150}
+    >
+      <a href={href}>{children}</a>
+    </OverlayTrigger>
+  );
 }
 
 class Terminal extends Component {
@@ -107,7 +120,8 @@ class Terminal extends Component {
 
                       <li>Hey there!</li>
                       <li>
-                        In this lesson, we gonna learn about computer <a href="#" data-placement="top" data-toggle="tooltip" title="Blah blah more info">architecture</a>
+                        In this lesson, we gonna learn about computer <LinkWithTooltip tooltip={
+                        <span> INCREASED <strong>KNOWLEDGE</strong> </span>} href="#" id="tooltip-2"> architecture </LinkWithTooltip>
                       </li>
 
                       </Typist>
