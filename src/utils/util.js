@@ -49,7 +49,7 @@ export var nameToRegisterMap = {
   "$ra" : 0x1f
 };
 
-export  class Registers {
+export class Registers {
   // Registers as a map for simplicity. Definitely fast enough
   constructor() {
     this.registers_ = {
@@ -95,5 +95,14 @@ export  class Registers {
     }
 
     return this.registers_[register];
+  }
+
+  write(register, value) {
+    if (register > 31 || register < 0) {
+      // TODO: Should also signal an error in the interface
+      return
+    }
+
+    this.registers_[register] = value;
   }
 }

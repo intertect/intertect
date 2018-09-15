@@ -37,10 +37,6 @@ const TransitionTerminal = posed.div({
   }
 });
 
-function onChange(newValue) {
-  console.log('change',newValue);
-}
-
 function LinkWithTooltip({ id, children, href, tooltip }) {
   return (
     <OverlayTrigger
@@ -63,9 +59,11 @@ class Terminal extends Component {
       completedLs: false,
       completedAssembly: false,
       completedIntro: false,
-      assemblyStep: 1,
+      assemblyStep: 0,
       theme: "monokai",
-      program: "",
+
+      studentProgram: "",
+      assemblyProgram: "",
       memory: new Memory(),
       registers: new Registers()
     }
@@ -73,17 +71,38 @@ class Terminal extends Component {
     fetch('../utils/starter.js')
     .then((r)  => r.text())
     .then(text => {
-      this.setState({ program: text });
+      this.setState({ studentProgram: text });
+    })
+
+    fetch('../assembly/test.s')
+    .then((r)  => r.text())
+    .then(text => {
+      this.setState({ assemblyProgram: text.split("\n") });
+      this.state.registers.write(nameToRegisterMap["$t0"], 1);
+      this.state.registers.write(nameToRegisterMap["$t1"], 1);
     })
 
     this.handleSelect = this.handleSelect.bind(this);
+    this.onChange = this.onChange.bind(this);
   }
 
   handleSelect(evt) {
     this.setState({ theme: evt });
   }
 
+  onChange(newValue) {
+    this.setState({ studentProgram: newValue});
+  }
+
   render() {
+    var assemblyList = [];
+    for (var i = 0; i < this.state.assemblyProgram.length; i++) {
+      assemblyList.push(
+        <span className={this.state.assemblyStep == i ? "active" : "inactive"}>
+          {this.state.assemblyProgram[i]}<br/>
+        </span>);
+    }
+
     return (this.state.completedIntro ?
 
       <div>
@@ -122,38 +141,27 @@ class Terminal extends Component {
                   <Panel.Title componentClass="h4">Code</Panel.Title>
                 </Panel.Heading>
                 <Panel.Body>
-                  <ul className="shell-body" >
-                    <span className={this.state.assemblyStep == 1 ? "active" : "inactive"}> &nbsp;&nbsp;&nbsp;&nbsp;.file&nbsp;&nbsp;&nbsp;{"main.c"} </span>
-                    <span className={this.state.assemblyStep == 2 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.text </span>
-                    <span className={this.state.assemblyStep == 3 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.globl&nbsp;&nbsp;main </span>
-                    <span className={this.state.assemblyStep == 4 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.type&nbsp;&nbsp;&nbsp;main,&nbsp;@function </span>
-                    <span className={this.state.assemblyStep == 5 ? "active" : "inactive"}> <br /> main: </span>
-                    <span className={this.state.assemblyStep == 6 ? "active" : "inactive"}> <br /> .LFB0: </span>
-                    <span className={this.state.assemblyStep == 7 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_startproc </span>
-                    <span className={this.state.assemblyStep == 8 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;pushq&nbsp;&nbsp;&nbsp;%rbp </span>
-                    <span className={this.state.assemblyStep == 9 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa_offset&nbsp;16 </span>
-                    <span className={this.state.assemblyStep == 10 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_offset&nbsp;6,&nbsp;-16 </span>
-                    <span className={this.state.assemblyStep == 11 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;movq&nbsp;&nbsp;&nbsp;&nbsp;%rsp,&nbsp;%rbp </span>
-                    <span className={this.state.assemblyStep == 12 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa_register&nbsp;6 </span>
-                    <span className={this.state.assemblyStep == 13 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;movl&nbsp;&nbsp;&nbsp;&nbsp;$0,&nbsp;%eax </span>
-                    <span className={this.state.assemblyStep == 14 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;popq&nbsp;&nbsp;&nbsp;&nbsp;%rbp </span>
-                    <span className={this.state.assemblyStep == 15 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa&nbsp;7,&nbsp;8 </span>
-                    <span className={this.state.assemblyStep == 16 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;ret </span>
-                    <span className={this.state.assemblyStep == 17 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_endproc </span>
-                    <span className={this.state.assemblyStep == 18 ? "active" : "inactive"}> <br /> .LFE0: </span>
-                    <span className={this.state.assemblyStep == 19 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.size&nbsp;&nbsp;&nbsp;main,&nbsp;.-main </span>
-                    <span className={this.state.assemblyStep == 20 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.ident&nbsp;&nbsp;{'"GCC:&nbsp;(Ubuntu&nbsp;7.2.0-1ubuntu1~16.04)&nbsp;7.2.0"'} </span>
-                    <span className={this.state.assemblyStep == 21 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.section&nbsp;&nbsp;&nbsp;&nbsp;.note.GNU-stack,{'""'},@progbits </span>
-                  </ul>
+                  <ul className="shell-body" >{ assemblyList }</ul>
                   <br />
                   <Row>
                     <Col sm={4}> <Button bsStyle="success" style={{width:"100%"}}>
                       <span className="glyphicon glyphicon-play"></span> Run
                     </Button> </Col>
                     <Col sm={4}> <Button bsStyle="info" style={{width:"100%"}}
-                    onClick={() =>
-                      this.setState({ assemblyStep: this.state.assemblyStep + 1 })
-                    }>
+                    onClick={() => {
+                      this.setState({ assemblyStep: this.state.assemblyStep + 1 });
+                      var script = document.createElement('script');
+                      try {
+                        script.appendChild(document.createTextNode(this.state.studentProgram));
+                        document.body.appendChild(script);
+                      } catch (e) {
+                        script.text = this.state.studentProgram;
+                        document.body.appendChild(script);
+                      }
+
+                      execute(this.state.assemblyProgram[this.state.assemblyStep].split(" "),
+                        this.state.registers)
+                    }}>
                       <span className="glyphicon glyphicon-forward"></span> Step
                     </Button> </Col>
                     <Col sm={4}> <Button bsStyle="danger" style={{width:"100%"}}>
@@ -168,7 +176,6 @@ class Terminal extends Component {
               <Panel>
                 <Panel.Heading>
                   <Panel.Title componentClass="h4">Implement</Panel.Title>
-
                   <DropdownButton onSelect={this.handleSelect} title={this.state.theme}>
                     <MenuItem eventKey="chrome" className={this.state.theme == "chrome" ? "active" : "inactive"}>chrome</MenuItem>
                     <MenuItem eventKey="dracula" className={this.state.theme == "dracula" ? "active" : "inactive"}>dracula</MenuItem>
@@ -184,10 +191,10 @@ class Terminal extends Component {
                   <AceEditor
                     mode="javascript"
                     theme={this.state.theme}
-                    onChange={onChange}
+                    onChange={this.onChange}
                     name="UNIQUE_ID"
                     editorProps={{$blockScrolling: true}}
-                    defaultValue={this.state.program}
+                    value={this.state.studentProgram}
                   />
                 </Panel.Body>
               </Panel>
@@ -420,27 +427,7 @@ class Terminal extends Component {
 
             { this.state.completedAssembly?
               <div>
-                &nbsp;&nbsp;&nbsp;&nbsp;.file&nbsp;&nbsp;&nbsp;{'"main.c"'}
-                <br /> &nbsp;&nbsp;&nbsp;&nbsp;.text
-                <br /> &nbsp;&nbsp;&nbsp;&nbsp;.globl&nbsp;&nbsp;main
-                <br /> &nbsp;&nbsp;&nbsp;&nbsp;.type&nbsp;&nbsp;&nbsp;main,&nbsp;@function
-                <br /> main:
-                <br /> .LFB0:
-                <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_startproc
-                <br /> &nbsp;&nbsp;&nbsp;&nbsp;pushq&nbsp;&nbsp;&nbsp;%rbp
-                <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa_offset&nbsp;16
-                <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_offset&nbsp;6,&nbsp;-16
-                <br /> &nbsp;&nbsp;&nbsp;&nbsp;movq&nbsp;&nbsp;&nbsp;&nbsp;%rsp,&nbsp;%rbp
-                <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa_register&nbsp;6
-                <br /> &nbsp;&nbsp;&nbsp;&nbsp;movl&nbsp;&nbsp;&nbsp;&nbsp;$0,&nbsp;%eax
-                <br /> &nbsp;&nbsp;&nbsp;&nbsp;popq&nbsp;&nbsp;&nbsp;&nbsp;%rbp
-                <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_def_cfa&nbsp;7,&nbsp;8
-                <br /> &nbsp;&nbsp;&nbsp;&nbsp;ret
-                <br /> &nbsp;&nbsp;&nbsp;&nbsp;.cfi_endproc
-                <br /> .LFE0:
-                <br /> &nbsp;&nbsp;&nbsp;&nbsp;.size&nbsp;&nbsp;&nbsp;main,&nbsp;.-main
-                <br /> &nbsp;&nbsp;&nbsp;&nbsp;.ident&nbsp;&nbsp;{'"GCC: (Ubuntu 7.2.0-1ubuntu1~16.04) 7.2.0"'}
-                <br /> &nbsp;&nbsp;&nbsp;&nbsp;.section&nbsp;&nbsp;&nbsp;&nbsp;.note.GNU-stack,{'""'},@progbits
+                {this.state.assemblyProgram}
 
                 <li>
                   <Typist cursor={{
