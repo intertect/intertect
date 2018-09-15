@@ -6,9 +6,22 @@
 /* eslint-disable import/no-named-as-default */
 
 import React, {Component} from 'react';
-import {Navbar, Nav, NavItem, Button, Grid, Row, Col, Panel, Table} from 'react-bootstrap';
+import {Navbar, Nav, NavItem, Button, Grid, Row, Col,
+  Panel, Table, DropdownButton, MenuItem} from 'react-bootstrap';
 import Typist from 'react-typist';
 import posed from 'react-pose';
+import AceEditor from 'react-ace';
+
+import 'brace/mode/javascript';
+
+import 'brace/theme/chrome';
+import 'brace/theme/dracula';
+import 'brace/theme/eclipse';
+import 'brace/theme/github';
+import 'brace/theme/monokai';
+import 'brace/theme/solarized_dark';
+import 'brace/theme/solarized_light';
+import 'brace/theme/twilight';
 
 import '../styles/intro.css';
 
@@ -24,6 +37,10 @@ const TransitionTerminal = posed.div({
   }
 });
 
+function onChange(newValue) {
+  console.log('change',newValue);
+}
+
 class Terminal extends Component {
   constructor(props) {
     super(props);
@@ -32,8 +49,15 @@ class Terminal extends Component {
       completedLs: false,
       completedAssembly: false,
       completedIntro: false,
-      assemblyStep: 1
+      assemblyStep: 1,
+      theme: "monokai"
     }
+
+    this.handleSelect = this.handleSelect.bind(this);
+  }
+
+  handleSelect(evt) {
+    this.setState({ theme: evt });
   }
 
   render() {
@@ -130,13 +154,24 @@ class Terminal extends Component {
                   <Panel.Title componentClass="h4">Implement</Panel.Title>
                 </Panel.Heading>
                 <Panel.Body>
-                  <form role="form">
-                    <textarea id="sourceCode"
-                          className="form-control source-code"
-                          style={{marginBottom: '5px'}}
-                          rows="35"></textarea>
-                    <Button>Compile</Button>
-                  </form>
+                  <DropdownButton onSelect={this.handleSelect} title={this.state.theme}>
+                    <MenuItem eventKey="chrome" className={this.state.theme == "chrome" ? "active" : "inactive"}>chrome</MenuItem>
+                    <MenuItem eventKey="dracula" className={this.state.theme == "dracula" ? "active" : "inactive"}>dracula</MenuItem>
+                    <MenuItem eventKey="eclipse" className={this.state.theme == "eclipse" ? "active" : "inactive"}>eclipse</MenuItem>
+                    <MenuItem eventKey="github" className={this.state.theme == "github" ? "active" : "inactive"}>github</MenuItem>
+                    <MenuItem eventKey="monokai" className={this.state.theme == "monokai" ? "active" : "inactive"}>monokai</MenuItem>
+                    <MenuItem eventKey="solarized_dark" className={this.state.theme == "solarized_dark" ? "active" : "inactive"}>solarized_dark</MenuItem>
+                    <MenuItem eventKey="solarized_light" className={this.state.theme == "solarized_light" ? "active" : "inactive"}>solarized_light</MenuItem>
+                    <MenuItem eventKey="twilight" className={this.state.theme == "twilight" ? "active" : "inactive"}>twilight</MenuItem>
+                  </DropdownButton>
+
+                  <AceEditor
+                    mode="javascript"
+                    theme={this.state.theme}
+                    onChange={onChange}
+                    name="UNIQUE_ID"
+                    editorProps={{$blockScrolling: true}}
+                  />
                 </Panel.Body>
               </Panel>
 
