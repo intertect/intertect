@@ -205,29 +205,137 @@ class Terminal extends Component {
                 <Panel.Body>
                   <Table condensed striped>
                     <thead>
-                      <tr>
-                        <th>A</th>
-                        <th>B</th>
-                        <th>C</th>
-                        <th>D</th>
-                        <th>IP</th>
-                        <th>SP</th>
-                        <th>Z</th>
-                        <th>C</th>
-                        <th>F</th>
-                      </tr>
+                      <th style={{textAlign: 'center'}}>Register</th>
+                      <th style={{textAlign: 'center'}}>Value</th>
                     </thead>
                     <tbody>
                       <tr style={{textAlign: 'center'}} className="source-code">
-                        <td><div><small>blah</small></div></td>
-                        <td><div><small>blah</small></div></td>
-                        <td><div><small>blah</small></div></td>
-                        <td><div><small>blah</small></div></td>
-                        <td><div><small>blah</small></div></td>
-                        <td><div><small>blah</small></div></td>
-                        <td><small>blah</small></td>
-                        <td><small>blah</small></td>
-                        <td><small>blah</small></td>
+                        <td>Zero</td>
+                        <td><div><small>this.registers.Zero</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>At</td>
+                        <td><div><small>this.registers.At</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>V0</td>
+                        <td><div><small>this.registers.V0</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>V1</td>
+                        <td><div><small>this.registers.V1</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>A0</td>
+                        <td><div><small>this.registers.A0</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>A1</td>
+                        <td><div><small>this.registers.A1</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>A2</td>
+                        <td><div><small>this.registers.A2</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>A3</td>
+                        <td><div><small>this.registers.A3</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>T0</td>
+                        <td><div><small>this.registers.T0</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>T1</td>
+                        <td><div><small>this.registers.T1</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>T2</td>
+                        <td><div><small>this.registers.T2</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>T3</td>
+                        <td><div><small>this.registers.T3</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>T4</td>
+                        <td><div><small>this.registers.T4</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>T5</td>
+                        <td><div><small>this.registers.T5</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>T6</td>
+                        <td><div><small>this.registers.T6</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>T7</td>
+                        <td><div><small>this.registers.T7</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>S0</td>
+                        <td><div><small>this.registers.S0</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>S1</td>
+                        <td><div><small>this.registers.S1</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>S2</td>
+                        <td><div><small>this.registers.S2</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>S3</td>
+                        <td><div><small>this.registers.S3</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>S4</td>
+                        <td><div><small>this.registers.S4</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>S5</td>
+                        <td><div><small>this.registers.S5</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>S6</td>
+                        <td><div><small>this.registers.S6</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>S7</td>
+                        <td><div><small>this.registers.S7</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>T8</td>
+                        <td><div><small>this.registers.T8</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>T9</td>
+                        <td><div><small>this.registers.T9</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>K0</td>
+                        <td><div><small>this.registers.K0</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>K1</td>
+                        <td><div><small>this.registers.K1</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>Gp</td>
+                        <td><div><small>this.registers.Gp</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>Sp</td>
+                        <td><div><small>this.registers.Sp</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>Fp</td>
+                        <td><div><small>this.registers.Fp</small></div></td>
+                      </tr>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td>Ra</td>
+                        <td><div><small>this.registers.Ra</small></div></td>
                       </tr>
                     </tbody>
                   </Table>
