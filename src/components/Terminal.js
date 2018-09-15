@@ -87,29 +87,6 @@ class Terminal extends Component {
     return (this.state.completedIntro ?
 
       <div>
-        <Navbar>
-          <Nav>
-            <Grid>
-              <NavItem>
-                <Row>
-                  <Col sm={4}> <Button bsStyle="success" style={{width:"100%"}}>
-                    <span className="glyphicon glyphicon-play"></span> Run
-                  </Button> </Col>
-                  <Col sm={4}> <Button bsStyle="info" style={{width:"100%"}}
-                  onClick={() =>
-                    this.setState({ assemblyStep: this.state.assemblyStep + 1 })
-                  }>
-                    <span className="glyphicon glyphicon-forward"></span> Step
-                  </Button> </Col>
-                  <Col sm={4}> <Button bsStyle="danger" style={{width:"100%"}}>
-                    <span className="glyphicon glyphicon-stop"></span> Stop
-                  </Button> </Col>
-                </Row>
-              </NavItem>
-            </Grid>
-          </Nav>
-        </Navbar>
-
         <Navbar fixedBottom>
           <p>&copy; 2018 Yash Patel and Peter DeLong. All rights reserved.</p>
           <h1></h1>
@@ -168,6 +145,21 @@ class Terminal extends Component {
                     <span className={this.state.assemblyStep == 20 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.ident&nbsp;&nbsp;{'"GCC:&nbsp;(Ubuntu&nbsp;7.2.0-1ubuntu1~16.04)&nbsp;7.2.0"'} </span>
                     <span className={this.state.assemblyStep == 21 ? "active" : "inactive"}> <br /> &nbsp;&nbsp;&nbsp;&nbsp;.section&nbsp;&nbsp;&nbsp;&nbsp;.note.GNU-stack,{'""'},@progbits </span>
                   </ul>
+                  <br />
+                  <Row>
+                    <Col sm={4}> <Button bsStyle="success" style={{width:"100%"}}>
+                      <span className="glyphicon glyphicon-play"></span> Run
+                    </Button> </Col>
+                    <Col sm={4}> <Button bsStyle="info" style={{width:"100%"}}
+                    onClick={() =>
+                      this.setState({ assemblyStep: this.state.assemblyStep + 1 })
+                    }>
+                      <span className="glyphicon glyphicon-forward"></span> Step
+                    </Button> </Col>
+                    <Col sm={4}> <Button bsStyle="danger" style={{width:"100%"}}>
+                      <span className="glyphicon glyphicon-stop"></span> Stop
+                    </Button> </Col>
+                  </Row>
                 </Panel.Body>
               </Panel>
             </Col>
@@ -176,8 +168,7 @@ class Terminal extends Component {
               <Panel>
                 <Panel.Heading>
                   <Panel.Title componentClass="h4">Implement</Panel.Title>
-                </Panel.Heading>
-                <Panel.Body>
+
                   <DropdownButton onSelect={this.handleSelect} title={this.state.theme}>
                     <MenuItem eventKey="chrome" className={this.state.theme == "chrome" ? "active" : "inactive"}>chrome</MenuItem>
                     <MenuItem eventKey="dracula" className={this.state.theme == "dracula" ? "active" : "inactive"}>dracula</MenuItem>
@@ -188,7 +179,8 @@ class Terminal extends Component {
                     <MenuItem eventKey="solarized_light" className={this.state.theme == "solarized_light" ? "active" : "inactive"}>solarized_light</MenuItem>
                     <MenuItem eventKey="twilight" className={this.state.theme == "twilight" ? "active" : "inactive"}>twilight</MenuItem>
                   </DropdownButton>
-
+                </Panel.Heading>
+                <Panel.Body>
                   <AceEditor
                     mode="javascript"
                     theme={this.state.theme}
