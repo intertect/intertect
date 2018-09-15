@@ -11,6 +11,7 @@ import {Navbar, Nav, NavItem, Button, Grid, Row, Col,
 import Typist from 'react-typist';
 import posed from 'react-pose';
 import AceEditor from 'react-ace';
+import SlidingPane from 'react-sliding-pane';
 
 import 'brace/mode/javascript';
 import 'brace/theme/chrome';
@@ -22,8 +23,10 @@ import 'brace/theme/solarized_dark';
 import 'brace/theme/solarized_light';
 import 'brace/theme/twilight';
 
-import '../styles/intro.css';
 import {Memory, Registers, nameToRegisterMap} from '../utils/util.js';
+
+import '../styles/intro.css';
+import 'react-sliding-pane/dist/react-sliding-pane.css';
 
 const TransitionTerminal = posed.div({
   start: {
@@ -61,6 +64,8 @@ class Terminal extends Component {
       completedIntro: false,
       assemblyStep: 0,
       theme: "monokai",
+
+      isPaneOpen: true,
 
       studentProgram: "",
       assemblyProgram: "",
@@ -111,31 +116,62 @@ class Terminal extends Component {
           <h1></h1>
         </Navbar>
 
+        <SlidingPane
+            isOpen={ this.state.isPaneOpen }
+            title='Instructions'
+            width='50%'
+            onRequestClose={ () => {
+                this.setState({ isPaneOpen: false });
+            }}>
+            <div className="shell-wrap">
+              <ul className="shell-body">
+                <Typist>
+                <Typist.Delay ms={500} />
+
+                <li>Hey there!</li>
+                <li>
+                  In this lesson, we gonna learn about computer <LinkWithTooltip tooltip={
+                  <span> INCREASED <strong>KNOWLEDGE</strong> </span>} href="#" id="tooltip-2"> architecture </LinkWithTooltip>
+                </li>
+
+                </Typist>
+              </ul>
+            </div><br />
+        </SlidingPane>
+
         <Grid>
           <Row>
             <Col sm={6}>
               <Panel>
                 <Panel.Heading>
-                  <Panel.Title componentClass="h4">Instructions</Panel.Title>
+                  <Panel.Title componentClass="h4">
+                    Implement&nbsp;
+                    <DropdownButton onSelect={this.handleSelect} title={this.state.theme}>
+                      <MenuItem eventKey="chrome" className={this.state.theme == "chrome" ? "active" : "inactive"}>chrome</MenuItem>
+                      <MenuItem eventKey="dracula" className={this.state.theme == "dracula" ? "active" : "inactive"}>dracula</MenuItem>
+                      <MenuItem eventKey="eclipse" className={this.state.theme == "eclipse" ? "active" : "inactive"}>eclipse</MenuItem>
+                      <MenuItem eventKey="github" className={this.state.theme == "github" ? "active" : "inactive"}>github</MenuItem>
+                      <MenuItem eventKey="monokai" className={this.state.theme == "monokai" ? "active" : "inactive"}>monokai</MenuItem>
+                      <MenuItem eventKey="solarized_dark" className={this.state.theme == "solarized_dark" ? "active" : "inactive"}>solarized_dark</MenuItem>
+                      <MenuItem eventKey="solarized_light" className={this.state.theme == "solarized_light" ? "active" : "inactive"}>solarized_light</MenuItem>
+                      <MenuItem eventKey="twilight" className={this.state.theme == "twilight" ? "active" : "inactive"}>twilight</MenuItem>
+                    </DropdownButton>
+                  </Panel.Title>
                 </Panel.Heading>
                 <Panel.Body>
-                  <div className="shell-wrap">
-                    <ul className="shell-body">
-                      <Typist>
-                      <Typist.Delay ms={500} />
-
-                      <li>Hey there!</li>
-                      <li>
-                        In this lesson, we gonna learn about computer <LinkWithTooltip tooltip={
-                        <span> INCREASED <strong>KNOWLEDGE</strong> </span>} href="#" id="tooltip-2"> architecture </LinkWithTooltip>
-                      </li>
-
-                      </Typist>
-                    </ul>
-                  </div>
+                  <AceEditor
+                    mode="javascript"
+                    theme={this.state.theme}
+                    onChange={this.onChange}
+                    name="UNIQUE_ID"
+                    editorProps={{$blockScrolling: true}}
+                    value={this.state.studentProgram}
+                  />
                 </Panel.Body>
               </Panel>
+            </Col>
 
+            <Col sm={6}>
               <Panel>
                 <Panel.Heading>
                   <Panel.Title componentClass="h4">Code</Panel.Title>
@@ -168,34 +204,6 @@ class Terminal extends Component {
                       <span className="glyphicon glyphicon-stop"></span> Stop
                     </Button> </Col>
                   </Row>
-                </Panel.Body>
-              </Panel>
-            </Col>
-
-            <Col sm={6}>
-              <Panel>
-                <Panel.Heading>
-                  <Panel.Title componentClass="h4">Implement</Panel.Title>
-                  <DropdownButton onSelect={this.handleSelect} title={this.state.theme}>
-                    <MenuItem eventKey="chrome" className={this.state.theme == "chrome" ? "active" : "inactive"}>chrome</MenuItem>
-                    <MenuItem eventKey="dracula" className={this.state.theme == "dracula" ? "active" : "inactive"}>dracula</MenuItem>
-                    <MenuItem eventKey="eclipse" className={this.state.theme == "eclipse" ? "active" : "inactive"}>eclipse</MenuItem>
-                    <MenuItem eventKey="github" className={this.state.theme == "github" ? "active" : "inactive"}>github</MenuItem>
-                    <MenuItem eventKey="monokai" className={this.state.theme == "monokai" ? "active" : "inactive"}>monokai</MenuItem>
-                    <MenuItem eventKey="solarized_dark" className={this.state.theme == "solarized_dark" ? "active" : "inactive"}>solarized_dark</MenuItem>
-                    <MenuItem eventKey="solarized_light" className={this.state.theme == "solarized_light" ? "active" : "inactive"}>solarized_light</MenuItem>
-                    <MenuItem eventKey="twilight" className={this.state.theme == "twilight" ? "active" : "inactive"}>twilight</MenuItem>
-                  </DropdownButton>
-                </Panel.Heading>
-                <Panel.Body>
-                  <AceEditor
-                    mode="javascript"
-                    theme={this.state.theme}
-                    onChange={this.onChange}
-                    name="UNIQUE_ID"
-                    editorProps={{$blockScrolling: true}}
-                    value={this.state.studentProgram}
-                  />
                 </Panel.Body>
               </Panel>
 
