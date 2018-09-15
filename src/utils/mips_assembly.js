@@ -3,124 +3,147 @@
 * All rights reserved.
 */
 
-/* fn compile_r_format(
-    op: Operation,
-    rs: Register,
-    rt: Register,
-    rd: Register,
-    shamt: u8,
-) -> u32 {
-    let rs_val = rs as u8;
-    let rt_val = rt as u8;
-    let rd_val = rd as u8;
+// unsure about LUI immediate and labels
 
-    let funct = match op {
-        Operation::Add => 0x20,
-        Operation::Addu => 0x21,
-        Operation::Sub => 0x22,
-        Operation::Subu => 0x23,
-        Operation::And => 0x24,
-        Operation::Or => 0x25,
-        Operation::Nor => 0x27,
-        Operation::Xor => 0x26,
-        Operation::Sll => 0x0,
-        Operation::Srl => 0x2,
-        Operation::Sra => 0x3,
-        Operation::Jr => 0x8,
-        _ => unreachable!(),
-    };
+// formatted version from http://www2.engr.arizona.edu/~ece369/Resources/spim/MIPSReference.pdf
+const functToNameFormat = {
+  "100000": ["add", "ArithLog"],
+  "100001": ["addu", "ArithLog"],
+  "100010": ["sub", "ArithLog"],
+  "100011": ["subu", "ArithLog"],
+  "100100": ["and", "ArithLog"],
+  "100101": ["or", "ArithLog"],
+  "100111": ["nor", "ArithLog"],
+  "100110": ["xor", "ArithLog"],
+  "000000": ["sll", "Shift"],
+  "000010": ["srl", "Shift"],
+  "000011": ["sra", "Shift"],
+  "001000": ["jr", "JumpR"],
+}
 
-    // Make sure arguments use the appropriate number of bits
-    assert!(rs_val < 32);
-    assert!(rt_val < 32);
-    assert!(rd_val < 32);
-    assert!(shamt < 32);
-    assert!(funct < 64);
+const opcodeToNameFormat = {
+  "001000": ["addi", "ArithLogI"],
+  "001001": ["addiu", "ArithLogI"],
+  "001100": ["andi", "ArithLogI"],
+  "001101": ["ori", "ArithLogI"],
+  "001110": ["xori", "ArithLogI"],
+  "100100": ["lbu", "LoadStore"],
+  "100101": ["lhu", "LoadStore"],
+  "100011": ["lw", "LoadStore"],
+  "001111": ["lui", "LoadImm"],
+  "101000": ["sb", "LoadStore"],
+  "101001": ["sh", "LoadStore"],
+  "101011": ["sw", "LoadStore"],
+  "000100": ["beq", "Branch"],
 
-    let mut instruction: u32 = 0;
+  "000010": ["j", "Jump"],
+  "000011": ["jal", "Jump"]
+}
 
+const styleToFormatter = {
+  "ArithLog": (opname, rd, rs, rt) => `${opname} $${rd} $${rs} $${rt}`,
+  "DivMult": (opname, rs, rt) => `${opname} $${rs} $${rt}`,
+  "Shift": (opname, rd, rt, shamt) => `${opname} $${rd} $${rt} ${shamt}`,
+  "ShiftV": (opname, rd, rt, rs) => `${opname} $${rd} $${rt} $${rs}`,
+  "JumpR": (opname, rs) => `${opname} $${rs}`,
+  "MoveFrom": (opname, rd) => `${opname} $${rd}`,
+  "MoveTo": (opname, rs) => `${opname} $${rs}`,
+
+  "ArithLogI": (opname, rt, rs, i) => `${opname} $${rt} $${rs} ${i}`,
+  "LoadImm": (opname, rt, imm) => `${opname} $${rt} ${imm}`,
+  "LoadI": (opname, rt, i) => `${opname} $${rt} ${i}`,
+  "Branch": (opname, rs, rt, label) => `${opname} $${rs} $${rt} ${label}`,
+  "BranchZ": (opname, rs, label) => `${opname} $${rs} ${label}`,
+  "LoadStore": (opname, rt, rs) => `${opname} $${rt} i($${rs})`,
+
+  "Jump": (opname, label) => `${opname} ${label}`,
+  "Trap": (opname, i) => `${opname} ${i}`
+}
+
+/* We assume the inputs will be decimal numbers that are to be converted to
+decimal to understand their underlying meaning */
+export function disassembleMips(decimalOperations) {
+  var binaryOperation = "";
+  decimalOperations.forEach(function(el) {
+    var nextSegment = el.toString(2);
+    nextSegment = "00000000".substr(0, 8 - nextSegment.length) + nextSegment;
+    binaryOperation += nextSegment;
+  });
+
+  var opcode = binaryOperation.slice(0,6);
+
+  // all R (register) instructions start with 0s
+  var opname, formatter;
+  if (opcode == "000000") {
     // R format: 000000ss sssttttt dddddaaa aaffffff
-    instruction |= (0x0 as u32) << 26; // 6 bits opcode
-    instruction |= (rs_val as u32) << 21;
-    instruction |= (rt_val as u32) << 16;
-    instruction |= (rd_val as u32) << 11;
-    instruction |= (shamt as u32) << 6;
-    instruction |= funct as u32;
+    var rs    = binaryOperation.slice(6,11);
+    var rt    = binaryOperation.slice(11,16);
+    var rd    = binaryOperation.slice(16,21);
+    var shamt = binaryOperation.slice(21,26);
+    var funct = binaryOperation.slice(26,32);
 
-    instruction
-}
+    // funct is unique identifier for R instructions
+    [opname, formatter] = functToNameFormat[funct];
+    switch(formatter) {
+      case "ArithLog":
+        return styleToFormatter[formatter](opname, rd, rs, rt);
+      case "DivMult":
+        return styleToFormatter[formatter](opname, rs, rt);
+      case "Shift":
+        return styleToFormatter[formatter](opname, rd, rt, shamt);
+      case "ShiftV":
+        return styleToFormatter[formatter](opname, rd, rt, rs);
+      case "JumpR":
+        return styleToFormatter[formatter](opname, rs);
+      case "MoveFrom":
+        return styleToFormatter[formatter](opname, rd);
+      case "MoveTo":
+        return styleToFormatter[formatter](opname, rs);
+      default:
+        return;
+    }
+  }
 
-fn compile_i_format(op: Operation, rs: Register, rt: Register, imm: Immediate) -> u32 {
-    let rs_val = rs as u8;
-    let rt_val = rt as u8;
-    let imm_val = match imm {
-        Immediate::Value(val) => val,
-        Immediate::Label(_) => panic!("Label still present at codegen time"),
-    };
-
-    let opcode = match op {
-        Operation::Addi => 0x8,
-        Operation::Addiu => 0x9,
-        Operation::Andi => 0xc,
-        Operation::Ori => 0xd,
-        Operation::Xori => 0xe,
-        Operation::Lbu => 0x24,
-        Operation::Lhu => 0x25,
-        Operation::Lw => 0x23,
-        Operation::Lui => 0xf,
-        Operation::Sb => 0x28,
-        Operation::Sh => 0x29,
-        Operation::Sw => 0x2b,
-        Operation::Beq => 0x4,
-        _ => unreachable!(),
-    };
-
-    // Make sure arguments use the appropriate number of bits
-    assert!(opcode < 64);
-    assert!(rs_val < 32);
-    assert!(rt_val < 32);
-    // imm_val forced to be 16 bits by Rust
-
-    let mut instruction: u32 = 0;
-
+  // only support j and jal J (jump) instructions
+  else if (opcode == "000010" || opcode == "000011") {
     // I format: ooooooss sssttttt iiiiiiii iiiiiiii
-    instruction |= (opcode as u32) << 26;
-    instruction |= (rs_val as u32) << 21;
-    instruction |= (rt_val as u32) << 16;
-    instruction |= imm_val as u32;
+    var rs = binaryOperation.slice(6,11);
+    var rt = binaryOperation.slice(11,16);
+    var i  = binaryOperation.slice(16,32);
 
-    instruction
-}
+    [opname, formatter] = opcodeToNameFormat[opcode];
+    switch(formatter) {
+      case "ArithLogI":
+        return styleToFormatter[formatter](opname, rt, rs, i);
+      case "LoadI":
+        return styleToFormatter[formatter](opname, rt, i);
+      case "Branch":
+        return styleToFormatter[formatter](opname, rs, rt, label);
+      case "BranchZ":
+        return styleToFormatter[formatter](opname, rs, label);
+      case "LoadStore":
+        return styleToFormatter[formatter](opname, rt, rs);
+      default:
+        return;
+    }
+  }
 
-fn compile_j_format(op: Operation, target: JumpTarget) -> u32 {
-    let target = match target {
-        JumpTarget::Value(val) => val,
-        JumpTarget::Label(_) => panic!("Label somehow made it into final codegen step"),
-    };
+  // all others are I (immediate) instructions
+  else {
+    // J format: ooooooii iiiiiiii iiiiiiii iiiiiiii
+    var rs = binaryOperation.slice(6,11);
+    var i  = binaryOperation.slice(11,32);
 
-    let opcode = match op {
-        Operation::J => 0x2,
-        Operation::Jal => 0x3,
-        _ => unreachable!()
-    };
+    var label = i >> 2;
 
-    assert!(opcode < 64);
-    assert!(target < 0x10000000);
-    assert!(target % 4 == 0);
-
-    let mut instruction: u32 = 0;
-
-    instruction |= (opcode as u32) << 26;
-    // Already shifted earlier
-    instruction |= target;
-
-    instruction
-} */
-
-/*
-*/
-function disassembleMips(binary) {
-  // 1. identify type of instruction (opcode/funct)
-  // 2. identify arguments based on instruction type
-  // 3. format into proper assembly code to be parsed
+    [opname, formatter] = opcodeToNameFormat[opcode];
+    switch(formatter) {
+      case "Jump":
+        return styleToFormatter[formatter](opname, label);
+      case "Trap":
+        return styleToFormatter[formatter](opname, i);
+      default:
+        return;
+    }
+  }
 }
