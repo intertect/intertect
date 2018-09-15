@@ -1,85 +1,85 @@
 function main(instruction) {
   switch(instruction.arg) {
-    case "add":
+    case 'add':
       var result = registers.read(instruction.rs) + registers.read(instruction.rt);
       registers.write(instruction.rd, result);
       break;
-    case "addu":
+    case 'addu':
       // TODO
       break;
-    case "sub":
+    case 'sub':
       // TODO
       break;
-    case "subu":
+    case 'subu':
       // TODO
       break;
-    case "and":
+    case 'and':
       // TODO
       break;
-    case "or":
+    case 'or':
       // TODO
       break;
-    case "nor":
+    case 'nor':
       // TODO
       break;
-    case "xor":
+    case 'xor':
       // TODO
       break;
-    case "sll":
+    case 'sll':
       // TODO
       break;
-    case "srl":
+    case 'srl':
       // TODO
       break;
-    case "sra":
+    case 'sra':
       // TODO
       break;
-    case "jr":
+    case 'jr':
       // TODO
       break;
-    case "addi":
+    case 'addi':
       // TODO
       break;
-    case "addiu":
+    case 'addiu':
       // TODO
       break;
-    case "andi":
+    case 'andi':
       // TODO
       break;
-    case "ori":
+    case 'ori':
       // TODO
       break;
-    case "xori":
+    case 'xori':
       // TODO
       break;
-    case "lbu":
+    case 'lbu':
       // TODO
       break;
-    case "lhu":
+    case 'lhu':
       // TODO
       break;
-    case "lw":
+    case 'lw':
       // TODO
       break;
-    case "lui":
+    case 'lui':
       // TODO
       break;
-    case "sb":
+    case 'sb':
       // TODO
       break;
-    case "sh":
+    case 'sh':
       // TODO
       break;
-    case "sw":
+    case 'sw':
       // TODO
       break;
-    case "beq":
+    case 'beq':
       // TODO
       break;
-    case "j":
+    case 'j':
       // TODO
       break;
-    case "jal":
+    case 'jal':
       // TODO
       break;
     default:

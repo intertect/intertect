@@ -57,14 +57,22 @@ function LinkWithTooltip({ id, children, href, tooltip }) {
 class Terminal extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       completedCat: false,
       completedLs: false,
       completedAssembly: false,
       completedIntro: false,
       assemblyStep: 1,
-      theme: "monokai"
+      theme: "monokai",
+      program: ""
     }
+
+    fetch('../utils/starter.js')
+    .then((r)  => r.text())
+    .then(text => {
+      this.setState({ program: text });
+    })
 
     this.handleSelect = this.handleSelect.bind(this);
   }
@@ -185,7 +193,9 @@ class Terminal extends Component {
                     onChange={onChange}
                     name="UNIQUE_ID"
                     editorProps={{$blockScrolling: true}}
+                    defaultValue={this.state.program}
                   />
+                  {this.state.program}
                 </Panel.Body>
               </Panel>
 
