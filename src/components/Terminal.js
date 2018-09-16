@@ -83,7 +83,8 @@ class Terminal extends Component {
       studentProgram: "",
       assemblyProgram: "",
       memory: new Memory(),
-      registers: new Registers()
+      registers: new Registers(),
+      targetRegisters: new Registers()
     }
 
     fetch('../utils/starter.js')
@@ -104,6 +105,12 @@ class Terminal extends Component {
     .then((r)  => r.text())
     .then(text => {
       this.state.registers.load(text);
+    })
+
+    fetch(lessonDir + "/final.txt")
+    .then((r)  => r.text())
+    .then(text => {
+      this.state.targetRegisters.load(text);
     })
 
     this.handleSelect = this.handleSelect.bind(this);
@@ -140,9 +147,7 @@ class Terminal extends Component {
             title='Instructions'
             width='50%'
             onRequestClose={ () => {
-              if (this.state.completedInstructions) {
-                this.setState({ isPaneOpen: false });
-              }
+              this.setState({ isPaneOpen: false });
             }}>
             <div className="shell-wrap">
               <ul className="shell-body">
@@ -212,6 +217,7 @@ class Terminal extends Component {
                     <Col sm={4}> <Button bsStyle="info" style={{width:"100%"}}
                     onClick={() => {
                       this.setState({ assemblyStep: this.state.assemblyStep + 1 });
+
                       var script = document.createElement('script');
                       try {
                         script.appendChild(document.createTextNode(this.state.studentProgram));
@@ -225,6 +231,16 @@ class Terminal extends Component {
                         .replace(/,/g,"")
                         .split(" "),
                         this.state.registers)
+
+                      if (this.state.assemblyStep == (this.state.assemblyProgram.length - 2)) {
+                        var correct = this.state.registers.compareRegisters(this.state.targetRegisters);
+                        console.log(correct)
+                        if (correct) {
+                          console.log("Woooo! You're right!");
+                        } else {
+                          console.log("Booo! You suck");
+                        }
+                      }
                     }}>
                       <span className="glyphicon glyphicon-forward"></span> Step
                     </Button> </Col>

@@ -109,12 +109,26 @@ export class Registers {
   // expects to receive information in the format of init, i.e. $t1=3
   load(registerValueSets) {
     var splitRegisterValueSets = registerValueSets.split("\n")
-    // necessary, "this" is no longer defined in forEach scope of javascript
-    var registers_ = this.registers_;
-    splitRegisterValueSets.forEach(function(registerValueSet) {
-      var registerPair = registerValueSet.split("=")
+    var registers = Object.keys(this.registers_);
+    for (var i = 0; i < splitRegisterValueSets.length; i++) {
+      var registerValueSet = splitRegisterValueSets[i];
+      var registerPair = registerValueSet.split("=");
       var registerBinary = nameToRegisterMap[registerPair[0]];
-      registers_[registerBinary] = parseInt(registerPair[1]);
-    })
+      if (!this.registers_.hasOwnProperty(registerBinary)) return;
+      this.registers_[registerBinary] = parseInt(registerPair[1]);
+    }
+  }
+
+  compareRegisters(other) {
+    if (this.registers_.size !== other.registers_.size) {
+        return false;
+    }
+    var registers = Object.keys(this.registers_);
+    for (var i = 0; i < registers.length; i++) {
+      if (this.registers_[registers[i]] != other.registers_[registers[i]]) {
+        return false;
+      }
+    }
+    return true;
   }
 }
