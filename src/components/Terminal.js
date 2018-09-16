@@ -201,7 +201,7 @@ class Terminal extends Component {
       var register = registers[i];
       registerTable.push(<tr style={{textAlign: 'center'}} className="source-code">
           <td>{register}</td>
-          <td><div><small>{this.state.registers.read(nameToRegisterMap[register])}</small></div></td>
+          <td><div><small>0x{this.state.registers.read(nameToRegisterMap[register]).toString(16).toUpperCase()}</small></div></td>
         </tr>);
     }
 
