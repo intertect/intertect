@@ -171,20 +171,35 @@ class Terminal extends Component {
     let continuationButton;
     if (this.state.lessonCorrect) {
       continuationButton =
-        <Button bsStyle="success" style={{width:"100%"}}
-          onClick={() => {
-            this.setState({
-              lessonPart : this.state.lessonPart + 1,
-              loadLesson : true,
-              isPaneOpen: true
-            });
-          }}> Next Lesson
-        </Button>
+        <div>
+          <Col sm={6}>
+            <Button bsStyle="warning" style={{width:"100%"}}
+              onClick={() => {this.setState({ loadLesson : true })}}> Reset
+            </Button>
+          </Col>
+          <Col sm={6}>
+            <Button bsStyle="success" style={{width:"100%"}}
+              onClick={() => {
+              this.setState({
+                lessonPart : this.state.lessonPart + 1,
+                loadLesson : true,
+                isPaneOpen: true
+              });
+            }}> Next Lesson </Button>
+          </Col>
+        </div>
     } else {
       continuationButton =
-        <Button bsStyle="warning" style={{width:"100%"}}
-          onClick={() => {this.setState({ loadLesson : true })}}> Reset
-        </Button>
+        <div>
+          <Col sm={6}>
+            <Button bsStyle="warning" style={{width:"100%"}}
+              onClick={() => {this.setState({ loadLesson : true })}}> Reset
+            </Button>
+          </Col>
+          <Col sm={6}>
+            <Button bsStyle="success" style={{width:"100%"}} disabled> Next Lesson </Button>
+          </Col>
+        </div>
     }
 
     var assemblyList = [];
