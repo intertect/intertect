@@ -87,7 +87,7 @@ class Terminal extends Component {
       targetRegisters: new Registers()
     }
 
-    fetch('../utils/starter.js')
+    fetch(`../starter/lesson_${this.state.lesson}-${this.state.lessonPart}.js`)
     .then((r)  => r.text())
     .then(text => {
       this.setState({ studentProgram: text });
