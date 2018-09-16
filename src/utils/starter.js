@@ -38,13 +38,17 @@ var nameToRegisterMap = {
   "$ra" : 0x1f
 };
 
+function ToUint32(x) {
+  return parseInt(x) % Math.pow(2, 32);
+}
+
 function execute(instruction, registers) {
   switch(instruction[0]) {
     case 'add':
       var rd = nameToRegisterMap[instruction[1]];
       var rs = nameToRegisterMap[instruction[2]];
       var rt = nameToRegisterMap[instruction[3]];
-      var result = registers.read(rs) + registers.read(rt);
+      var result = ToUint32(registers.read(rs) + registers.read(rt));
       registers.write(rd, result);
       break;
     case 'addu':

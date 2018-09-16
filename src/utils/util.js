@@ -126,6 +126,7 @@ export class Registers {
     var registers = Object.keys(this.registers_);
     for (var i = 0; i < registers.length; i++) {
       if (this.registers_[registers[i]] != other.registers_[registers[i]]) {
+        console.log("Sorry, incorrect for register: " + registers[i]);
         return false;
       }
     }
