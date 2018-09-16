@@ -71,29 +71,30 @@ class Terminal extends Component {
       completedLs: false,
       completedAssembly: false,
       completedIntro: false,
-      assemblyStep: 0,
       theme: "monokai",
+
+      currentStep: 0,
+      targetStep: 0,
 
       isPaneOpen: true,
       completedInstructions: false,
 
       lesson: 1,
       lessonPart: 1,
-
-      lessonCorrect: false,
+      loadLesson: true,
 
       studentProgram: "",
-      assemblyProgram: "",
+      assemblyProgram: [],
       memory: new Memory(),
       registers: new Registers(),
-      targetRegisters: new Registers()
+      targetRegisters: new Registers(),
+
+      test: false
     }
 
-    this.loadLesson();
     this.handleSelect = this.handleSelect.bind(this);
     this.onChange = this.onChange.bind(this);
     this.loadLesson = this.loadLesson.bind(this);
-    this.makeProgramStep = this.makeProgramStep.bind(this);
   }
 
   handleSelect(evt) {
@@ -105,6 +106,12 @@ class Terminal extends Component {
   }
 
   loadLesson() {
+    this.setState({
+      lessonCorrect : false,
+      currentStep : 0,
+      targetStep : 0
+    });
+
     var studentProgram, assemblyProgram, initRegisters, targetRegisters;
     var starterCode = `../starter/lesson_${this.state.lesson}-${this.state.lessonPart}.js`;
     fetch(starterCode)
@@ -136,75 +143,63 @@ class Terminal extends Component {
       this.setState({ targetRegisters : targetRegisters });
     })
 
-    this.setState({
-      lessonCorrect : false,
-      lessonPart    : this.state.lessonPart + 1,
-      assemblyStep  : 0
-    });
-  }
-
-  makeProgramStep() {
-    this.setState({
-      assemblyStep : this.state.assemblyStep + 1
-    });
-
-    var script = document.createElement('script');
-    try {
-      script.appendChild(document.createTextNode(this.state.studentProgram));
-      document.body.appendChild(script);
-    } catch (e) {
-      script.text = this.state.studentProgram;
-      document.body.appendChild(script);
-    }
-
-    execute(this.state.assemblyProgram[this.state.assemblyStep]
-      .replace(/,/g,"")
-      .split(" "),
-      this.state.registers)
-
-    if (this.state.assemblyStep == (this.state.assemblyProgram.length - 2)) {
-      this.setState({
-        lessonCorrect : this.state.registers.compareRegisters(this.state.targetRegisters)
-      });
-    }
+    this.setState({ loadLesson : false });
   }
 
   render() {
+    if (this.state.loadLesson) {
+      this.loadLesson();
+    }
+
+    if (this.state.currentStep != this.state.targetStep) {
+      this.setState({
+        currentStep : this.state.currentStep + 1
+      });
+
+      var script = document.createElement('script');
+      try {
+        script.appendChild(document.createTextNode(this.state.studentProgram));
+        document.body.appendChild(script);
+      } catch (e) {
+        script.text = this.state.studentProgram;
+        document.body.appendChild(script);
+      }
+
+      execute(this.state.assemblyProgram[this.state.currentStep]
+        .replace(/,/g,"")
+        .split(" "),
+        this.state.registers)
+
+      if (this.state.currentStep == (this.state.assemblyProgram.length - 2)) {
+        this.setState({
+          lessonCorrect : this.state.registers.compareRegisters(this.state.targetRegisters)
+        });
+      }
+    }
+
     let continuationButton;
     if (this.state.lessonCorrect) {
       continuationButton =
         <Button bsStyle="success" style={{width:"100%"}}
           onClick={() => {
             this.setState({
+              lessonPart : this.state.lessonPart + 1,
+              loadLesson : true,
               isPaneOpen: true
             });
-            this.loadLesson();
           }}> Next Lesson
         </Button>
     } else {
       continuationButton =
         <Button bsStyle="warning" style={{width:"100%"}}
-          onClick={() => {
-            var lessonDir = `../lesson_programs/lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
-            fetch(lessonDir + "/init.txt")
-            .then((r)  => r.text())
-            .then(text => {
-              var initRegisters = new Registers();
-              initRegisters.load(text);
-              this.setState({
-                assemblyStep: 0,
-                registers : initRegisters
-              });
-            })
-
-          }}> Reset
+          onClick={() => {this.setState({ loadLesson : true })}}> Reset
         </Button>
     }
 
     var assemblyList = [];
     for (var i = 0; i < this.state.assemblyProgram.length; i++) {
       assemblyList.push(
-        <span className={this.state.assemblyStep == i ? "active" : "inactive"}>
+        <span className={this.state.currentStep == i ? "active" : "inactive"}>
           {this.state.assemblyProgram[i]}<br/>
         </span>);
     }
@@ -291,11 +286,12 @@ class Terminal extends Component {
                   <ul className="shell-body" >{ assemblyList }</ul>
                   <br />
                   <Row>
-                    <Col sm={4}> <Button bsStyle="success" style={{width:"100%"}}>
+                    <Col sm={4}> <Button bsStyle="success" style={{width:"100%"}}
+                    onClick={() => this.setState({ targetStep : this.state.assemblyProgram.length - 1 })}>
                       <span className="glyphicon glyphicon-play"></span> Run
                     </Button> </Col>
                     <Col sm={4}> <Button bsStyle="info" style={{width:"100%"}}
-                    onClick={this.makeProgramStep}>
+                    onClick={() => this.setState({ targetStep : this.state.targetStep + 1 })}>
                       <span className="glyphicon glyphicon-forward"></span> Step
                     </Button> </Col>
                     <Col sm={4}> <Button bsStyle="danger" style={{width:"100%"}}>
