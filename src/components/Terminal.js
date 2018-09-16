@@ -221,7 +221,9 @@ class Terminal extends Component {
                         document.body.appendChild(script);
                       }
 
-                      execute(this.state.assemblyProgram[this.state.assemblyStep].split(" "),
+                      execute(this.state.assemblyProgram[this.state.assemblyStep]
+                        .replace(/,/g,"")
+                        .split(" "),
                         this.state.registers)
                     }}>
                       <span className="glyphicon glyphicon-forward"></span> Step
