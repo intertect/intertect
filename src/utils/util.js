@@ -52,6 +52,11 @@ export var nameToRegisterMap = {
 export class Registers {
   // Registers as a map for simplicity. Definitely fast enough
   constructor() {
+    this.registers_ = {};
+    this.reset();
+  }
+
+  reset() {
     this.registers_ = {
       0x0: 0,
       0x1: 0,
@@ -84,8 +89,8 @@ export class Registers {
       0x1c: 0,
       0x1d: 0,
       0x1e: 0,
-      0x1f: 0,
-    };
+      0x1f: 0
+    }
   }
 
   read(register) {

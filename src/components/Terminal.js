@@ -78,7 +78,9 @@ class Terminal extends Component {
       completedInstructions: false,
 
       lesson: 1,
-      lessonPart: 1,
+      lessonPart: 0,
+
+      lessonCorrect: false,
 
       studentProgram: "",
       assemblyProgram: "",
@@ -87,14 +89,33 @@ class Terminal extends Component {
       targetRegisters: new Registers()
     }
 
-    fetch(`../starter/lesson_${this.state.lesson}-${this.state.lessonPart}.js`)
+    this.loadLesson();
+    this.handleSelect = this.handleSelect.bind(this);
+    this.onChange = this.onChange.bind(this);
+    this.loadLesson = this.loadLesson.bind(this);
+  }
+
+  handleSelect(evt) {
+    this.setState({ theme: evt });
+  }
+
+  onChange(newValue) {
+    this.setState({ studentProgram: newValue});
+  }
+
+  loadLesson() {
+    this.state.lessonCorrect = false;
+    this.state.lessonPart += 1;
+    this.state.assemblyStep = 0;
+
+    var starterCode = `../starter/lesson_${this.state.lesson}-${this.state.lessonPart}.js`;
+    fetch(starterCode)
     .then((r)  => r.text())
     .then(text => {
       this.setState({ studentProgram: text });
     })
 
     var lessonDir = `../lesson_programs/lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
-
     fetch(lessonDir + "/prog.s")
     .then((r)  => r.text())
     .then(text => {
@@ -112,20 +133,35 @@ class Terminal extends Component {
     .then(text => {
       this.state.targetRegisters.load(text);
     })
-
-    this.handleSelect = this.handleSelect.bind(this);
-    this.onChange = this.onChange.bind(this);
-  }
-
-  handleSelect(evt) {
-    this.setState({ theme: evt });
-  }
-
-  onChange(newValue) {
-    this.setState({ studentProgram: newValue});
   }
 
   render() {
+    let continuationButton;
+    if (this.state.lessonCorrect) {
+      continuationButton =
+        <Button bsStyle="success" style={{width:"100%"}}
+          onClick={() => {
+            this.setState({
+              isPaneOpen: true
+            });
+            this.loadLesson();
+          }}> Next Lesson
+        </Button>
+    } else {
+      continuationButton =
+        <Button bsStyle="warning" style={{width:"100%"}}
+          onClick={() => {
+            this.setState({  assemblyStep: 0 });
+            var lessonDir = `../lesson_programs/lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
+            fetch(lessonDir + "/init.txt")
+            .then((r)  => r.text())
+            .then(text => {
+              this.state.registers.load(text);
+            })
+          }}> Reset
+        </Button>
+    }
+
     var assemblyList = [];
     for (var i = 0; i < this.state.assemblyProgram.length; i++) {
       assemblyList.push(
@@ -144,7 +180,7 @@ class Terminal extends Component {
 
         <SlidingPane
             isOpen={ this.state.isPaneOpen }
-            title='Instructions'
+            title={ 'Lesson ' + this.state.lesson + '.' + this.state.lessonPart }
             width='50%'
             onRequestClose={ () => {
               this.setState({ isPaneOpen: false });
@@ -198,6 +234,11 @@ class Terminal extends Component {
                     value={this.state.studentProgram}
                     style="{{width:50%}}"
                   />
+
+                  <br />
+                  <Col sm={12}>
+                    { continuationButton }
+                  </Col>
                 </Panel.Body>
               </Panel>
             </Col>
@@ -233,13 +274,9 @@ class Terminal extends Component {
                         this.state.registers)
 
                       if (this.state.assemblyStep == (this.state.assemblyProgram.length - 2)) {
-                        var correct = this.state.registers.compareRegisters(this.state.targetRegisters);
-                        console.log(correct)
-                        if (correct) {
-                          console.log("Woooo! You're right!");
-                        } else {
-                          console.log("Booo! You suck");
-                        }
+                        this.setState({
+                          lessonCorrect: this.state.registers.compareRegisters(this.state.targetRegisters)
+                        });
                       }
                     }}>
                       <span className="glyphicon glyphicon-forward"></span> Step
