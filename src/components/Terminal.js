@@ -28,15 +28,6 @@ import {Memory, Registers, nameToRegisterMap} from '../utils/util.js';
 import '../styles/intro.css';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
 
-const Box = posed.div({
-  hoverable: true,
-  draggable: 'x',
-  dragBounds: { left: '-100%', right: '100%' },
-  init: { scale: 1 },
-  hover: { scale: 1.2 },
-  drag: { scale: 1.1 }
-})
-
 const TransitionTerminal = posed.div({
   start: {
     x: "50%"
@@ -204,6 +195,16 @@ class Terminal extends Component {
         </span>);
     }
 
+    var registerTable = [];
+    var registers = Object.keys(nameToRegisterMap);
+    for (var i = 0; i < registers.length; i++) {
+      var register = registers[i];
+      registerTable.push(<tr style={{textAlign: 'center'}} className="source-code">
+          <td>{register}</td>
+          <td><div><small>{this.state.registers.read(nameToRegisterMap[register])}</small></div></td>
+        </tr>);
+    }
+
     return (this.state.completedIntro ?
 
       <div>
@@ -308,144 +309,12 @@ class Terminal extends Component {
                 <Panel.Body>
                   <Table condensed striped>
                     <thead>
-                      <th style={{textAlign: 'center'}}>Register</th>
-                      <th style={{textAlign: 'center'}}>Value</th>
+                      <tr>
+                        <th style={{textAlign: 'center'}}>Register</th>
+                        <th style={{textAlign: 'center'}}>Value</th>
+                      </tr>
                     </thead>
-                    <tbody>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td><Box></Box></td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$zero"])}</small></div></td>
-                      </tr>
-
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>Zero</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$zero"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>At</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$at"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>V0</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$v0"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>V1</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$v1"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>A0</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$a0"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>A1</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$a1"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>A2</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$a2"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>A3</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$a3"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>T0</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$t0"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>T1</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$t1"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>T2</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$t2"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>T3</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$t3"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>T4</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$t4"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>T5</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$t5"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>T6</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$t6"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>T7</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$t7"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>S0</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$s0"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>S1</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$s1"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>S2</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$s2"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>S3</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$s3"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>S4</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$s4"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>S5</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$s5"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>S6</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$s6"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>S7</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$s7"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>T8</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$t8"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>T9</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$t9"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>K0</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$k0"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>K1</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$k1"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>Gp</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$gp"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>Sp</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$sp"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>Fp</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$fp"])}</small></div></td>
-                      </tr>
-                      <tr style={{textAlign: 'center'}} className="source-code">
-                        <td>Ra</td>
-                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$ra"])}</small></div></td>
-                      </tr>
-                    </tbody>
+                    <tbody> { registerTable } </tbody>
                   </Table>
                 </Panel.Body>
               </Panel>
