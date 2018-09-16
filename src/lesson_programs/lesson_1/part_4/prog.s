@@ -3,11 +3,11 @@ addi $t6, $t1, 5
 addi $t7, $t4, 1
 addi $t8, $t3, 1
 
-addui $s0, $t0, 1
-addui $s1, $t1, 5
-addui $s2, $t4, 1
-addui $s3, $t3, 1
-addui $s4, $zero, -1
+addiu $s0, $t0, 1
+addiu $s1, $t1, 5
+addiu $s2, $t4, 1
+addiu $s3, $t3, 1
+addiu $s4, $zero, -1
 
 andi $s5, $t0, 0
 andi $s6, $t0, 1
