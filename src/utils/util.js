@@ -105,4 +105,16 @@ export class Registers {
 
     this.registers_[register] = value;
   }
+
+  // expects to receive information in the format of init, i.e. $t1=3
+  load(registerValueSets) {
+    var splitRegisterValueSets = registerValueSets.split("\n")
+    // necessary, "this" is no longer defined in forEach scope of javascript
+    var registers_ = this.registers_;
+    splitRegisterValueSets.forEach(function(registerValueSet) {
+      var registerPair = registerValueSet.split("=")
+      var registerBinary = nameToRegisterMap[registerPair[0]];
+      registers_[registerBinary] = parseInt(registerPair[1]);
+    })
+  }
 }

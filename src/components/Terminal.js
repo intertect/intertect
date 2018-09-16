@@ -28,6 +28,15 @@ import {Memory, Registers, nameToRegisterMap} from '../utils/util.js';
 import '../styles/intro.css';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
 
+const Box = posed.div({
+  hoverable: true,
+  draggable: 'x',
+  dragBounds: { left: '-100%', right: '100%' },
+  init: { scale: 1 },
+  hover: { scale: 1.2 },
+  drag: { scale: 1.1 }
+})
+
 const TransitionTerminal = posed.div({
   start: {
     x: "50%"
@@ -66,6 +75,10 @@ class Terminal extends Component {
       theme: "monokai",
 
       isPaneOpen: true,
+      completedInstructions: false,
+
+      lesson: 1,
+      lessonPart: 1,
 
       studentProgram: "",
       assemblyProgram: "",
@@ -79,12 +92,18 @@ class Terminal extends Component {
       this.setState({ studentProgram: text });
     })
 
-    fetch('../assembly/test.s')
+    var lessonDir = `../lesson_programs/lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
+
+    fetch(lessonDir + "/prog.s")
     .then((r)  => r.text())
     .then(text => {
       this.setState({ assemblyProgram: text.split("\n") });
-      this.state.registers.write(nameToRegisterMap["$t0"], 1);
-      this.state.registers.write(nameToRegisterMap["$t1"], 1);
+    })
+
+    fetch(lessonDir + "/init.txt")
+    .then((r)  => r.text())
+    .then(text => {
+      this.state.registers.load(text);
     })
 
     this.handleSelect = this.handleSelect.bind(this);
@@ -121,11 +140,17 @@ class Terminal extends Component {
             title='Instructions'
             width='50%'
             onRequestClose={ () => {
+              if (this.state.completedInstructions) {
                 this.setState({ isPaneOpen: false });
+              }
             }}>
             <div className="shell-wrap">
               <ul className="shell-body">
-                <Typist>
+                <Typist
+                  onTypingDone={() => {
+                    this.setState({
+                      completedInstructions: true
+                    })}}>
                 <Typist.Delay ms={500} />
 
                 <li>Hey there!</li>
@@ -166,6 +191,7 @@ class Terminal extends Component {
                     name="UNIQUE_ID"
                     editorProps={{$blockScrolling: true}}
                     value={this.state.studentProgram}
+                    style="{{width:50%}}"
                   />
                 </Panel.Body>
               </Panel>
@@ -218,6 +244,11 @@ class Terminal extends Component {
                       <th style={{textAlign: 'center'}}>Value</th>
                     </thead>
                     <tbody>
+                      <tr style={{textAlign: 'center'}} className="source-code">
+                        <td><Box></Box></td>
+                        <td><div><small>{this.state.registers.read(nameToRegisterMap["$zero"])}</small></div></td>
+                      </tr>
+
                       <tr style={{textAlign: 'center'}} className="source-code">
                         <td>Zero</td>
                         <td><div><small>{this.state.registers.read(nameToRegisterMap["$zero"])}</small></div></td>
@@ -358,8 +389,6 @@ class Terminal extends Component {
       :
 
       <div>
-        <Navbar></Navbar>
-
         <Navbar fixedBottom>
           <p>&copy; 2018 Yash Patel and Peter DeLong. All rights reserved.</p>
         </Navbar>
