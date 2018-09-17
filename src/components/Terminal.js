@@ -300,7 +300,8 @@ class Terminal extends Component {
                     <span className="glyphicon glyphicon-forward"></span> Step
                   </Button> </div>
                   <div className="col-sm-4"> <Button rounded outline style={{width:"100%"}}
-                    onClick={() => {this.setState({ loadLesson : true })}}> Reset
+                    onClick={() => {this.setState({ loadLesson : true })}}>
+                    <span className="glyphicon glyphicon-repeat"></span> Reset
                   </Button> </div>
                 </div>
               </CardFooter>
@@ -308,7 +309,7 @@ class Terminal extends Component {
 
             <Card style={{ marginTop: '1rem'}} className="text-center">
               <CardHeader color="default-color">
-                <CardTitle componentClass="h4">CPU & Memory</CardTitle>
+                <CardTitle componentClass="h1">CPU & Memory</CardTitle>
               </CardHeader>
               <CardBody>
                 <Table hover condensed>
@@ -329,19 +330,19 @@ class Terminal extends Component {
       :
 
       <div>
-        <div className="col-sm-6 col-sm-offset-3">
+        <div className="col-sm-6 col-sm-offset-3" style={{position: "absolute", top:"25%"}}>
           <Card style={{ marginTop: '1rem'}} className="text-center">
             <CardHeader color="default-color">
               <CardTitle componentClass="h1">Intertect</CardTitle>
             </CardHeader>
             <CardBody>
-              <Button color="success" rounded outline onClick={() => {
+              <Button rounded outline onClick={() => {
                 this.setState({ selectedLesson : true })}}>
                 Lesson 1
               </Button><br />
-              <Button color="success" rounded outline disabled>Lesson 2</Button><br />
-              <Button color="success" rounded outline disabled>Lesson 3</Button><br />
-              <Button color="success" rounded outline disabled>Lesson 4</Button>
+              <Button rounded outline disabled>Lesson 2</Button><br />
+              <Button rounded outline disabled>Lesson 3</Button><br />
+              <Button rounded outline disabled>Lesson 4</Button>
             </CardBody>
           </Card>
         </div>
