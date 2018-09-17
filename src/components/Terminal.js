@@ -6,9 +6,9 @@
 /* eslint-disable import/no-named-as-default */
 
 import React, {Component} from 'react';
-import {Navbar, Nav, NavItem, Grid, Row, Col,
-  Table, DropdownButton, MenuItem, Tooltip, OverlayTrigger} from 'react-bootstrap';
-import { Button, Card, CardBody, CardTitle, CardHeader, CardFooter } from 'mdbreact';
+import { Button, Card, CardBody, CardTitle, CardHeader, CardFooter,
+  Table, Dropdown, DropdownToggle, DropdownMenu, DropdownItem,
+  Tooltip } from 'mdbreact';
 
 import Typist from 'react-typist';
 import posed from 'react-pose';
@@ -26,6 +26,7 @@ import 'brace/theme/solarized_light';
 import 'brace/theme/twilight';
 
 import {Memory, Registers, nameToRegisterMap} from '../utils/util.js';
+import FooterPage from './FooterPage.js'
 
 import '../styles/intro.css';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
@@ -176,7 +177,7 @@ class Terminal extends Component {
     let continuationButton;
     if (this.state.lessonCorrect) {
       continuationButton =
-        <Button bsStyle="success" style={{width:"100%"}}
+        <Button outline style={{width:"100%"}}
             onClick={() => {
             this.setState({
               lessonPart : this.state.lessonPart + 1,
@@ -187,7 +188,7 @@ class Terminal extends Component {
         </Button>
     } else {
       continuationButton =
-        <Button bsStyle="success" style={{width:"100%"}} disabled> Next Lesson </Button>
+        <Button outline style={{width:"100%"}} disabled> Next Lesson </Button>
     }
 
     var assemblyList = [];
@@ -211,11 +212,7 @@ class Terminal extends Component {
     return (this.state.completedIntro ?
 
       <div>
-        <Navbar fixedBottom>
-          <p>&copy; 2018 Yash Patel and Peter DeLong. All rights reserved.</p>
-          <h1></h1>
-        </Navbar>
-
+        <FooterPage />
         <SlidingPane
             isOpen={ this.state.isPaneOpen }
             title={ 'Lesson ' + this.state.lesson + '.' + this.state.lessonPart }
@@ -234,8 +231,10 @@ class Terminal extends Component {
 
                 <li>Hey there!</li>
                 <li>
-                  In this lesson, we gonna learn about computer <LinkWithTooltip tooltip={
-                  <span> INCREASED <strong>KNOWLEDGE</strong> </span>} href="#" id="tooltip-2"> architecture </LinkWithTooltip>
+                  In this lesson, we gonna learn about computer <Tooltip
+                    placement="top"
+                    component="a"
+                    tooltipContent="Increased KNOWLEDGE"> architecture </Tooltip>
                 </li>
 
                 </Typist>
@@ -243,9 +242,9 @@ class Terminal extends Component {
             </div><br />
         </SlidingPane>
 
-        <Grid>
-          <Row>
-            <Col sm={6}>
+
+          <div className="row">
+            <div className="col-sm-6">
               <Card style={{ marginTop: '1rem'}} className="text-center">
                 <CardHeader color="default-color">
                   <CardTitle componentClass="h4">
@@ -264,27 +263,32 @@ class Terminal extends Component {
                     style="{{width:50%}}"
                   />
                 </CardBody>
-                <CardFooter color="default-color-dark">
-                  <Col sm={6}>
-                    <DropdownButton onSelect={this.handleSelect} title={this.state.theme} style={{width:"100%"}}>
-                      <MenuItem eventKey="chrome" className={this.state.theme == "chrome" ? "active" : "inactive"}>chrome</MenuItem>
-                      <MenuItem eventKey="dracula" className={this.state.theme == "dracula" ? "active" : "inactive"}>dracula</MenuItem>
-                      <MenuItem eventKey="eclipse" className={this.state.theme == "eclipse" ? "active" : "inactive"}>eclipse</MenuItem>
-                      <MenuItem eventKey="github" className={this.state.theme == "github" ? "active" : "inactive"}>github</MenuItem>
-                      <MenuItem eventKey="monokai" className={this.state.theme == "monokai" ? "active" : "inactive"}>monokai</MenuItem>
-                      <MenuItem eventKey="solarized_dark" className={this.state.theme == "solarized_dark" ? "active" : "inactive"}>solarized_dark</MenuItem>
-                      <MenuItem eventKey="solarized_light" className={this.state.theme == "solarized_light" ? "active" : "inactive"}>solarized_light</MenuItem>
-                      <MenuItem eventKey="twilight" className={this.state.theme == "twilight" ? "active" : "inactive"}>twilight</MenuItem>
-                    </DropdownButton>
-                  </Col>
-                  <Col sm={6}>
+                <CardFooter color="stylish-color">
+                  <div className="col-sm-6">
+                    <Dropdown>
+                      <DropdownToggle caret outline color="default" style={{width:"100%"}}>
+                        {this.state.theme}
+                      </DropdownToggle>
+                      <DropdownMenu>
+                        <DropdownItem onClick={() => {this.setState({ theme : "chrome" })}} eventKey="chrome" className={this.state.theme == "chrome" ? "active" : "inactive"}>chrome</DropdownItem>
+                        <DropdownItem onClick={() => {this.setState({ theme : "dracula" })}} eventKey="dracula" className={this.state.theme == "dracula" ? "active" : "inactive"}>dracula</DropdownItem>
+                        <DropdownItem onClick={() => {this.setState({ theme : "eclipse" })}} eventKey="eclipse" className={this.state.theme == "eclipse" ? "active" : "inactive"}>eclipse</DropdownItem>
+                        <DropdownItem onClick={() => {this.setState({ theme : "github" })}} eventKey="github" className={this.state.theme == "github" ? "active" : "inactive"}>github</DropdownItem>
+                        <DropdownItem onClick={() => {this.setState({ theme : "monokai" })}} eventKey="monokai" className={this.state.theme == "monokai" ? "active" : "inactive"}>monokai</DropdownItem>
+                        <DropdownItem onClick={() => {this.setState({ theme : "solarized_dark" })}} eventKey="solarized_dark" className={this.state.theme == "solarized_dark" ? "active" : "inactive"}>solarized_dark</DropdownItem>
+                        <DropdownItem onClick={() => {this.setState({ theme : "solarized_light" })}} eventKey="solarized_light" className={this.state.theme == "solarized_light" ? "active" : "inactive"}>solarized_light</DropdownItem>
+                        <DropdownItem onClick={() => {this.setState({ theme : "twilight" })}} eventKey="twilight" className={this.state.theme == "twilight" ? "active" : "inactive"}>twilight</DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
+                  </div>
+                  <div className="col-sm-6">
                     { continuationButton }
-                  </Col>
+                  </div>
                 </CardFooter>
               </Card>
-            </Col>
+            </div>
 
-            <Col sm={6}>
+            <div className="col-sm-6">
               <Card style={{ marginTop: '1rem'}}>
                 <CardHeader color="default-color" className="text-center">
                   <CardTitle componentClass="h4">Code</CardTitle>
@@ -292,20 +296,20 @@ class Terminal extends Component {
                 <CardBody>
                   <ul className="shell-body" >{ assemblyList }</ul>
                 </CardBody>
-                <CardFooter color="default-color-dark">
-                  <Row>
-                    <Col sm={4}> <Button bsStyle="success" style={{width:"100%"}}
+                <CardFooter color="stylish-color">
+                  <div className="row">
+                    <div className="col-sm-4"> <Button outline style={{width:"100%"}}
                     onClick={() => this.setState({ targetStep : this.state.assemblyProgram.length - 1 })}>
                       <span className="glyphicon glyphicon-play"></span> Run
-                    </Button> </Col>
-                    <Col sm={4}> <Button bsStyle="info" style={{width:"100%"}}
+                    </Button> </div>
+                    <div className="col-sm-4"> <Button outline style={{width:"100%"}}
                     onClick={() => this.setState({ targetStep : this.state.targetStep + 1 })}>
                       <span className="glyphicon glyphicon-forward"></span> Step
-                    </Button> </Col>
-                    <Col sm={4}> <Button bsStyle="warning" style={{width:"100%"}}
+                    </Button> </div>
+                    <div className="col-sm-4"> <Button outline style={{width:"100%"}}
                       onClick={() => {this.setState({ loadLesson : true })}}> Reset
-                    </Button> </Col>
-                  </Row>
+                    </Button> </div>
+                  </div>
                 </CardFooter>
               </Card>
 
@@ -314,7 +318,7 @@ class Terminal extends Component {
                   <CardTitle componentClass="h4">CPU & Memory</CardTitle>
                 </CardHeader>
                 <CardBody>
-                  <Table condensed striped>
+                  <Table hover condensed>
                     <thead>
                       <tr>
                         <th style={{textAlign: 'center'}}>Register</th>
@@ -325,18 +329,15 @@ class Terminal extends Component {
                   </Table>
                 </CardBody>
               </Card>
-            </Col>
-          </Row>
-        </Grid>
+            </div>
+          </div>
+
       </div>
 
       :
 
       <div>
-        <Navbar fixedBottom>
-          <p>&copy; 2018 Yash Patel and Peter DeLong. All rights reserved.</p>
-        </Navbar>
-
+        <FooterPage />
         <TransitionTerminal className="shell-wrap col-sm-6" pose={this.state.completedAssembly ? 'end' : 'start'}>
           <p className="shell-top-bar">/Users/intertect/</p>
           <ul className="shell-body" >
