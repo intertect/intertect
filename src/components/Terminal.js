@@ -6,8 +6,10 @@
 /* eslint-disable import/no-named-as-default */
 
 import React, {Component} from 'react';
-import {Navbar, Nav, NavItem, Button, Grid, Row, Col,
-  Panel, Table, DropdownButton, MenuItem, Tooltip, OverlayTrigger} from 'react-bootstrap';
+import {Navbar, Nav, NavItem, Grid, Row, Col,
+  Table, DropdownButton, MenuItem, Tooltip, OverlayTrigger} from 'react-bootstrap';
+import { Button, Card, CardBody, CardTitle, CardHeader, CardFooter } from 'mdbreact';
+
 import Typist from 'react-typist';
 import posed from 'react-pose';
 import AceEditor from 'react-ace';
@@ -27,6 +29,9 @@ import {Memory, Registers, nameToRegisterMap} from '../utils/util.js';
 
 import '../styles/intro.css';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
+import 'font-awesome/css/font-awesome.min.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'mdbreact/dist/css/mdb.css';
 
 const TransitionTerminal = posed.div({
   start: {
@@ -62,7 +67,7 @@ class Terminal extends Component {
       completedLs: false,
       completedAssembly: false,
       completedIntro: false,
-      theme: "monokai",
+      theme: "solarized_dark",
 
       currentStep: 0,
       targetStep: 0,
@@ -171,35 +176,18 @@ class Terminal extends Component {
     let continuationButton;
     if (this.state.lessonCorrect) {
       continuationButton =
-        <div>
-          <Col sm={6}>
-            <Button bsStyle="warning" style={{width:"100%"}}
-              onClick={() => {this.setState({ loadLesson : true })}}> Reset
-            </Button>
-          </Col>
-          <Col sm={6}>
-            <Button bsStyle="success" style={{width:"100%"}}
-              onClick={() => {
-              this.setState({
-                lessonPart : this.state.lessonPart + 1,
-                loadLesson : true,
-                isPaneOpen: true
-              });
-            }}> Next Lesson </Button>
-          </Col>
-        </div>
+        <Button bsStyle="success" style={{width:"100%"}}
+            onClick={() => {
+            this.setState({
+              lessonPart : this.state.lessonPart + 1,
+              loadLesson : true,
+              isPaneOpen: true
+            });
+          }}> Next Lesson
+        </Button>
     } else {
       continuationButton =
-        <div>
-          <Col sm={6}>
-            <Button bsStyle="warning" style={{width:"100%"}}
-              onClick={() => {this.setState({ loadLesson : true })}}> Reset
-            </Button>
-          </Col>
-          <Col sm={6}>
-            <Button bsStyle="success" style={{width:"100%"}} disabled> Next Lesson </Button>
-          </Col>
-        </div>
+        <Button bsStyle="success" style={{width:"100%"}} disabled> Next Lesson </Button>
     }
 
     var assemblyList = [];
@@ -258,23 +246,14 @@ class Terminal extends Component {
         <Grid>
           <Row>
             <Col sm={6}>
-              <Panel>
-                <Panel.Heading>
-                  <Panel.Title componentClass="h4">
+              <Card style={{ marginTop: '1rem'}} className="text-center">
+                <CardHeader color="default-color">
+                  <CardTitle componentClass="h4">
                     Implement&nbsp;
-                    <DropdownButton onSelect={this.handleSelect} title={this.state.theme}>
-                      <MenuItem eventKey="chrome" className={this.state.theme == "chrome" ? "active" : "inactive"}>chrome</MenuItem>
-                      <MenuItem eventKey="dracula" className={this.state.theme == "dracula" ? "active" : "inactive"}>dracula</MenuItem>
-                      <MenuItem eventKey="eclipse" className={this.state.theme == "eclipse" ? "active" : "inactive"}>eclipse</MenuItem>
-                      <MenuItem eventKey="github" className={this.state.theme == "github" ? "active" : "inactive"}>github</MenuItem>
-                      <MenuItem eventKey="monokai" className={this.state.theme == "monokai" ? "active" : "inactive"}>monokai</MenuItem>
-                      <MenuItem eventKey="solarized_dark" className={this.state.theme == "solarized_dark" ? "active" : "inactive"}>solarized_dark</MenuItem>
-                      <MenuItem eventKey="solarized_light" className={this.state.theme == "solarized_light" ? "active" : "inactive"}>solarized_light</MenuItem>
-                      <MenuItem eventKey="twilight" className={this.state.theme == "twilight" ? "active" : "inactive"}>twilight</MenuItem>
-                    </DropdownButton>
-                  </Panel.Title>
-                </Panel.Heading>
-                <Panel.Body>
+                  </CardTitle>
+                </CardHeader>
+
+                <CardBody>
                   <AceEditor
                     mode="javascript"
                     theme={this.state.theme}
@@ -284,23 +263,36 @@ class Terminal extends Component {
                     value={this.state.studentProgram}
                     style="{{width:50%}}"
                   />
-
-                  <br />
-                  <Col sm={12}>
+                </CardBody>
+                <CardFooter color="default-color-dark">
+                  <Col sm={6}>
+                    <DropdownButton onSelect={this.handleSelect} title={this.state.theme} style={{width:"100%"}}>
+                      <MenuItem eventKey="chrome" className={this.state.theme == "chrome" ? "active" : "inactive"}>chrome</MenuItem>
+                      <MenuItem eventKey="dracula" className={this.state.theme == "dracula" ? "active" : "inactive"}>dracula</MenuItem>
+                      <MenuItem eventKey="eclipse" className={this.state.theme == "eclipse" ? "active" : "inactive"}>eclipse</MenuItem>
+                      <MenuItem eventKey="github" className={this.state.theme == "github" ? "active" : "inactive"}>github</MenuItem>
+                      <MenuItem eventKey="monokai" className={this.state.theme == "monokai" ? "active" : "inactive"}>monokai</MenuItem>
+                      <MenuItem eventKey="solarized_dark" className={this.state.theme == "solarized_dark" ? "active" : "inactive"}>solarized_dark</MenuItem>
+                      <MenuItem eventKey="solarized_light" className={this.state.theme == "solarized_light" ? "active" : "inactive"}>solarized_light</MenuItem>
+                      <MenuItem eventKey="twilight" className={this.state.theme == "twilight" ? "active" : "inactive"}>twilight</MenuItem>
+                    </DropdownButton>
+                  </Col>
+                  <Col sm={6}>
                     { continuationButton }
                   </Col>
-                </Panel.Body>
-              </Panel>
+                </CardFooter>
+              </Card>
             </Col>
 
             <Col sm={6}>
-              <Panel>
-                <Panel.Heading>
-                  <Panel.Title componentClass="h4">Code</Panel.Title>
-                </Panel.Heading>
-                <Panel.Body>
+              <Card style={{ marginTop: '1rem'}}>
+                <CardHeader color="default-color" className="text-center">
+                  <CardTitle componentClass="h4">Code</CardTitle>
+                </CardHeader>
+                <CardBody>
                   <ul className="shell-body" >{ assemblyList }</ul>
-                  <br />
+                </CardBody>
+                <CardFooter color="default-color-dark">
                   <Row>
                     <Col sm={4}> <Button bsStyle="success" style={{width:"100%"}}
                     onClick={() => this.setState({ targetStep : this.state.assemblyProgram.length - 1 })}>
@@ -310,18 +302,18 @@ class Terminal extends Component {
                     onClick={() => this.setState({ targetStep : this.state.targetStep + 1 })}>
                       <span className="glyphicon glyphicon-forward"></span> Step
                     </Button> </Col>
-                    <Col sm={4}> <Button bsStyle="danger" style={{width:"100%"}}>
-                      <span className="glyphicon glyphicon-stop"></span> Stop
+                    <Col sm={4}> <Button bsStyle="warning" style={{width:"100%"}}
+                      onClick={() => {this.setState({ loadLesson : true })}}> Reset
                     </Button> </Col>
                   </Row>
-                </Panel.Body>
-              </Panel>
+                </CardFooter>
+              </Card>
 
-              <Panel>
-                <Panel.Heading>
-                  <Panel.Title componentClass="h4">CPU & Memory</Panel.Title>
-                </Panel.Heading>
-                <Panel.Body>
+              <Card style={{ marginTop: '1rem'}} className="text-center">
+                <CardHeader color="default-color">
+                  <CardTitle componentClass="h4">CPU & Memory</CardTitle>
+                </CardHeader>
+                <CardBody>
                   <Table condensed striped>
                     <thead>
                       <tr>
@@ -331,8 +323,8 @@ class Terminal extends Component {
                     </thead>
                     <tbody> { registerTable } </tbody>
                   </Table>
-                </Panel.Body>
-              </Panel>
+                </CardBody>
+              </Card>
             </Col>
           </Row>
         </Grid>

@@ -1,8 +1,3 @@
-/**
-* Copyright (c) 2018--present, Yash Patel and Peter DeLong
-* All rights reserved.
-*/
-
 var nameToRegisterMap = {
   "$zero" : 0x0,
   "$at" : 0x1,

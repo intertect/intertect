@@ -30,6 +30,7 @@
   "license": "None",
   "dependencies": {
     "babel-core": "6.26.3",
+    "mdbreact": "4.7.1",
     "object-assign": "4.1.1",
     "react": "16.4.2",
     "react-bootstrap": "0.32.3",
