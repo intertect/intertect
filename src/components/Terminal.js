@@ -64,10 +64,7 @@ class Terminal extends Component {
     super(props);
 
     this.state = {
-      completedCat: false,
-      completedLs: false,
-      completedAssembly: false,
-      completedIntro: false,
+      selectedLesson: false,
       theme: "solarized_dark",
 
       currentStep: 0,
@@ -177,7 +174,7 @@ class Terminal extends Component {
     let continuationButton;
     if (this.state.lessonCorrect) {
       continuationButton =
-        <Button outline style={{width:"100%"}}
+        <Button rounded outline style={{width:"100%"}}
             onClick={() => {
             this.setState({
               lessonPart : this.state.lessonPart + 1,
@@ -188,7 +185,7 @@ class Terminal extends Component {
         </Button>
     } else {
       continuationButton =
-        <Button outline style={{width:"100%"}} disabled> Next Lesson </Button>
+        <Button rounded outline style={{width:"100%"}} disabled> Next Lesson </Button>
     }
 
     var assemblyList = [];
@@ -209,7 +206,7 @@ class Terminal extends Component {
         </tr>);
     }
 
-    return (this.state.completedIntro ?
+    return (this.state.selectedLesson ?
 
       <div>
         <SlidingPane
@@ -241,7 +238,7 @@ class Terminal extends Component {
             </div><br />
         </SlidingPane>
 
-        <div className="row">
+        <div className="col-sm-12">
           <div className="col-sm-6">
             <Card style={{ marginTop: '1rem'}} className="text-center">
               <CardHeader color="default-color">
@@ -262,7 +259,7 @@ class Terminal extends Component {
               <CardFooter color="stylish-color">
                 <div className="col-sm-6">
                   <Dropdown>
-                    <DropdownToggle caret outline color="default" style={{width:"100%"}}>
+                    <DropdownToggle caret rounded outline color="default" style={{width:"100%"}}>
                       {this.state.theme}
                     </DropdownToggle>
                     <DropdownMenu>
@@ -294,15 +291,15 @@ class Terminal extends Component {
               </CardBody>
               <CardFooter color="stylish-color">
                 <div className="row">
-                  <div className="col-sm-4"> <Button outline style={{width:"100%"}}
+                  <div className="col-sm-4"> <Button rounded outline style={{width:"100%"}}
                   onClick={() => this.setState({ targetStep : this.state.assemblyProgram.length - 1 })}>
                     <span className="glyphicon glyphicon-play"></span> Run
                   </Button> </div>
-                  <div className="col-sm-4"> <Button outline style={{width:"100%"}}
+                  <div className="col-sm-4"> <Button rounded outline style={{width:"100%"}}
                   onClick={() => this.setState({ targetStep : this.state.targetStep + 1 })}>
                     <span className="glyphicon glyphicon-forward"></span> Step
                   </Button> </div>
-                  <div className="col-sm-4"> <Button outline style={{width:"100%"}}
+                  <div className="col-sm-4"> <Button rounded outline style={{width:"100%"}}
                     onClick={() => {this.setState({ loadLesson : true })}}> Reset
                   </Button> </div>
                 </div>
@@ -327,107 +324,27 @@ class Terminal extends Component {
             </Card>
           </div>
         </div>
-
-        <FooterPage />
       </div>
 
       :
 
       <div>
-        <TransitionTerminal className="shell-wrap col-sm-6" pose={this.state.completedAssembly ? 'end' : 'start'}>
-          <p className="shell-top-bar">/Users/intertect/</p>
-          <ul className="shell-body" >
-            <li>
-              <Typist cursor={{
-                hideWhenDone: true,
-                hideWhenDoneDelay: 200
-              }} onTypingDone={() => {
-                this.setState({
-                  completedCat: true
-                })
-              }}>
-              <Typist.Delay ms={500} />
-                cat main.c
-              </Typist>
-            </li>
-
-            { this.state.completedCat?
-              <div>
-                {'#include <stdio.h>'}
-                <br />{'int main() {'}
-                <br />&nbsp;&nbsp;&nbsp;&nbsp;{'printf("Hello, World!");'}
-                <br />&nbsp;&nbsp;&nbsp;&nbsp;{'return 0;'}
-                <br />{'}'}
-                <br />
-                <li>
-                  <Typist cursor={{
-                    hideWhenDone: true,
-                    hideWhenDoneDelay: 200
-                  }} onTypingDone={() => {
-                    this.setState({
-                      completedLs: true
-                    })
-                  }}>
-                  <Typist.Delay ms={500} />
-                    ls
-                  </Typist>
-                </li>
-              </div>
-
-              :
-
-              <div></div>
-            }
-
-            { this.state.completedLs?
-              <div>
-                main.c main.s
-                <br />
-                <li>
-                  <Typist cursor={{
-                    hideWhenDone: true,
-                    hideWhenDoneDelay: 200
-                  }} onTypingDone={() => {
-                    this.setState({
-                      completedAssembly: true
-                    })
-                  }}>
-                    <Typist.Delay ms={500} />
-                    cat main.s
-                  </Typist>
-                </li>
-              </div>
-
-              :
-
-              <div></div>
-            }
-
-            { this.state.completedAssembly?
-              <div>
-                {this.state.assemblyProgram}
-
-                <li>
-                  <Typist cursor={{
-                    hideWhenDone: true,
-                    hideWhenDoneDelay: 200
-                  }} onTypingDone={() => {
-                    this.setState({
-                      completedIntro: true
-                    })
-                  }}>
-                    <Typist.Delay ms={2500} />
-                    clear
-                  </Typist>
-                </li>
-              </div>
-
-              :
-
-              <div></div>
-            }
-          </ul>
-        </TransitionTerminal>
+        <div className="col-sm-6 col-sm-offset-3">
+          <Card style={{ marginTop: '1rem'}} className="text-center">
+            <CardHeader color="default-color">
+              <CardTitle componentClass="h1">Intertect</CardTitle>
+            </CardHeader>
+            <CardBody>
+              <Button color="success" rounded outline onClick={() => {
+                this.setState({ selectedLesson : true })}}>
+                Lesson 1
+              </Button><br />
+              <Button color="success" rounded outline disabled>Lesson 2</Button><br />
+              <Button color="success" rounded outline disabled>Lesson 3</Button><br />
+              <Button color="success" rounded outline disabled>Lesson 4</Button>
+            </CardBody>
+          </Card>
+        </div>
       </div>
     );
   }

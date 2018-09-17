@@ -8,22 +8,7 @@
 
 import React from 'react';
 import { render } from 'react-dom';
-
 import Terminal from './components/Terminal';
-const mips = import("./utils/mips");
-const mipsAssembly = import("./utils/mips_disassembler");
-const util = import("./utils/util");
 
 require('./favicon.ico');
-
-mips.then(mipsResult => {
-  mipsAssembly.then(mipsAssemblyResult => {
-    util.then(utilResult => {
-      console.log('Return value was ', mipsResult.compile_string("add $t2, $t0, $t1"));
-      var instruction = mipsAssemblyResult.bytesToInstruction([1, 9, 80, 32]);
-      console.log(instruction);
-      console.log(mipsAssemblyResult.disassembleInstruction(instruction));
-      render(<Terminal />, document.getElementById("terminal"));
-    })
-  })
-})
+render(<Terminal />, document.getElementById("terminal"));
