@@ -174,7 +174,7 @@ class Terminal extends Component {
     let continuationButton;
     if (this.state.lessonCorrect) {
       continuationButton =
-        <Button rounded outline style={{width:"100%"}}
+        <Button outline style={{width:"100%"}}
             onClick={() => {
             this.setState({
               lessonPart : this.state.lessonPart + 1,
@@ -185,7 +185,7 @@ class Terminal extends Component {
         </Button>
     } else {
       continuationButton =
-        <Button rounded outline style={{width:"100%"}} disabled> Next Lesson </Button>
+        <Button outline style={{width:"100%"}} disabled> Next Lesson </Button>
     }
 
     var assemblyList = [];
@@ -259,7 +259,7 @@ class Terminal extends Component {
               <CardFooter color="stylish-color">
                 <div className="col-sm-6">
                   <Dropdown>
-                    <DropdownToggle caret rounded outline color="default" style={{width:"100%"}}>
+                    <DropdownToggle caret outline color="default" style={{width:"100%"}}>
                       {this.state.theme}
                     </DropdownToggle>
                     <DropdownMenu>
@@ -291,15 +291,15 @@ class Terminal extends Component {
               </CardBody>
               <CardFooter color="stylish-color">
                 <div className="row">
-                  <div className="col-sm-4"> <Button rounded outline style={{width:"100%"}}
+                  <div className="col-sm-4"> <Button outline style={{width:"100%"}}
                   onClick={() => this.setState({ targetStep : this.state.assemblyProgram.length - 1 })}>
                     <span className="glyphicon glyphicon-play"></span> Run
                   </Button> </div>
-                  <div className="col-sm-4"> <Button rounded outline style={{width:"100%"}}
+                  <div className="col-sm-4"> <Button outline style={{width:"100%"}}
                   onClick={() => this.setState({ targetStep : this.state.targetStep + 1 })}>
                     <span className="glyphicon glyphicon-forward"></span> Step
                   </Button> </div>
-                  <div className="col-sm-4"> <Button rounded outline style={{width:"100%"}}
+                  <div className="col-sm-4"> <Button outline style={{width:"100%"}}
                     onClick={() => {this.setState({ loadLesson : true })}}>
                     <span className="glyphicon glyphicon-repeat"></span> Reset
                   </Button> </div>
@@ -336,13 +336,13 @@ class Terminal extends Component {
               <CardTitle componentClass="h1">Intertect</CardTitle>
             </CardHeader>
             <CardBody>
-              <Button rounded outline onClick={() => {
-                this.setState({ selectedLesson : true })}}>
+              <Button outline onClick={() => {
+                this.setState({ selectedLesson : true })}} style={{width:"75%"}}>
                 Lesson 1
               </Button><br />
-              <Button rounded outline disabled>Lesson 2</Button><br />
-              <Button rounded outline disabled>Lesson 3</Button><br />
-              <Button rounded outline disabled>Lesson 4</Button>
+              <Button outline disabled style={{width:"75%"}}>Lesson 2</Button><br />
+              <Button outline disabled style={{width:"75%"}}>Lesson 3</Button><br />
+              <Button outline disabled style={{width:"75%"}}>Lesson 4</Button>
             </CardBody>
           </Card>
         </div>
