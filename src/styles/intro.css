@@ -40,3 +40,7 @@
 .active {
   background-color: #FFA;
 }
+
+html {
+  font-size: 10pt;
+}

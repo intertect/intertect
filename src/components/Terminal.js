@@ -202,7 +202,7 @@ class Terminal extends Component {
       var register = registers[i];
       registerTable.push(<tr style={{textAlign: 'center'}} className="source-code">
           <td>{register}</td>
-          <td><div><small>0x{this.state.registers.read(nameToRegisterMap[register]).toString(16).toUpperCase()}</small></div></td>
+          <td>0x{this.state.registers.read(nameToRegisterMap[register]).toString(16).toUpperCase()}</td>
         </tr>);
     }
 
@@ -238,8 +238,8 @@ class Terminal extends Component {
             </div><br />
         </SlidingPane>
 
-        <div className="col-sm-12">
-          <div className="col-sm-6">
+        <div className="col-sm-12" style={{paddingBottom: "100%", marginBottom: "-100%"}}>
+          <div className="col-sm-6" style={{paddingBottom: "100%", marginBottom: "-100%"}}>
             <Card style={{ marginTop: '1rem'}} className="text-center">
               <CardHeader color="default-color">
                 <CardTitle componentClass="h4">
@@ -254,13 +254,14 @@ class Terminal extends Component {
                   name="UNIQUE_ID"
                   editorProps={{$blockScrolling: true}}
                   value={this.state.studentProgram}
+                  style={{width:"100%"}}
                 />
               </CardBody>
               <CardFooter color="stylish-color">
                 <div className="col-sm-6">
                   <Dropdown>
                     <DropdownToggle caret outline color="default" style={{width:"100%"}}>
-                      {this.state.theme}
+                      {this.state.theme.replace(/_/g," ")}
                     </DropdownToggle>
                     <DropdownMenu>
                       <DropdownItem onClick={() => {this.setState({ theme : "chrome" })}} eventKey="chrome" className={this.state.theme == "chrome" ? "active" : "inactive"}>chrome</DropdownItem>
@@ -268,8 +269,8 @@ class Terminal extends Component {
                       <DropdownItem onClick={() => {this.setState({ theme : "eclipse" })}} eventKey="eclipse" className={this.state.theme == "eclipse" ? "active" : "inactive"}>eclipse</DropdownItem>
                       <DropdownItem onClick={() => {this.setState({ theme : "github" })}} eventKey="github" className={this.state.theme == "github" ? "active" : "inactive"}>github</DropdownItem>
                       <DropdownItem onClick={() => {this.setState({ theme : "monokai" })}} eventKey="monokai" className={this.state.theme == "monokai" ? "active" : "inactive"}>monokai</DropdownItem>
-                      <DropdownItem onClick={() => {this.setState({ theme : "solarized_dark" })}} eventKey="solarized_dark" className={this.state.theme == "solarized_dark" ? "active" : "inactive"}>solarized_dark</DropdownItem>
-                      <DropdownItem onClick={() => {this.setState({ theme : "solarized_light" })}} eventKey="solarized_light" className={this.state.theme == "solarized_light" ? "active" : "inactive"}>solarized_light</DropdownItem>
+                      <DropdownItem onClick={() => {this.setState({ theme : "solarized_dark" })}} eventKey="solarized_dark" className={this.state.theme == "solarized_dark" ? "active" : "inactive"}>solarized (dark)</DropdownItem>
+                      <DropdownItem onClick={() => {this.setState({ theme : "solarized_light" })}} eventKey="solarized_light" className={this.state.theme == "solarized_light" ? "active" : "inactive"}>solarized (light)</DropdownItem>
                       <DropdownItem onClick={() => {this.setState({ theme : "twilight" })}} eventKey="twilight" className={this.state.theme == "twilight" ? "active" : "inactive"}>twilight</DropdownItem>
                     </DropdownMenu>
                   </Dropdown>
