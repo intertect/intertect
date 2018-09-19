@@ -9,6 +9,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import Terminal from './components/Terminal';
+import ModalPage from './components/ModalPage';
 
 require('./favicon.ico');
 render(<Terminal />, document.getElementById("terminal"));

@@ -1,14 +1,33 @@
-import React from 'react';
-import { Col, Container, Row, Footer } from 'mdbreact';
+import React, { Component } from 'react';
+import { Container, Button, Modal, ModalBody, ModalHeader, ModalFooter } from 'mdbreact';
 
-function FooterPage(props) {
-  return(
-    <Footer color="stylish-color-dark" className="page-footer font-small pt-4 mt-4">
-        <div className="footer-copyright text-center py-3">
-            &copy; {(new Date().getFullYear())} Copyright: Yash Patel and Peter DeLong. All rights reserved.
-        </div>
-    </Footer>
-  );
+class ModalPage extends Component {
+  state = {
+    modal: false
+  };
+  toggle = () => {
+    this.setState({
+      modal: !this.state.modal
+    });
+  }
+  render() {
+    return (
+      <Container>
+        {/* BUTTON */}
+        <Button color="info" onClick={this.toggle}>Click</Button>
+        {/* MODAL */}
+        <Modal isOpen={this.state.modal} toggle={this.toggle}>
+          <ModalHeader toggle={this.toggle}>Modal title</ModalHeader>
+          <ModalBody>
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+          </ModalBody>
+          <ModalFooter>
+            <Button color="secondary" onClick={this.toggle}>Close</Button>
+            <Button color="primary">Save changes</Button>
+          </ModalFooter>
+        </Modal>
+      </Container>
+    );
+  }
 }
-
-export default FooterPage;
+export default ModalPage;
