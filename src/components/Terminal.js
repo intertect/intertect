@@ -89,6 +89,7 @@ class Terminal extends Component {
       unviewedStepExplanation: true,
       unviewedImplementExplanation: true,
       unviewedMemoryExplanation: true,
+      showTest: false
     }
 
     this.handleSelect = this.handleSelect.bind(this);
@@ -212,7 +213,7 @@ class Terminal extends Component {
           that lesson.
             <Button outline style={{width:"100%"}}
               onClick={() => this.setState({ unviewedAssemblyExplanation : false })}>
-              <span className="glyphicon glyphicon-stop"></span> Close Help
+              <i class="fa fa-stop" aria-hidden="true"></i> Close Help
             </Button>
           </PopoverBody>
         </Popover>
@@ -233,7 +234,7 @@ class Terminal extends Component {
             </ul>
             <Button outline style={{width:"100%"}}
               onClick={() => this.setState({ unviewedStepExplanation : false })}>
-              <span className="glyphicon glyphicon-stop"></span> Close Help
+              <i class="fa fa-stop" aria-hidden="true"></i>Close Help
             </Button>
           </PopoverBody>
         </Popover>
@@ -250,7 +251,7 @@ class Terminal extends Component {
           you with a template to get started.
             <Button outline style={{width:"100%"}}
               onClick={() => this.setState({ unviewedImplementExplanation : false })}>
-              <span className="glyphicon glyphicon-stop"></span> Close Help
+              <i class="fa fa-stop" aria-hidden="true"></i> Close Help
             </Button>
           </PopoverBody>
         </Popover>
@@ -267,7 +268,7 @@ class Terminal extends Component {
           area, which you can use for debugging what's is going on when you run your program.
             <Button outline style={{width:"100%"}}
               onClick={() => this.setState({ unviewedMemoryExplanation : false })}>
-              <span className="glyphicon glyphicon-stop"></span> Close Help
+              <i class="fa fa-stop" aria-hidden="true"></i> Close Help
             </Button>
           </PopoverBody>
         </Popover>
@@ -318,7 +319,8 @@ class Terminal extends Component {
                     this.setState({
                       lessonPart : this.state.lessonPart + 1,
                       loadLesson : true,
-                      isPaneOpen: true
+                      isPaneOpen: true,
+                      showTest: false
                     });
                   }}> Next Lesson
                 </Button>
@@ -333,36 +335,47 @@ class Terminal extends Component {
           </ModalBody>
         </Modal>
 
-        <div className="row">
-          <div className="col-sm-6">
-            <Card style={{ marginTop: '1rem'}}>
-              <CardHeader color="default-color" className="text-center">
-                {assemblyExplanation}
-                <CardTitle componentClass="h1"> Code </CardTitle>
-              </CardHeader>
-              <CardBody>
-                <ul className="shell-body" >{ assemblyList }</ul>
-              </CardBody>
-              <CardFooter color="stylish-color">
-                {stepExplanation}
-                <div className="row">
-                  <div className="col-sm-4"> <Button outline style={{width:"100%"}}
-                  onClick={() => this.setState({ targetStep : this.state.assemblyProgram.length - 1 })}>
-                    <span className="glyphicon glyphicon-play"></span> Run
-                  </Button> </div>
-                  <div className="col-sm-4"> <Button outline style={{width:"100%"}}
-                  onClick={() => this.setState({ targetStep : this.state.targetStep + 1 })}>
-                    <span className="glyphicon glyphicon-forward"></span> Step
-                  </Button> </div>
-                  <div className="col-sm-4"> <Button outline style={{width:"100%"}}
-                    onClick={() => {this.setState({ loadLesson : true })}}>
-                    <span className="glyphicon glyphicon-repeat"></span> Reset
-                  </Button> </div>
-                </div>
-              </CardFooter>
-            </Card>
+        <Modal isOpen={this.state.showTest} frame position="top">
+          <ModalBody>
+            <div className="row" style={{display: "flex"}}>
+              <div className="col-sm-6" style={{display: "flex"}}>
+                <ul className="shell-body" style={{width:"100%"}}>{ assemblyList }</ul>
+              </div>
 
-            <Card style={{ marginTop: '1rem'}} className="text-center">
+              <div className="col-sm-6" style={{display: "flex"}}>
+                <div className="row" style={{width:"100%"}}>
+                  <div className="col-sm-12">
+                    <Button outline style={{width:"100%"}}
+                      onClick={() => this.setState({ targetStep : this.state.assemblyProgram.length - 1 })}>
+                        <i class="fa fa-play" aria-hidden="true"></i> Run
+                    </Button>
+                  </div>
+                  <div className="col-sm-12">
+                    <Button outline style={{width:"100%"}}
+                      onClick={() => this.setState({ targetStep : this.state.targetStep + 1 })}>
+                        <i class="fa fa-forward" aria-hidden="true"></i> Step
+                    </Button>
+                  </div>
+                  <div className="col-sm-12">
+                    <Button outline style={{width:"100%"}}
+                      onClick={() => {this.setState({ loadLesson : true })}}>
+                      <i class="fa fa-refresh" aria-hidden="true"></i> Reset
+                    </Button>
+                  </div>
+                  <div className="col-sm-12">
+                    <Button outline color="danger" onClick={() => this.setState({ showTest : false })} style={{width:"100%"}}>
+                      Close
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ModalBody>
+        </Modal>
+
+        <div className="row" style={{display: "flex"}}>
+          <div className="col-sm-6" style={{display: "flex"}}>
+            <Card style={{ marginTop: '1rem', width:"100%"}} className="text-center">
               <CardHeader color="default-color">
                 {implementExplanation}
                 <CardTitle componentClass="h4">
@@ -370,6 +383,11 @@ class Terminal extends Component {
                 </CardTitle>
               </CardHeader>
               <CardBody>
+                {assemblyExplanation}
+                <Button outline color="danger" onClick={() => this.setState({ showTest : true })} style={{width:"100%"}}>
+                  Test Code
+                </Button>
+
                 <Dropdown>
                   <DropdownToggle caret outline color="default" style={{width:"100%"}}>
                     {this.state.theme.replace(/_/g," ")}
@@ -393,14 +411,15 @@ class Terminal extends Component {
                   name="UNIQUE_ID"
                   editorProps={{$blockScrolling: true}}
                   value={this.state.studentProgram}
-                  style={{width:"100%"}}
+                  width="100%"
+                  tabSize="2"
                 />
               </CardBody>
             </Card>
           </div>
 
-          <div className="col-sm-6">
-            <Card style={{ marginTop: '1rem'}} className="text-center">
+          <div className="col-sm-6" style={{display: "flex"}}>
+            <Card style={{ marginTop: '1rem', width:"100%"}} className="text-center">
               <CardHeader color="default-color">
                 {memoryExplanation}
                 <CardTitle componentClass="h1">
