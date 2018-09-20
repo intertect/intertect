@@ -53,6 +53,7 @@ export class Registers {
   // Registers as a map for simplicity. Definitely fast enough
   constructor() {
     this.registers_ = {};
+    this.recentRegister = null;
     this.reset();
   }
 
@@ -108,6 +109,7 @@ export class Registers {
       return
     }
 
+    this.recentRegister = register;
     this.registers_[register] = value;
   }
 

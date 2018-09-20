@@ -77,6 +77,7 @@ class Terminal extends Component {
 
       lesson: 1,
       lessonPart: 1,
+      lessonTitle: "Starting Slowly",
       loadLesson: true,
 
       studentProgram: "",
@@ -189,10 +190,19 @@ class Terminal extends Component {
     var registers = Object.keys(nameToRegisterMap);
     for (var i = 0; i < registers.length; i++) {
       var register = registers[i];
-      registerTable.push(<tr style={{textAlign: 'center'}} className="source-code">
+
+      console.log(this.state.registers.recentRegister)
+      if (nameToRegisterMap[register] == this.state.registers.recentRegister) {
+        registerTable.push(<tr style={{textAlign: 'center', background: 'yellow'}} className="source-code">
+          <td><b>{register}</b></td>
+          <td><b>0x{this.state.registers.read(nameToRegisterMap[register]).toString(16).toUpperCase()}</b></td>
+        </tr>);
+      } else {
+        registerTable.push(<tr style={{textAlign: 'center'}} className="source-code">
           <td>{register}</td>
           <td>0x{this.state.registers.read(nameToRegisterMap[register]).toString(16).toUpperCase()}</td>
         </tr>);
+      }
     }
 
     var pulsatingInterest =
@@ -282,7 +292,7 @@ class Terminal extends Component {
       <div>
         <SlidingPane
             isOpen={ this.state.isPaneOpen }
-            title={ 'Lesson ' + this.state.lesson + '.' + this.state.lessonPart }
+            title={ 'Part ' + this.state.lessonPart + ": " + this.state.lessonTitle }
             width='50%'
             onRequestClose={ () => {
               this.setState({ isPaneOpen: false });
@@ -298,15 +308,59 @@ class Terminal extends Component {
 
                 <li>Hey there!</li>
                 <li>
-                  In this lesson, we gonna learn about computer <Tooltip
-                    placement="top"
-                    component="a"
-                    tooltipContent="Increased KNOWLEDGE"> architecture </Tooltip>
+                  Welcome to the first lesson about computer architecture! You've
+                  already had to read a boatload of introduction, so now it's time for
+                  us to get started by implementing the <b>addu</b> instruction. We've
+                  already implemented this for you in order to give you a base to build
+                  on.
                 </li>
-
+                <li>
+                  If you don't like the code, feel free to delete all of it and do
+                  this however you want. In future lessons, you'll be implementing
+                  functionality on your own (with some written instructions like this).
+                </li>
                 </Typist>
               </ul>
             </div><br />
+        </SlidingPane>
+
+        <SlidingPane
+            isOpen={ this.state.showTest }
+            width='100%'
+            from="left"
+            title="Testing"
+            onRequestClose={ () => {
+              this.setState({ showTest: false });
+            }}>
+            <ModalBody>
+            <div className="row" style={{display: "flex"}}>
+              <div className="col-sm-6" style={{display: "flex"}}>
+
+              </div>
+
+              <div className="col-sm-6" style={{display: "flex"}}>
+                <Card style={{ marginTop: '1rem', width:"100%"}} className="text-center">
+                  <CardHeader color="default-color">
+                    {memoryExplanation}
+                    <CardTitle componentClass="h1">
+                      CPU & Memory
+                    </CardTitle>
+                  </CardHeader>
+                  <CardBody>
+                    <Table hover condensed>
+                      <thead>
+                        <tr>
+                          <th style={{textAlign: 'center'}}>Register</th>
+                          <th style={{textAlign: 'center'}}>Value</th>
+                        </tr>
+                      </thead>
+                      <tbody> { registerTable } </tbody>
+                    </Table>
+                  </CardBody>
+                </Card>
+              </div>
+            </div>
+          </ModalBody>
         </SlidingPane>
 
         <Modal isOpen={this.state.lessonCorrect} frame position="bottom">
@@ -335,15 +389,61 @@ class Terminal extends Component {
           </ModalBody>
         </Modal>
 
-        <Modal isOpen={this.state.showTest} frame position="top">
-          <ModalBody>
-            <div className="row" style={{display: "flex"}}>
-              <div className="col-sm-6" style={{display: "flex"}}>
-                <ul className="shell-body" style={{width:"100%"}}>{ assemblyList }</ul>
-              </div>
+        <div className="row" style={{display: "flex"}}>
+          <div className="col-sm-12" style={{display: "flex"}}>
+            <Card style={{ marginTop: '1rem', width:"100%"}} className="text-center">
+              <CardHeader color="default-color">
+                {implementExplanation}
+                <CardTitle componentClass="h4">
+                  Implement
+                </CardTitle>
+              </CardHeader>
+              <CardBody>
+                <AceEditor
+                  mode="javascript"
+                  theme={this.state.theme}
+                  onChange={this.onChange}
+                  name="UNIQUE_ID"
+                  editorProps={{$blockScrolling: true}}
+                  value={this.state.studentProgram}
+                  width="100%"
+                  tabSize="2"
+                  style={{visible : !this.state.showTest}}
+                />
+                <br />
+                <Dropdown>
+                  <DropdownToggle caret outline color="default" style={{width:"100%"}}>
+                    {this.state.theme.replace(/_/g," ")}
+                  </DropdownToggle>
+                  <DropdownMenu  style={{width:"100%"}}>
+                    <DropdownItem onClick={() => {this.setState({ theme : "chrome" })}} eventKey="chrome" className={this.state.theme == "chrome" ? "active" : "inactive"}>chrome</DropdownItem>
+                    <DropdownItem onClick={() => {this.setState({ theme : "dracula" })}} eventKey="dracula" className={this.state.theme == "dracula" ? "active" : "inactive"}>dracula</DropdownItem>
+                    <DropdownItem onClick={() => {this.setState({ theme : "eclipse" })}} eventKey="eclipse" className={this.state.theme == "eclipse" ? "active" : "inactive"}>eclipse</DropdownItem>
+                    <DropdownItem onClick={() => {this.setState({ theme : "github" })}} eventKey="github" className={this.state.theme == "github" ? "active" : "inactive"}>github</DropdownItem>
+                    <DropdownItem onClick={() => {this.setState({ theme : "monokai" })}} eventKey="monokai" className={this.state.theme == "monokai" ? "active" : "inactive"}>monokai</DropdownItem>
+                    <DropdownItem onClick={() => {this.setState({ theme : "solarized_dark" })}} eventKey="solarized_dark" className={this.state.theme == "solarized_dark" ? "active" : "inactive"}>solarized (dark)</DropdownItem>
+                    <DropdownItem onClick={() => {this.setState({ theme : "solarized_light" })}} eventKey="solarized_light" className={this.state.theme == "solarized_light" ? "active" : "inactive"}>solarized (light)</DropdownItem>
+                    <DropdownItem onClick={() => {this.setState({ theme : "twilight" })}} eventKey="twilight" className={this.state.theme == "twilight" ? "active" : "inactive"}>twilight</DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+              </CardBody>
+            </Card>
+          </div>
 
-              <div className="col-sm-6" style={{display: "flex"}}>
-                <div className="row" style={{width:"100%"}}>
+          <div className="col-sm-6" style={{display: "flex"}}>
+            <Card style={{ marginTop: '1rem', width:"100%"}}>
+              <CardHeader color="default-color" className="text-center">
+                {stepExplanation}
+                <CardTitle componentClass="h4">
+                  Testing
+                </CardTitle>
+              </CardHeader>
+              <CardBody>
+                {assemblyExplanation}
+                <div className="col-sm-12">
+                  <div className="col-sm-12">
+                    <ul className="shell-body" style={{width:"100%"}}>{ assemblyList }</ul>
+                  </div>
                   <div className="col-sm-12">
                     <Button outline style={{width:"100%"}}
                       onClick={() => this.setState({ targetStep : this.state.assemblyProgram.length - 1 })}>
@@ -362,58 +462,7 @@ class Terminal extends Component {
                       <i class="fa fa-refresh" aria-hidden="true"></i> Reset
                     </Button>
                   </div>
-                  <div className="col-sm-12">
-                    <Button outline color="danger" onClick={() => this.setState({ showTest : false })} style={{width:"100%"}}>
-                      Close
-                    </Button>
-                  </div>
                 </div>
-              </div>
-            </div>
-          </ModalBody>
-        </Modal>
-
-        <div className="row" style={{display: "flex"}}>
-          <div className="col-sm-6" style={{display: "flex"}}>
-            <Card style={{ marginTop: '1rem', width:"100%"}} className="text-center">
-              <CardHeader color="default-color">
-                {implementExplanation}
-                <CardTitle componentClass="h4">
-                  Implement
-                </CardTitle>
-              </CardHeader>
-              <CardBody>
-                {assemblyExplanation}
-                <Button outline color="danger" onClick={() => this.setState({ showTest : true })} style={{width:"100%"}}>
-                  Test Code
-                </Button>
-
-                <Dropdown>
-                  <DropdownToggle caret outline color="default" style={{width:"100%"}}>
-                    {this.state.theme.replace(/_/g," ")}
-                  </DropdownToggle>
-                  <DropdownMenu  style={{width:"100%"}}>
-                    <DropdownItem onClick={() => {this.setState({ theme : "chrome" })}} eventKey="chrome" className={this.state.theme == "chrome" ? "active" : "inactive"}>chrome</DropdownItem>
-                    <DropdownItem onClick={() => {this.setState({ theme : "dracula" })}} eventKey="dracula" className={this.state.theme == "dracula" ? "active" : "inactive"}>dracula</DropdownItem>
-                    <DropdownItem onClick={() => {this.setState({ theme : "eclipse" })}} eventKey="eclipse" className={this.state.theme == "eclipse" ? "active" : "inactive"}>eclipse</DropdownItem>
-                    <DropdownItem onClick={() => {this.setState({ theme : "github" })}} eventKey="github" className={this.state.theme == "github" ? "active" : "inactive"}>github</DropdownItem>
-                    <DropdownItem onClick={() => {this.setState({ theme : "monokai" })}} eventKey="monokai" className={this.state.theme == "monokai" ? "active" : "inactive"}>monokai</DropdownItem>
-                    <DropdownItem onClick={() => {this.setState({ theme : "solarized_dark" })}} eventKey="solarized_dark" className={this.state.theme == "solarized_dark" ? "active" : "inactive"}>solarized (dark)</DropdownItem>
-                    <DropdownItem onClick={() => {this.setState({ theme : "solarized_light" })}} eventKey="solarized_light" className={this.state.theme == "solarized_light" ? "active" : "inactive"}>solarized (light)</DropdownItem>
-                    <DropdownItem onClick={() => {this.setState({ theme : "twilight" })}} eventKey="twilight" className={this.state.theme == "twilight" ? "active" : "inactive"}>twilight</DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-                <br />
-                <AceEditor
-                  mode="javascript"
-                  theme={this.state.theme}
-                  onChange={this.onChange}
-                  name="UNIQUE_ID"
-                  editorProps={{$blockScrolling: true}}
-                  value={this.state.studentProgram}
-                  width="100%"
-                  tabSize="2"
-                />
               </CardBody>
             </Card>
           </div>
