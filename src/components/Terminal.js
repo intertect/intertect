@@ -77,6 +77,7 @@ class Terminal extends Component {
 
       lesson: 1,
       lessonPart: 1,
+      lessonContent: [],
       lessonTitle: "Starting Slowly",
       loadLesson: true,
 
@@ -119,6 +120,14 @@ class Terminal extends Component {
     .then((r)  => r.text())
     .then(text => {
       this.setState({ studentProgram : text });
+    })
+
+    var lessonContentFile = `../content/lesson_${this.state.lesson}/part_${this.state.lessonPart}.md`;
+    console.log(lessonContentFile)
+    fetch(lessonContentFile)
+    .then((r)  => r.text())
+    .then(text => {
+      this.setState({ lessonContent : text.split("\n\n") });
     })
 
     var lessonDir = `../lesson_programs/lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
@@ -191,7 +200,6 @@ class Terminal extends Component {
     for (var i = 0; i < registers.length; i++) {
       var register = registers[i];
 
-      console.log(this.state.registers.recentRegister)
       if (nameToRegisterMap[register] == this.state.registers.recentRegister) {
         registerTable.push(<tr style={{textAlign: 'center', background: 'yellow'}} className="source-code">
           <td><b>{register}</b></td>
@@ -286,6 +294,12 @@ class Terminal extends Component {
       memoryExplanation = <div></div>
     }
 
+    var lessonContentTypist = [];
+    for (var i = 0; i < this.state.lessonContent.length; i++) {
+      lessonContentTypist.push(<li>
+        {this.state.lessonContent[i]}
+      </li>)
+    }
 
     return (this.state.selectedLesson ?
 
@@ -305,20 +319,7 @@ class Terminal extends Component {
                       completedInstructions: true
                     })}}>
                 <Typist.Delay ms={500} />
-
-                <li>Hey there!</li>
-                <li>
-                  Welcome to the first lesson about computer architecture! You've
-                  already had to read a boatload of introduction, so now it's time for
-                  us to get started by implementing the <b>addu</b> instruction. We've
-                  already implemented this for you in order to give you a base to build
-                  on.
-                </li>
-                <li>
-                  If you don't like the code, feel free to delete all of it and do
-                  this however you want. In future lessons, you'll be implementing
-                  functionality on your own (with some written instructions like this).
-                </li>
+                  {lessonContentTypist}
                 </Typist>
               </ul>
             </div><br />

@@ -1,3 +1,31 @@
+function ToUint32(x) {
+  return parseInt(x) % Math.pow(2, 32);
+}
+
+function execute(instruction, registers) {
+  switch(instruction[0]) {
+    case 'add':
+      var rd = nameToRegisterMap[instruction[1]];
+      var rs = nameToRegisterMap[instruction[2]];
+      var rt = nameToRegisterMap[instruction[3]];
+      var result = ToUint32(registers.read(rs) + registers.read(rt));
+      registers.write(rd, result);
+      break;
+    case 'addu':
+      // TODO
+      break;
+    case 'sub':
+      // TODO
+      break;
+    case 'subu':
+      // TODO
+      break;
+    default:
+      // invalid/unsupported instruction passed in
+      return;
+  }
+}
+
 var nameToRegisterMap = {
   "$zero" : 0x0,
   "$at" : 0x1,
@@ -33,30 +61,3 @@ var nameToRegisterMap = {
   "$ra" : 0x1f
 };
 
-function ToUint32(x) {
-  return parseInt(x) % Math.pow(2, 32);
-}
-
-function execute(instruction, registers) {
-  switch(instruction[0]) {
-    case 'add':
-      var rd = nameToRegisterMap[instruction[1]];
-      var rs = nameToRegisterMap[instruction[2]];
-      var rt = nameToRegisterMap[instruction[3]];
-      var result = ToUint32(registers.read(rs) + registers.read(rt));
-      registers.write(rd, result);
-      break;
-    case 'addu':
-      // TODO
-      break;
-    case 'sub':
-      // TODO
-      break;
-    case 'subu':
-      // TODO
-      break;
-    default:
-      // invalid/unsupported instruction passed in
-      return;
-  }
-}
