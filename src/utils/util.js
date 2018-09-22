@@ -54,6 +54,7 @@ export class Registers {
   constructor() {
     this.registers_ = {};
     this.recentRegister = null;
+    this.usedRegisters = [];
     this.reset();
   }
 
@@ -109,6 +110,13 @@ export class Registers {
       return
     }
 
+    if (this.usedRegisters.indexOf(register) != -1) {
+      this.usedRegisters = array.filter(function(value, index, arr){
+        return value != register;
+      });
+    }
+
+    this.usedRegisters.unshift(register);
     this.recentRegister = register;
     this.registers_[register] = value;
   }

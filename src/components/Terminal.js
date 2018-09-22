@@ -196,21 +196,35 @@ class Terminal extends Component {
     }
 
     var registerTable = [];
-    var registers = Object.keys(nameToRegisterMap);
-    for (var i = 0; i < registers.length; i++) {
-      var register = registers[i];
 
-      if (nameToRegisterMap[register] == this.state.registers.recentRegister) {
+    for (var i = 0; i < this.state.registers.usedRegisters.length; i++) {
+      var register = this.state.registers.usedRegisters[i];
+      console.log(register)
+
+      if (i == 0) {
         registerTable.push(<tr style={{textAlign: 'center', background: 'yellow'}} className="source-code">
           <td><b>{register}</b></td>
-          <td><b>0x{this.state.registers.read(nameToRegisterMap[register]).toString(16).toUpperCase()}</b></td>
+          <td><b>0x{this.state.registers.read(register).toString(16).toUpperCase()}</b></td>
         </tr>);
       } else {
         registerTable.push(<tr style={{textAlign: 'center'}} className="source-code">
           <td>{register}</td>
-          <td>0x{this.state.registers.read(nameToRegisterMap[register]).toString(16).toUpperCase()}</td>
+          <td>0x{this.state.registers.read(register).toString(16).toUpperCase()}</td>
         </tr>);
       }
+    }
+
+    var registers = Object.keys(nameToRegisterMap);
+    for (var i = 0; i < registers.length; i++) {
+      var register = registers[i];
+      if (this.state.registers.usedRegisters.indexOf(register) != -1) {
+        continue;
+      }
+
+      registerTable.push(<tr style={{textAlign: 'center'}} className="source-code">
+          <td>{register}</td>
+          <td>0x{this.state.registers.read(nameToRegisterMap[register]).toString(16).toUpperCase()}</td>
+        </tr>);
     }
 
     var pulsatingInterest =
