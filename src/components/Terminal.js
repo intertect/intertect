@@ -310,6 +310,20 @@ class Terminal extends Component {
       memoryExplanation = <div></div>
     }
 
+    var lessonsCompleted = [];
+    for (var i = 1; i < this.state.lessonPart; i++) {
+      lessonsCompleted.push(
+        <Button outline onClick={() => this.setState({
+                      lessonPart : (i-1),
+                      loadLesson : true,
+                      isPaneOpen: true,
+                      showTest: false,
+                      showMenu: false
+                    })}>
+          Lesson {i}
+        </Button>)
+    }
+
     return (this.state.selectedLesson ?
 
       <div>
@@ -327,34 +341,21 @@ class Terminal extends Component {
             isOpen={ this.state.showMenu }
             width='50%'
             from="left"
-            title="Testing"
             onRequestClose={ () => {
               this.setState({ showMenu: false });
             }}>
             <ModalBody>
-            <div className="row" style={{display: "flex"}}>
-              <div className="col-sm-6" style={{display: "flex"}}>
-                <Card style={{ marginTop: '1rem', width:"100%"}} className="text-center">
-                  <CardHeader color="default-color">
-                    {memoryExplanation}
-                    <CardTitle componentClass="h1">
-                      CPU & Memory
-                    </CardTitle>
-                  </CardHeader>
-                  <CardBody>
-                    <Table hover condensed>
-                      <thead>
-                        <tr>
-                          <th style={{textAlign: 'center'}}>Register</th>
-                          <th style={{textAlign: 'center'}}>Value</th>
-                        </tr>
-                      </thead>
-                      <tbody> { registerTable } </tbody>
-                    </Table>
-                  </CardBody>
-                </Card>
+              <div className="row">
+                <Button outline onClick={() => this.setState({
+                  selectedLesson : false,
+                  showMenu: false
+                })} style={{width:"100%"}}>
+                  Return to Title
+                </Button>
+
+                <h1>Return to a Previous Lesson</h1>
+                {lessonsCompleted}
               </div>
-            </div>
           </ModalBody>
         </SlidingPane>
 
