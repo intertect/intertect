@@ -13,7 +13,7 @@ import { Button, Card, CardBody, CardTitle, CardHeader, CardFooter,
   Navbar, NavLink, NavItem, NavbarNav, NavbarBrand, Collapse } from 'mdbreact';
 
 import FadeIn from 'react-fade-in';
-
+import ReactMarkdown from 'react-markdown';
 import Typist from 'react-typist';
 import posed from 'react-pose';
 import AceEditor from 'react-ace';
@@ -74,11 +74,12 @@ class Terminal extends Component {
       targetStep: 0,
 
       isPaneOpen: true,
+      showMenu: false,
       completedInstructions: false,
 
       lesson: 1,
       lessonPart: 1,
-      lessonContent: [],
+      lessonContent: "",
       lessonTitle: "Starting Slowly",
       loadLesson: true,
 
@@ -128,7 +129,7 @@ class Terminal extends Component {
     fetch(lessonContentFile)
     .then((r)  => r.text())
     .then(text => {
-      this.setState({ lessonContent : text.split("\n\n") });
+      this.setState({ lessonContent : text });
     })
 
     var lessonDir = `../lesson_programs/lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
@@ -309,51 +310,29 @@ class Terminal extends Component {
       memoryExplanation = <div></div>
     }
 
-    var lessonContentTypist = [];
-    for (var i = 0; i < this.state.lessonContent.length; i++) {
-      lessonContentTypist.push(<li>
-        {this.state.lessonContent[i]}
-      </li>)
-    }
-
     return (this.state.selectedLesson ?
 
       <div>
         <SlidingPane
             isOpen={ this.state.isPaneOpen }
-            title={ 'Part ' + this.state.lessonPart + ": " + this.state.lessonTitle }
             width='50%'
             onRequestClose={ () => {
               this.setState({ isPaneOpen: false });
             }}>
-            <div className="shell-wrap">
-              <ul className="shell-body">
-                <Typist
-                  onTypingDone={() => {
-                    this.setState({
-                      completedInstructions: true
-                    })}}>
-                <Typist.Delay ms={500} />
-                  {lessonContentTypist}
-                </Typist>
-              </ul>
-            </div><br />
+
+          <ReactMarkdown source={this.state.lessonContent} />
         </SlidingPane>
 
         <SlidingPane
-            isOpen={ this.state.showTest }
-            width='100%'
+            isOpen={ this.state.showMenu }
+            width='50%'
             from="left"
             title="Testing"
             onRequestClose={ () => {
-              this.setState({ showTest: false });
+              this.setState({ showMenu: false });
             }}>
             <ModalBody>
             <div className="row" style={{display: "flex"}}>
-              <div className="col-sm-6" style={{display: "flex"}}>
-
-              </div>
-
               <div className="col-sm-6" style={{display: "flex"}}>
                 <Card style={{ marginTop: '1rem', width:"100%"}} className="text-center">
                   <CardHeader color="default-color">
@@ -382,15 +361,15 @@ class Terminal extends Component {
 
         <Navbar color="default-color-dark" dark>
           <NavbarBrand href="#">
-            <Button outline onClick={() => this.setState({ selectedLesson : false })}>
-              Menu
+            <Button outline onClick={() => this.setState({ showMenu : true })}>
+              Main Menu
             </Button>
           </NavbarBrand>
           <Collapse isOpen={true}>
             <NavbarNav>
               <NavItem>
                 <Button outline onClick={() => this.setState({ isPaneOpen : true })}>
-                  Repeat Intro
+                  Intro Text
                 </Button>
               </NavItem>
             </NavbarNav>
@@ -442,7 +421,7 @@ class Terminal extends Component {
                   value={this.state.studentProgram}
                   width="100%"
                   tabSize="2"
-                  style={{visible : !this.state.showTest}}
+                  style={{visible : !this.state.showTest, zIndex: 0}}
                 />
                 <br />
                 <Dropdown>
