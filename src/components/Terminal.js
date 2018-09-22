@@ -9,7 +9,8 @@ import React, {Component} from 'react';
 import { Button, Card, CardBody, CardTitle, CardHeader, CardFooter,
   Table, Dropdown, DropdownToggle, DropdownMenu, DropdownItem,
   Tooltip, Footer, Container, Popover, PopoverHeader, PopoverBody,
-  PopoverFooter, Modal, ModalHeader, ModalBody, ModalFooter } from 'mdbreact';
+  PopoverFooter, Modal, ModalHeader, ModalBody, ModalFooter,
+  Navbar, NavLink, NavItem, NavbarNav, NavbarBrand, Collapse } from 'mdbreact';
 
 import FadeIn from 'react-fade-in';
 
@@ -377,6 +378,24 @@ class Terminal extends Component {
             </div>
           </ModalBody>
         </SlidingPane>
+
+
+        <Navbar color="default-color-dark" dark>
+          <NavbarBrand href="#">
+            <Button outline onClick={() => this.setState({ selectedLesson : false })}>
+              Menu
+            </Button>
+          </NavbarBrand>
+          <Collapse isOpen={true}>
+            <NavbarNav>
+              <NavItem>
+                <Button outline onClick={() => this.setState({ isPaneOpen : true })}>
+                  Repeat Intro
+                </Button>
+              </NavItem>
+            </NavbarNav>
+          </Collapse>
+        </Navbar>
 
         <Modal isOpen={this.state.lessonCorrect} frame position="bottom">
           <ModalHeader>Great Work!</ModalHeader>
