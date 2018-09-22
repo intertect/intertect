@@ -4,7 +4,6 @@ pub mod reference_extractor;
 * Copyright (c) 2018--present, Yash Patel and Peter DeLong
 * All rights reserved.
 */
-
 extern crate wasm_bindgen;
 use wasm_bindgen::prelude::*;
 
@@ -61,7 +60,6 @@ enum Operation {
     /* -------------------------- Jump Operations -------------------------- */
     J,
     Jal,
-
     /* ------------------------ Non-existent Operations -------------------- */
     /* TODO: @peterdelong: The below instructions are not in MIPS page. We   */
     /* should probably remove them from implementation details               */
@@ -96,8 +94,6 @@ enum Instruction {
 
     Nop,
 }
-
-
 
 // Register represents a single register in the system
 #[derive(Debug)]
@@ -171,7 +167,7 @@ pub fn compile_string(program: &str) -> Option<Vec<u8>> {
         Some(resolved) => resolved,
         None => {
             println!("Failed to resolve labels");
-            return None
+            return None;
         }
     };
 
@@ -191,27 +187,19 @@ fn resolve_labels(vr: VirtualRepresentation) -> Option<Vec<Instruction>> {
 
     for (index, instruction) in vr.instructions.into_iter().enumerate() {
         let resolved_instruction = match instruction {
-            Instruction::I {op, rs, rt, imm} => {
+            Instruction::I { op, rs, rt, imm } => {
                 let address = match op {
                     Operation::Beq => Some(index as u32 * 4),
                     _ => None,
                 };
 
                 let imm = resolve_imm_label(imm, &vr.labels, address);
-                Instruction::I {
-                    op,
-                    rs,
-                    rt,
-                    imm
-                }
-            },
-            Instruction::J {op, target} => {
+                Instruction::I { op, rs, rt, imm }
+            }
+            Instruction::J { op, target } => {
                 let target = resolve_target_label(target, &vr.labels);
-                Instruction::J {
-                    op,
-                    target
-                }
-            },
+                Instruction::J { op, target }
+            }
             _ => instruction,
         };
 
@@ -251,7 +239,10 @@ fn parse_program(program: &str) -> Option<VirtualRepresentation> {
     for line in program_pair.into_inner() {
         println!("{:?}", line.as_str());
         match line.as_rule() {
-            Rule::instruction => match handle_instruction(line.into_inner().next().unwrap(), next_instruction_index * 4) {
+            Rule::instruction => match handle_instruction(
+                line.into_inner().next().unwrap(),
+                next_instruction_index * 4,
+            ) {
                 Some(instruction) => {
                     next_instruction_index += 1;
                     vr.instructions.push(instruction)
@@ -260,7 +251,7 @@ fn parse_program(program: &str) -> Option<VirtualRepresentation> {
             },
             Rule::label => {
                 let label_name_str = line.as_str();
-                let label_name = label_name_str[..label_name_str.len()-1].to_string();
+                let label_name = label_name_str[..label_name_str.len() - 1].to_string();
                 vr.labels.insert(label_name, next_instruction_index * 4);
             }
             _ => println!("Found a thing: {:?}", line),
@@ -305,8 +296,8 @@ fn handle_instruction(instruction: Pair<'_, Rule>, current_address: u32) -> Opti
             // These look like I format instructions but are really R format
             if name == "srl" || name == "sra" || name == "sll" {
                 handle_r_instruction(
-                    name, /*rd_str=*/ rt_str, /*rs_str=*/ "$zero", /*rt_str=*/ rs_str,
-                    /*shamt_str=*/ imm_str,
+                    name, /*rd_str=*/ rt_str, /*rs_str=*/ "$zero",
+                    /*rt_str=*/ rs_str, /*shamt_str=*/ imm_str,
                 )
             } else {
                 handle_i_instruction(name, rt_str, rs_str, imm_str, current_address)
@@ -340,15 +331,6 @@ fn handle_instruction(instruction: Pair<'_, Rule>, current_address: u32) -> Opti
             let imm_str = pairs.next().unwrap().as_str();
 
             handle_i_instruction("lui", rt_str, "$zero", imm_str, current_address)
-        }
-
-        Rule::data => {
-            let mut pairs = instruction.into_inner();
-
-            let type_str = pairs.next().unwrap().as_str();
-            let data_str = pairs.next().unwrap().as_str();
-
-            None
         }
 
         Rule::nop => Some(Instruction::Nop),
@@ -475,7 +457,7 @@ fn handle_i_instruction(
     rt_str: &str,
     rs_str: &str,
     imm_str: &str,
-    current_address: u32
+    current_address: u32,
 ) -> Option<Instruction> {
     let rs = match lookup_register(rs_str) {
         Some(reg) => reg,
@@ -521,7 +503,7 @@ fn construct_i_instruction(
     };
 
     let imm = match u32::from_str_radix(imm_str, radix) {
-        Ok(val) => { 
+        Ok(val) => {
             if let Operation::Beq = op {
                 let offset = (val - current_address) >> 2;
                 // TODO: Return this as an error
@@ -532,7 +514,7 @@ fn construct_i_instruction(
                 assert!(val < 65536);
                 Immediate::Value(val as u16)
             }
-        },
+        }
         Err(_) => {
             let label_name = imm_str.to_string();
             Immediate::Label(label_name)
@@ -540,15 +522,13 @@ fn construct_i_instruction(
     };
 
     // For some reason these are swapped for branch instructions
-    let (rs, rt) = if let Operation::Beq = op { (rt, rs) } else { (rs, rt) };
-
-
-    let instruction = Instruction::I {
-        op,
-        rs,
-        rt,
-        imm
+    let (rs, rt) = if let Operation::Beq = op {
+        (rt, rs)
+    } else {
+        (rs, rt)
     };
+
+    let instruction = Instruction::I { op, rs, rt, imm };
 
     Some(instruction)
 }
@@ -562,7 +542,7 @@ fn handle_j_instruction(operation: &str, target_str: &str) -> Option<Instruction
 
     let target = match u32::from_str_radix(target_str, radix) {
         Ok(val) => JumpTarget::Value(val >> 2),
-        Err(_) => JumpTarget::Label(target_str.to_string())
+        Err(_) => JumpTarget::Label(target_str.to_string()),
     };
 
     let op = match operation {
@@ -571,10 +551,7 @@ fn handle_j_instruction(operation: &str, target_str: &str) -> Option<Instruction
         _ => return None,
     };
 
-    let instruction = Instruction::J {
-        op,
-        target
-    };
+    let instruction = Instruction::J { op, target };
 
     Some(instruction)
 }
@@ -591,9 +568,15 @@ fn compile_vr(instructions: Vec<Instruction>) -> Option<Vec<u8>> {
     // all material was pulled from: http://www2.engr.arizona.edu/~ece369/Resources/spim/MIPSReference.pdf
     for instruction in instructions {
         let machine_code = match instruction {
-            Instruction::R {op, rs, rt, rd, shamt} => compile_r_format(op, rs, rt, rd, shamt),
-            Instruction::I {op, rs, rt, imm} => compile_i_format(op, rs, rt, imm),
-            Instruction::J {op, target} => compile_j_format(op, target),
+            Instruction::R {
+                op,
+                rs,
+                rt,
+                rd,
+                shamt,
+            } => compile_r_format(op, rs, rt, rd, shamt),
+            Instruction::I { op, rs, rt, imm } => compile_i_format(op, rs, rt, imm),
+            Instruction::J { op, target } => compile_j_format(op, target),
             Instruction::Nop => 0,
         };
 
@@ -611,15 +594,19 @@ fn resolve_target_label(target: JumpTarget, labels: &HashMap<String, u32>) -> Ju
                 Some(&value) => {
                     assert!(value < 67108864);
                     JumpTarget::Value(value << 2)
-                },
+                }
                 // TODO: Return as an error
-                None => panic!("Label doesn't have resolution")
+                None => panic!("Label doesn't have resolution"),
             }
         }
     }
 }
 
-fn resolve_imm_label(imm: Immediate, labels: &HashMap<String, u32>, current_address: Option<u32>) -> Immediate {
+fn resolve_imm_label(
+    imm: Immediate,
+    labels: &HashMap<String, u32>,
+    current_address: Option<u32>,
+) -> Immediate {
     match imm {
         Immediate::Value(_) => imm,
         Immediate::Label(label) => {
@@ -631,9 +618,9 @@ fn resolve_imm_label(imm: Immediate, labels: &HashMap<String, u32>, current_addr
                     }
                     assert!(value < 65536);
                     Immediate::Value(value as u16)
-                },
+                }
                 // TODO: Return as an error
-                None => panic!("Label doesn't have resolution")
+                None => panic!("Label doesn't have resolution"),
             }
         }
     }
@@ -647,13 +634,7 @@ fn transform_u32_to_array_of_u8(x: u32) -> [u8; 4] {
     return [b1, b2, b3, b4];
 }
 
-fn compile_r_format(
-    op: Operation,
-    rs: Register,
-    rt: Register,
-    rd: Register,
-    shamt: u8,
-) -> u32 {
+fn compile_r_format(op: Operation, rs: Register, rt: Register, rd: Register, shamt: u8) -> u32 {
     let rs_val = rs as u8;
     let rt_val = rt as u8;
     let rd_val = rd as u8;
@@ -745,7 +726,7 @@ fn compile_j_format(op: Operation, target: JumpTarget) -> u32 {
     let opcode = match op {
         Operation::J => 0x2,
         Operation::Jal => 0x3,
-        _ => unreachable!()
+        _ => unreachable!(),
     };
 
     assert!(opcode < 64);
