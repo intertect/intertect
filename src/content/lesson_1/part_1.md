@@ -21,7 +21,7 @@ writes the result into the first operand.
 
 ### The `subu` instruction
 
-The `subu` similarly takes its second two operands, calculates the second 
+The `subu` similarly takes its second two operands, calculates the second
 minus the third, and writes the result into the first operand.
 
 #### What's in a name?
@@ -37,13 +37,3 @@ kernel) if there is an overflow. Since we most certainly do not have a
 kernel running on this emulator, these two instructions are exactly
 the same, and we felt it pointless for you to implement the same
 functionality twice.
-
-
-<!--
-Assumptions:
-
-- The student already knows how assembly instructions are formatted
-- The student already knows what signed unsigned numbers are (we
-  might have to explain prior to this part, however)
-- The student understands overflow? Perhaps this will require explanation.
--->
