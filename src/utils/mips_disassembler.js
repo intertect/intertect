@@ -82,18 +82,22 @@ export function disassembleInstruction(instruction) {
   var opcode = (instruction >> 26) & 0x3F // 0x3F == 0b111111
 
   // All R (register) instructions start with 0s
+  var rs, rt, rd;
+  var rs_str, rt_str, rd_str;
+  var op_str;
+
   if (opcode == 0x0) {
-    var rs = (instruction >> 21) & 0x1F;
-    var rt = (instruction >> 16) & 0x1F;
-    var rd = (instruction >> 11) & 0x1F;
+    rs = (instruction >> 21) & 0x1F;
+    rt = (instruction >> 16) & 0x1F;
+    rd = (instruction >> 11) & 0x1F;
     var shamt = (instruction >> 6) & 0x1F;
     var funct = (instruction >> 0) & 0x3F;
 
-    var op_str = functMap[funct];
+    op_str = functMap[funct];
 
-    var rs_str = regMap[rs];
-    var rt_str = regMap[rt];
-    var rd_str = regMap[rd];
+    rs_str = regMap[rs];
+    rt_str = regMap[rt];
+    rd_str = regMap[rd];
 
     return {op: op_str,
             rs: rs_str,
@@ -115,14 +119,14 @@ export function disassembleInstruction(instruction) {
 
   else {
     // I format: ooooooss sssttttt iiiiiiii iiiiiiii
-    var rs = (instruction >> 21) & 0x1F;
-    var rt = (instruction >> 16) & 0x1F;
+    rs = (instruction >> 21) & 0x1F;
+    rt = (instruction >> 16) & 0x1F;
     var i = (instruction >> 0) & 0xFFFF;
 
-    var op_str = opcodeMap[opcode];
+    op_str = opcodeMap[opcode];
 
-    var rs_str = regMap[rs];
-    var rt_str = regMap[rt];
+    rs_str = regMap[rs];
+    rt_str = regMap[rt];
 
     return {op: op_str, rs: rs_str, rt: rt_str, immediate: i}
   }

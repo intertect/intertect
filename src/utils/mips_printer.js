@@ -67,10 +67,12 @@ export function disassembleMips(decimalOperations) {
 
   // all R (register) instructions start with 0s
   var opname, formatter;
+  var rs, rt, i;
+
   if (opcode == "000000") {
     // R format: 000000ss sssttttt dddddaaa aaffffff
-    var rs    = binaryOperation.slice(6,11);
-    var rt    = binaryOperation.slice(11,16);
+    rs    = binaryOperation.slice(6,11);
+    rt    = binaryOperation.slice(11,16);
     var rd    = binaryOperation.slice(16,21);
     var shamt = binaryOperation.slice(21,26);
     var funct = binaryOperation.slice(26,32);
@@ -92,9 +94,9 @@ export function disassembleMips(decimalOperations) {
   // only support j and jal J (jump) instructions
   else if (opcode == "000010" || opcode == "000011") {
     // I format: ooooooss sssttttt iiiiiiii iiiiiiii
-    var rs = binaryOperation.slice(6,11);
-    var rt = binaryOperation.slice(11,16);
-    var i  = binaryOperation.slice(16,32);
+    rs = binaryOperation.slice(6,11);
+    rt = binaryOperation.slice(11,16);
+    i  = binaryOperation.slice(16,32);
 
     [opname, formatter] = opcodeToNameFormat[opcode];
     switch(formatter) {
@@ -112,8 +114,8 @@ export function disassembleMips(decimalOperations) {
   // all others are I (immediate) instructions
   else {
     // J format: ooooooii iiiiiiii iiiiiiii iiiiiiii
-    var rs = binaryOperation.slice(6,11);
-    var i  = binaryOperation.slice(11,32);
+    rs = binaryOperation.slice(6,11);
+    i  = binaryOperation.slice(11,32);
 
     var label = i >> 2;
 

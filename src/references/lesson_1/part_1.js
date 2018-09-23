@@ -3,19 +3,21 @@ function ToUint32(x) {
 }
 
 export function solution_lesson_1_part_1(instruction, registers) {
+  var rd, rs, rt;
+  var result;
   switch(instruction[0]) {
     case 'addu':
-      var rd = nameToRegisterMap[instruction[1]];
-      var rs = nameToRegisterMap[instruction[2]];
-      var rt = nameToRegisterMap[instruction[3]];
-      var result = ToUint32(registers.read(rs) + registers.read(rt));
+      rd = nameToRegisterMap[instruction[1]];
+      rs = nameToRegisterMap[instruction[2]];
+      rt = nameToRegisterMap[instruction[3]];
+      result = ToUint32(registers.read(rs) + registers.read(rt));
       registers.write(rd, result);
       break;
     case 'subu':
-      var rd = nameToRegisterMap[instruction[1]];
-      var rs = nameToRegisterMap[instruction[2]];
-      var rt = nameToRegisterMap[instruction[3]];
-      var result = ToUint32(registers.read(rs) - registers.read(rt));
+      rd = nameToRegisterMap[instruction[1]];
+      rs = nameToRegisterMap[instruction[2]];
+      rt = nameToRegisterMap[instruction[3]];
+      result = ToUint32(registers.read(rs) - registers.read(rt));
       registers.write(rd, result);
       break;
     default:

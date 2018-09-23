@@ -6,16 +6,14 @@
 /* eslint-disable import/no-named-as-default */
 
 import React, {Component} from 'react';
-import { Button, Card, CardBody, CardTitle, CardHeader, CardFooter,
+import { Button, Card, CardBody, CardTitle, CardHeader,
   Table, Dropdown, DropdownToggle, DropdownMenu, DropdownItem,
-  Tooltip, Footer, Container, Popover, PopoverHeader, PopoverBody,
-  PopoverFooter, Modal, ModalHeader, ModalBody, ModalFooter,
-  Navbar, NavLink, NavItem, NavbarNav, NavbarBrand, Collapse } from 'mdbreact';
+  Tooltip, Popover, PopoverHeader, PopoverBody,
+  Modal, ModalHeader, ModalBody,
+  Navbar, NavItem, NavbarNav, NavbarBrand, Collapse } from 'mdbreact';
 
 import FadeIn from 'react-fade-in';
 import ReactMarkdown from 'react-markdown';
-import Typist from 'react-typist';
-import posed from 'react-pose';
 import AceEditor from 'react-ace';
 import SlidingPane from 'react-sliding-pane';
 
@@ -38,34 +36,11 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'mdbreact/dist/css/mdb.css';
 
 import {solution_lesson_1_part_1} from '../references/lesson_1/part_1.js'
+import {solution_lesson_1_part_2} from '../references/lesson_1/part_2.js'
 
 const solutionsToFunctions = {
-  "lesson_1/part_1" : solution_lesson_1_part_1
-}
-
-const TransitionTerminal = posed.div({
-  start: {
-    x: "50%"
-  },
-  end: {
-    x: "5%",
-    transition: {
-      duration: 2500
-    }
-  }
-});
-
-function LinkWithTooltip({ id, children, href, tooltip }) {
-  return (
-    <OverlayTrigger
-      overlay={<Tooltip id={id}>{tooltip}</Tooltip>}
-      placement="top"
-      delayShow={300}
-      delayHide={150}
-    >
-      <a href={href}>{children}</a>
-    </OverlayTrigger>
-  );
+  "lesson_1/part_1" : solution_lesson_1_part_1,
+  "lesson_1/part_2" : solution_lesson_1_part_2
 }
 
 class Terminal extends Component {
@@ -127,7 +102,7 @@ class Terminal extends Component {
       targetStep : 0
     });
 
-    var studentProgram, assemblyProgram, initRegisters, referenceRegisters, targetRegisters;
+    var initRegisters, referenceRegisters, targetRegisters;
     var starterCode = `../starter/lesson_${this.state.lesson}/part_${this.state.lessonPart}.js`;
     fetch(starterCode)
     .then((r)  => r.text())
@@ -136,7 +111,6 @@ class Terminal extends Component {
     })
 
     var lessonContentFile = `../content/lesson_${this.state.lesson}/part_${this.state.lessonPart}.md`;
-    console.log(lessonContentFile)
     fetch(lessonContentFile)
     .then((r)  => r.text())
     .then(text => {
@@ -197,7 +171,9 @@ class Terminal extends Component {
         script.text = this.state.studentProgram;
         document.body.appendChild(script);
       }
-      execute(assemblyInstruction, this.state.studentRegisters)
+
+      // eslint-disable-next-line
+      execute(assemblyInstruction, this.state.studentRegisters);
 
       var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
       var solution = solutionsToFunctions[lessonPart];
@@ -218,9 +194,9 @@ class Terminal extends Component {
     }
 
     var registerTable = [];
-
-    for (var i = 0; i < this.state.studentRegisters.usedRegisters.length; i++) {
-      var register = this.state.studentRegisters.usedRegisters[i];
+    var register;
+    for (i = 0; i < this.state.studentRegisters.usedRegisters.length; i++) {
+      register = this.state.studentRegisters.usedRegisters[i];
 
       var studentValue = `0x${this.state.studentRegisters.read(register).toString(16).toUpperCase()}`;
       var referenceValue = `0x${this.state.referenceRegisters.read(register).toString(16).toUpperCase()}`;
@@ -248,8 +224,8 @@ class Terminal extends Component {
     }
 
     var registers = Object.keys(nameToRegisterMap);
-    for (var i = 0; i < registers.length; i++) {
-      var register = registers[i];
+    for (i = 0; i < registers.length; i++) {
+      register = registers[i];
       if (this.state.studentRegisters.usedRegisters.indexOf(register) != -1) {
         continue;
       }
@@ -261,7 +237,7 @@ class Terminal extends Component {
     }
 
     var pulsatingInterest =
-      <div class="pulsating-dot__ripple">
+      <div className="pulsating-dot__ripple">
         <span></span>
         <div></div>
         <div></div>
@@ -274,11 +250,11 @@ class Terminal extends Component {
         <Popover placement="right" component="a" popoverBody={pulsatingInterest}>
           <PopoverHeader></PopoverHeader>
           <PopoverBody>This is the assembly code you will be testing your program with! Each lesson
-          will have a different assembly file targetting the instructions you'll be implementing in
+          will have a different assembly file targetting the instructions you&aposll be implementing in
           that lesson.
             <Button outline style={{width:"100%"}}
               onClick={() => this.setState({ unviewedAssemblyExplanation : false })}>
-              <i class="fa fa-stop" aria-hidden="true"></i> Close Help
+              <i className="fa fa-stop" aria-hidden="true"></i> Close Help
             </Button>
           </PopoverBody>
         </Popover>
@@ -291,7 +267,7 @@ class Terminal extends Component {
       stepExplanation =
         <Popover placement="right" component="a" popoverBody={pulsatingInterest}>
           <PopoverHeader></PopoverHeader>
-          <PopoverBody>This is how you'll be running your code!
+          <PopoverBody>This is how you&aposll be running your code!
             <ul>
               <li><b>Run</b>: Execute the entire assembly program with your implementation</li>
               <li><b>Step</b>: Execute just the highlighted line with your implementation</li>
@@ -299,7 +275,7 @@ class Terminal extends Component {
             </ul>
             <Button outline style={{width:"100%"}}
               onClick={() => this.setState({ unviewedStepExplanation : false })}>
-              <i class="fa fa-stop" aria-hidden="true"></i>Close Help
+              <i className="fa fa-stop" aria-hidden="true"></i>Close Help
             </Button>
           </PopoverBody>
         </Popover>
@@ -312,11 +288,11 @@ class Terminal extends Component {
       implementExplanation =
         <Popover placement="right" component="a" popoverBody={pulsatingInterest}>
           <PopoverHeader></PopoverHeader>
-          <PopoverBody>This is where you'll be implementing your code for the lesson! We've provided
+          <PopoverBody>This is where you&aposll be implementing your code for the lesson! We&aposve provided
           you with a template to get started.
             <Button outline style={{width:"100%"}}
               onClick={() => this.setState({ unviewedImplementExplanation : false })}>
-              <i class="fa fa-stop" aria-hidden="true"></i> Close Help
+              <i className="fa fa-stop" aria-hidden="true"></i> Close Help
             </Button>
           </PopoverBody>
         </Popover>
@@ -329,11 +305,11 @@ class Terminal extends Component {
       memoryExplanation =
         <Popover placement="right" component="a" popoverBody={pulsatingInterest}>
           <PopoverHeader></PopoverHeader>
-          <PopoverBody>This is debug corner! You'll see all the values of registers and memory in this
-          area, which you can use for debugging what's is going on when you run your program.
+          <PopoverBody>This is debug corner! You&aposll see all the values of registers and memory in this
+          area, which you can use for debugging what&aposs is going on when you run your program.
             <Button outline style={{width:"100%"}}
               onClick={() => this.setState({ unviewedMemoryExplanation : false })}>
-              <i class="fa fa-stop" aria-hidden="true"></i> Close Help
+              <i className="fa fa-stop" aria-hidden="true"></i> Close Help
             </Button>
           </PopoverBody>
         </Popover>
@@ -342,7 +318,7 @@ class Terminal extends Component {
     }
 
     var lessonsCompleted = [];
-    for (var i = 1; i < this.state.lessonPart; i++) {
+    for (i = 1; i < this.state.lessonPart; i++) {
       lessonsCompleted.push(
         <Button outline onClick={() => this.setState({
                       lessonPart : (i-1),
@@ -416,8 +392,8 @@ class Terminal extends Component {
 
           <ModalHeader>Great Work!</ModalHeader>
           <ModalBody className="text-center">
-            <div class="row">
-              <div class="col-sm-6">
+            <div className="row">
+              <div className="col-sm-6">
                 <Button outline style={{width:"100%"}}
                     onClick={() => {
                     this.setState({
@@ -430,7 +406,7 @@ class Terminal extends Component {
                 </Button>
               </div>
 
-              <div class="col-sm-6">
+              <div className="col-sm-6">
                 <Button outline color="danger" onClick={() => this.setState({ loadLesson : true })} style={{width:"100%"}}>
                   Redo Lesson
                 </Button>
@@ -444,7 +420,7 @@ class Terminal extends Component {
             <Card style={{ marginTop: '1rem', width:"100%"}} className="text-center">
               <CardHeader color="default-color">
                 {implementExplanation}
-                <CardTitle componentClass="h4">
+                <CardTitle componentclassName="h4">
                   Implement
                 </CardTitle>
               </CardHeader>
@@ -488,7 +464,7 @@ class Terminal extends Component {
             <Card style={{ marginTop: '1rem', width:"100%"}}>
               <CardHeader color="default-color" className="text-center">
                 {stepExplanation}
-                <CardTitle componentClass="h4">
+                <CardTitle componentclassName="h4">
                   Testing
                 </CardTitle>
               </CardHeader>
@@ -501,19 +477,19 @@ class Terminal extends Component {
                   <div className="col-sm-12">
                     <Button outline style={{width:"100%"}}
                       onClick={() => this.setState({ targetStep : this.state.assemblyProgram.length - 1 })}>
-                        <i class="fa fa-play" aria-hidden="true"></i> Run
+                        <i className="fa fa-play" aria-hidden="true"></i> Run
                     </Button>
                   </div>
                   <div className="col-sm-12">
                     <Button outline style={{width:"100%"}}
                       onClick={() => this.setState({ targetStep : this.state.targetStep + 1 })}>
-                        <i class="fa fa-forward" aria-hidden="true"></i> Step
+                        <i className="fa fa-forward" aria-hidden="true"></i> Step
                     </Button>
                   </div>
                   <div className="col-sm-12">
                     <Button outline style={{width:"100%"}}
                       onClick={() => {this.setState({ loadLesson : true })}}>
-                      <i class="fa fa-refresh" aria-hidden="true"></i> Reset
+                      <i className="fa fa-refresh" aria-hidden="true"></i> Reset
                     </Button>
                   </div>
                 </div>
@@ -522,7 +498,7 @@ class Terminal extends Component {
             <Card style={{ marginTop: '1rem', width:"100%"}} className="text-center">
               <CardHeader color="default-color">
                 {memoryExplanation}
-                <CardTitle componentClass="h1">
+                <CardTitle componentclassName="h1">
                   CPU & Memory
                 </CardTitle>
               </CardHeader>
@@ -549,7 +525,7 @@ class Terminal extends Component {
           <div className="col-sm-6" style={{position: "absolute", top:"25%", left:"25%"}}>
             <Card style={{ marginTop: '1rem'}} className="text-center">
               <CardHeader color="default-color">
-                <CardTitle componentClass="h1">Intertect</CardTitle>
+                <CardTitle componentclassName="h1">Intertect</CardTitle>
               </CardHeader>
               <CardBody>
                 <FadeIn>

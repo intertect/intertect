@@ -146,7 +146,7 @@ export class Registers {
     }
 
     if (this.usedRegisters.indexOf(register) != -1) {
-      this.usedRegisters = array.filter(function(value, index, arr){
+      this.usedRegisters = this.usedRegisters.filter(function(value){
         return value != register;
       });
     }
@@ -159,7 +159,6 @@ export class Registers {
   // expects to receive information in the format of init, i.e. $t1=3
   load(registerValueSets) {
     var splitRegisterValueSets = registerValueSets.split("\n")
-    var registers = Object.keys(this.registers_);
     for (var i = 0; i < splitRegisterValueSets.length; i++) {
       var registerValueSet = splitRegisterValueSets[i];
       var registerPair = registerValueSet.split("=");
@@ -176,7 +175,6 @@ export class Registers {
     var registers = Object.keys(this.registers_);
     for (var i = 0; i < registers.length; i++) {
       if (this.registers_[registers[i]] != other.registers_[registers[i]]) {
-        console.log("Sorry, incorrect for register: " + registers[i]);
         return false;
       }
     }
