@@ -88,11 +88,14 @@ class Terminal extends Component {
       lessonContent: "",
       lessonTitle: "Starting Slowly",
       loadLesson: true,
+      lessonComplete: false,
+      lessonCorrect: true,
 
       studentProgram: "",
       assemblyProgram: [],
       memory: new Memory(),
-      registers: new Registers(),
+
+      studentRegisters: new Registers(),
       referenceRegisters: new Registers(),
       targetRegisters: new Registers(),
 
@@ -106,7 +109,6 @@ class Terminal extends Component {
     this.handleSelect = this.handleSelect.bind(this);
     this.onChange = this.onChange.bind(this);
     this.loadLesson = this.loadLesson.bind(this);
-    this.runScript =  this.runScript.bind(this);
   }
 
   handleSelect(evt) {
@@ -119,7 +121,8 @@ class Terminal extends Component {
 
   loadLesson() {
     this.setState({
-      lessonCorrect : false,
+      lessonComplete: false,
+      lessonCorrect: true,
       currentStep : 0,
       targetStep : 0
     });
@@ -157,7 +160,7 @@ class Terminal extends Component {
       referenceRegisters.load(text);
 
       this.setState({
-        registers : initRegisters,
+        studentRegisters : initRegisters,
         referenceRegisters : referenceRegisters
       });
     })
@@ -171,10 +174,6 @@ class Terminal extends Component {
     })
 
     this.setState({ loadLesson : false });
-  }
-
-  runScript(scriptText, registers) {
-
   }
 
   render() {
@@ -198,17 +197,16 @@ class Terminal extends Component {
         script.text = this.state.studentProgram;
         document.body.appendChild(script);
       }
-      execute(assemblyInstruction, this.state.registers)
+      execute(assemblyInstruction, this.state.studentRegisters)
 
       var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
       var solution = solutionsToFunctions[lessonPart];
       solution(assemblyInstruction, this.state.referenceRegisters)
 
-      if (this.state.currentStep == (this.state.assemblyProgram.length - 2)) {
-        this.setState({
-          lessonCorrect : this.state.registers.compareRegisters(this.state.referenceRegisters)
-        });
-      }
+      this.setState({
+        lessonCorrect : this.state.studentRegisters.compareRegisters(this.state.referenceRegisters),
+        lessonComplete : (this.state.currentStep == (this.state.assemblyProgram.length - 2))
+      });
     }
 
     var assemblyList = [];
@@ -221,33 +219,32 @@ class Terminal extends Component {
 
     var registerTable = [];
 
-    for (var i = 0; i < this.state.registers.usedRegisters.length; i++) {
-      var register = this.state.registers.usedRegisters[i];
-      console.log(register)
+    for (var i = 0; i < this.state.studentRegisters.usedRegisters.length; i++) {
+      var register = this.state.studentRegisters.usedRegisters[i];
 
-      if (i == 0) {
-        registerTable.push(<tr style={{textAlign: 'center', background: 'yellow'}} className="source-code">
-          <td><b>{registerToNameMap[register]}</b></td>
-          <td><b>0x{this.state.registers.read(register).toString(16).toUpperCase()}</b></td>
-        </tr>);
+      var color;
+      if (this.state.studentRegisters.registers_[register] == this.state.referenceRegisters.registers_[register]) {
+        color = "#00C851";
       } else {
-        registerTable.push(<tr style={{textAlign: 'center'}} className="source-code">
-          <td>{registerToNameMap[register]}</td>
-          <td>0x{this.state.registers.read(register).toString(16).toUpperCase()}</td>
-        </tr>);
+        color = "#ff4444";
       }
+
+      registerTable.push(<tr style={{textAlign: 'center', background: color}} className="source-code">
+        <td><b>{registerToNameMap[register]}</b></td>
+        <td><b>0x{this.state.studentRegisters.read(register).toString(16).toUpperCase()}</b></td>
+      </tr>);
     }
 
     var registers = Object.keys(nameToRegisterMap);
     for (var i = 0; i < registers.length; i++) {
       var register = registers[i];
-      if (this.state.registers.usedRegisters.indexOf(register) != -1) {
+      if (this.state.studentRegisters.usedRegisters.indexOf(register) != -1) {
         continue;
       }
 
       registerTable.push(<tr style={{textAlign: 'center'}} className="source-code">
           <td>{register}</td>
-          <td>0x{this.state.registers.read(nameToRegisterMap[register]).toString(16).toUpperCase()}</td>
+          <td>0x{this.state.studentRegisters.read(nameToRegisterMap[register]).toString(16).toUpperCase()}</td>
         </tr>);
     }
 
@@ -399,7 +396,9 @@ class Terminal extends Component {
           </Collapse>
         </Navbar>
 
-        <Modal isOpen={this.state.lessonCorrect} frame position="bottom">
+        <Modal isOpen={this.state.lessonCorrect && this.state.lessonComplete}
+          frame position="bottom">
+
           <ModalHeader>Great Work!</ModalHeader>
           <ModalBody className="text-center">
             <div class="row">

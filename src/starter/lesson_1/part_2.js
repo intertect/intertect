@@ -4,17 +4,7 @@ function ToUint32(x) {
 
 function execute(instruction, registers) {
   switch(instruction[0]) {
-    case 'add':
-      var rd = nameToRegisterMap[instruction[1]];
-      var rs = nameToRegisterMap[instruction[2]];
-      var rt = nameToRegisterMap[instruction[3]];
-      var result = ToUint32(registers.read(rs) + registers.read(rt));
-      registers.write(rd, result);
-      break;
     case 'addu':
-      // TODO
-      break;
-    case 'sub':
       // TODO
       break;
     case 'subu':
