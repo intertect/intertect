@@ -1,35 +1,31 @@
 # Part 5: Jump Around!
 
-Now it's time to implement control flow. With this, your emulator will
-be Turing Complete. Congratulations! You will have a processor in the
-JavaScript virtual machine, in your browser, on you Operating System,
-running on a real physical processor. If you're running in a VM,
-you've got even more levels in there. Isn't that exciting?
+Now it's time to implement control flow.  With this, your emulator will be
+Turing Complete.  Congratulations! You will have a processor in the JavaScript
+virtual machine, in your browser, on you Operating System, running on a real
+physical processor.  If you're running in a VM, you've got even more levels in
+there.  Isn't that exciting?
 
-There are some strange things about jump instructions that we'll gloss
-over for this lesson. Be prepared for strangeness starting in Lesson
-2.
+There are some strange things about jump instructions that we'll gloss over for
+this lesson.  Be prepared for strangeness starting in Lesson 2.
 
 ## Branch Instructions
-
-We only have you implement beq since that's enough to do anything else
-you might want to do. It's possible to emulate any other branch
-instruction if you really want to. For example, to check if one number
-is less than another, you can subtract and use some bit shifts. It's
-not the most wonderful thing, but it works. <!-- Should we also have
-them implement blt? -->
+We only have you implement beq since that's enough to do anything else you might
+want to do.  It's possible to emulate any other branch instruction if you really
+want to.  For example, to check if one number is less than another, you can
+subtract and use some bit shifts.  It's not the most wonderful thing, but it
+works.
 
 ### How To Calculate Where To Go?
-
-Branch instructions are immediate format where the operand is an
-offset from the address of the *next* instruction. More specifically,
-the immediate operand is the offset *divided by 4*. Since all
-instructions are 32 bits, the bottom two bits are always 0. This
-allows us to get four times greater coverage from a branch
-instruction. Once the bits have been shifted, they are also sign
+Branch instructions are immediate format where the operand is an offset from the
+address of the *next* instruction.  More specifically, the immediate operand is
+the offset *divided by 4*.  Since all instructions are 32 bits, the bottom two
+bits are always 0.  This allows us to get four times greater coverage from a
+branch instruction.  Once the bits have been shifted, they are also sign
 extended and then added to the address of the next instruction.
 
 ## Jump Instruction
+<<<<<<< HEAD
 
 Jump instructions are much more straightforward. `jr` resets the
 program counter with the address contained in whatever register is

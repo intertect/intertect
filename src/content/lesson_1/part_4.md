@@ -36,6 +36,7 @@ If we had 2 instead of −2, it would work as follows:
 (sign extending...)
 2 = 0b00000000000000000000000000000010
 ```
+
 ---
 # The MIPS Instruction Set
 

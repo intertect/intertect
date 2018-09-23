@@ -46,6 +46,7 @@ target. `jal` is unconditional as well, but it also saves the address
 of the next instruction into the `$ra` or Return Address
 register. This allows the programmer to implement returning from
 function calls.
+
 ---
 # The MIPS Instruction Set
 
@@ -221,21 +222,3 @@ instruction set archiecture, but it can really come in handy when you need to
 fill a space with something and you want to make sure that nothing could
 possibly happen if you end up there. It certainly doesn't come up much, but it's
 very handy to have around when it does.
-=======
-Jump instructions are much more straightforward. `jr` resets the program counter
-with the address contained in whatever register is passed in.  This allows us to
-go to any place in memory we could possibly want.
-
-`j` and `jal` use the same format, while their semantics are slightly different.
-Both of them are an opcode followed by as many bits of address as possible,
-which happens to be 26.  They both use the same divide-by-four trick as before,
-so we actually end up with 28 bits in the end.  Instead of using these as an
-offset, the target is instead overlaid on the program counter.  This means the
-new address is the top 4 bits of the program counter after it has been
-incremented for the next instruction and then 28 bits of address.
-
-`j` is an unconditional jump, which means it always goes to its target. `jal` is
-unconditional as well, but it also saves the address of the next instruction
-into the `$ra` or Return Address register.  This allows the programmer to
-implement returning from function calls.
->>>>>>> 53e3a39a3dbf2b0c5315163926ac26feea073153
