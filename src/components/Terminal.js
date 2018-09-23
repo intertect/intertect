@@ -43,11 +43,6 @@ const solutionsToFunctions = {
   "lesson_1/part_2" : lesson_1_part_2.solution
 }
 
-// backup execute function in case student messes up the file
-function backupExecute(instruction, registers) {
-  return;
-}
-
 class Terminal extends Component {
   constructor(props) {
     super(props);
@@ -198,10 +193,12 @@ class Terminal extends Component {
         document.body.appendChild(script);
       }
 
-      // eslint-disable-next-line
       try {
+        // eslint-disable-next-line
         execute(assemblyInstruction, this.state.studentRegisters);
-      } catch(e) {}
+      } catch(e) {
+        // student renamed function -- no execution
+      }
 
       var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
       var solution = solutionsToFunctions[lessonPart];
@@ -372,38 +369,6 @@ class Terminal extends Component {
           <ReactMarkdown source={this.state.lessonContent} escapeHtml={false} />
         </SlidingPane>
 
-        <SlidingPane
-            isOpen={ this.state.glossaryItem != "" }
-            width='50%'
-            from="left">
-
-          <ReactMarkdown source={this.state.lessonGlossary}/>
-          <a href="addu">I'M ADDDU</a>
-        </SlidingPane>
-
-        <SlidingPane
-            isOpen={ this.state.showMenu }
-            width='50%'
-            from="left"
-            onRequestClose={ () => {
-              this.setState({ showMenu: false });
-            }}>
-            <ModalBody>
-              <div className="row">
-                <Button outline onClick={() => this.setState({
-                  selectedLesson : false,
-                  showMenu: false
-                })} style={{width:"100%"}}>
-                  Return to Title
-                </Button>
-
-                <h1>Return to a Previous Lesson</h1>
-                {lessonsCompleted}
-              </div>
-          </ModalBody>
-        </SlidingPane>
-
-
         <Navbar color="default-color-dark" dark>
           <NavbarBrand href="#">
             <Button outline onClick={() => this.setState({
@@ -456,7 +421,7 @@ class Terminal extends Component {
         <Modal isOpen={!this.state.lessonCorrect && this.state.lessonComplete}
           frame position="bottom">
 
-          <ModalHeader>Oops, let's try again!</ModalHeader>
+          <ModalHeader>Oops, let{"'"}s try again!</ModalHeader>
           <ModalBody className="text-center">
             <div className="row">
               <div className="col-sm-6">
@@ -469,7 +434,7 @@ class Terminal extends Component {
               <div className="col-sm-6">
                 <Button outline color="danger" style={{width:"100%"}}
                     onClick={() => {this.setState({ confirmRestart : true })}}>
-                  <i class="fa fa-warning" aria-hidden="true"></i> Restart Level
+                  <i className="fa fa-warning" aria-hidden="true"></i> Restart Level
                 </Button>
               </div>
             </div>
@@ -479,8 +444,8 @@ class Terminal extends Component {
         <Modal isOpen={this.state.confirmRestart} centered>
           <ModalHeader>Restart Level</ModalHeader>
           <ModalBody>
-            <b>Warning: </b> You will lose <b>all</b> your progress by hitting "Continue". Please make sure
-            this is what you want before clicking "Continue"
+            <b>Warning: </b> You will lose <b>all</b> your progress by hitting Continue. Please make sure
+            this is what you want before clicking Continue
           </ModalBody>
           <ModalFooter>
             <div className="row">
@@ -547,7 +512,7 @@ class Terminal extends Component {
                 <br />
                 <Button outline color="danger" style={{width:"100%"}}
                   onClick={() => {this.setState({ confirmRestart : true })}}>
-                  <i class="fa fa-warning" aria-hidden="true"></i> Restart Level
+                  <i className="fa fa-warning" aria-hidden="true"></i> Restart Level
                 </Button>
               </CardBody>
             </Card>
