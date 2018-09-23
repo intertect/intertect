@@ -33,6 +33,7 @@
     "mdbreact": "4.7.1",
     "object-assign": "4.1.1",
     "react": "16.4.2",
+    "react-cookie": "3.0.4",
     "react-dom": "16.4.2",
     "react-fade-in": "0.1.6",
     "react-markdown": "3.6.0",

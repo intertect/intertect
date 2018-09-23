@@ -16,6 +16,8 @@ import FadeIn from 'react-fade-in';
 import ReactMarkdown from 'react-markdown';
 import AceEditor from 'react-ace';
 import SlidingPane from 'react-sliding-pane';
+import { withCookies, Cookies  } from 'react-cookie';
+import { instanceOf } from 'prop-types';
 
 import 'brace/mode/javascript';
 import 'brace/theme/chrome';
@@ -50,8 +52,14 @@ const solutionsToFunctions = {
 };
 
 class Terminal extends Component {
+  static propTypes = {
+    cookies: instanceOf(Cookies).isRequired
+  };
+
   constructor(props) {
     super(props);
+    const { cookies } = props;
+    console.log(cookies)
 
     this.state = {
       selectedLesson: false,
@@ -66,18 +74,18 @@ class Terminal extends Component {
       showMenu: false,
       completedInstructions: false,
 
-      lesson: 1,
-      lessonPart: 1,
+      lesson: cookies.get('lesson') || 1,
+      lessonPart: cookies.get('lessonPart') || 1,
       lessonGlossary: "",
       glossaryItem: "",
       lessonContent: "",
       lessonTitle: "Starting Slowly",
-      resetCode: true,
+      resetCode: (cookies.get('studentProgram') || "") == "",
       loadLesson: true,
       lessonComplete: false,
       lessonCorrect: true,
 
-      studentProgram: "",
+      studentProgram: cookies.get('studentProgram') || "",
       assemblyProgram: [],
       memory: new Memory(),
 
@@ -96,6 +104,7 @@ class Terminal extends Component {
     this.onChange = this.onChange.bind(this);
     this.resetCode = this.resetCode.bind(this);
     this.loadLesson = this.loadLesson.bind(this);
+    this.saveProgram = this.saveProgram.bind(this);
   }
 
   handleSelect(evt) {
@@ -104,6 +113,13 @@ class Terminal extends Component {
 
   onChange(newValue) {
     this.setState({ studentProgram: newValue});
+  }
+
+  saveProgram() {
+    const { cookies } = this.props;
+    cookies.set('studentProgram', this.state.studentProgram, { path: '/' });
+    cookies.set('lesson', this.state.lesson, { path: '/' });
+    cookies.set('lessonPart', this.state.lessonPart, { path: '/' });
   }
 
   resetCode() {
@@ -515,10 +531,21 @@ class Terminal extends Component {
                   </DropdownMenu>
                 </Dropdown>
                 <br />
-                <Button outline color="danger" style={{width:"100%"}}
-                  onClick={() => {this.setState({ confirmRestart : true })}}>
-                  <i className="fa fa-warning" aria-hidden="true"></i> Restart Level
-                </Button>
+                <div className="row">
+                  <div className="col-sm-6">
+                    <Button outline style={{width:"100%"}}
+                        onClick={() => this.saveProgram()}>
+                      <i className="fa fa-save" aria-hidden="true"></i> Save Progress
+                    </Button>
+                  </div>
+
+                  <div className="col-sm-6">
+                    <Button outline color="danger" style={{width:"100%"}}
+                        onClick={() => {this.setState({ confirmRestart : true })}}>
+                      <i className="fa fa-warning" aria-hidden="true"></i> Restart Level
+                    </Button>
+                  </div>
+                </div>
               </CardBody>
             </Card>
           </div>
@@ -608,4 +635,4 @@ class Terminal extends Component {
   }
 }
 
-export default Terminal;
+export default withCookies(Terminal);
