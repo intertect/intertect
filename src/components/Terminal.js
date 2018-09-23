@@ -65,8 +65,8 @@ class Terminal extends Component {
       showMenu: false,
       completedInstructions: false,
 
-      lesson: localStorage.getItem('lesson') || 1,
-      lessonPart: localStorage.getItem('lessonPart') || 1,
+      lesson: parseInt(localStorage.getItem('lesson') || "1"),
+      lessonPart: parseInt(localStorage.getItem('lessonPart') || "1"),
       lessonGlossary: "",
       glossaryItem: "",
       lessonContent: "",
