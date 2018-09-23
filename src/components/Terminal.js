@@ -37,7 +37,11 @@ import 'font-awesome/css/font-awesome.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'mdbreact/dist/css/mdb.css';
 
-import {solution_part1} from '../references/lesson_1/part_1.js'
+import {solution_lesson_1_part_1} from '../references/lesson_1/part_1.js'
+
+const solutionsToFunctions = {
+  "lesson_1/part_1" : solution_lesson_1_part_1
+}
 
 const TransitionTerminal = posed.div({
   start: {
@@ -85,7 +89,6 @@ class Terminal extends Component {
       lessonTitle: "Starting Slowly",
       loadLesson: true,
 
-      referenceProgram: "",
       studentProgram: "",
       assemblyProgram: [],
       memory: new Memory(),
@@ -167,13 +170,6 @@ class Terminal extends Component {
       this.setState({ targetRegisters : targetRegisters });
     })
 
-    var referenceSolutionFile = `../references/lesson_${this.state.lesson}/part_${this.state.lessonPart}.js`;
-    fetch(referenceSolutionFile)
-    .then((r)  => r.text())
-    .then(text => {
-      this.setState({ referenceProgram : text });
-    })
-
     this.setState({ loadLesson : false });
   }
 
@@ -203,7 +199,10 @@ class Terminal extends Component {
         document.body.appendChild(script);
       }
       execute(assemblyInstruction, this.state.registers)
-      solution_part1(assemblyInstruction, this.state.referenceRegisters)
+
+      var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
+      var solution = solutionsToFunctions[lessonPart];
+      solution(assemblyInstruction, this.state.referenceRegisters)
 
       if (this.state.currentStep == (this.state.assemblyProgram.length - 2)) {
         this.setState({
