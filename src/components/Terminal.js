@@ -95,7 +95,7 @@ class Terminal extends Component {
       unviewedImplementExplanation: true,
       unviewedMemoryExplanation: true,
       showTest: false
-    }
+    };
 
     this.handleSelect = this.handleSelect.bind(this);
     this.onChange = this.onChange.bind(this);
@@ -117,7 +117,7 @@ class Terminal extends Component {
     .then((r)  => r.text())
     .then(text => {
       this.setState({ studentProgram : text });
-    })
+    });
 
     this.setState({ resetCode : false });
   }
@@ -136,21 +136,21 @@ class Terminal extends Component {
     .then((r)  => r.text())
     .then(text => {
       this.setState({ lessonContent : text });
-    })
+    });
 
     var lessonGlossaryFile = `../content/lesson_${this.state.lesson}/introduction.md`;
     fetch(lessonGlossaryFile)
     .then((r)  => r.text())
     .then(text => {
       this.setState({ lessonGlossary : text });
-    })
+    });
 
     var lessonDir = `../lesson_programs/lesson_${this.state.lesson}/part_${this.state.lessonPart}/`;
     fetch(lessonDir + "prog.s")
     .then((r)  => r.text())
     .then(text => {
       this.setState({ assemblyProgram : text.split("\n") });
-    })
+    });
 
     fetch(lessonDir + "init.txt")
     .then((r)  => r.text())
@@ -165,7 +165,7 @@ class Terminal extends Component {
         studentRegisters : initRegisters,
         referenceRegisters : referenceRegisters
       });
-    })
+    });
 
     fetch(lessonDir + "final.txt")
     .then((r)  => r.text())
@@ -173,7 +173,7 @@ class Terminal extends Component {
       targetRegisters = new Registers();
       targetRegisters.load(text);
       this.setState({ targetRegisters : targetRegisters });
-    })
+    });
 
     this.setState({ loadLesson : false });
   }
@@ -209,7 +209,7 @@ class Terminal extends Component {
 
       var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
       var solution = solutionsToFunctions[lessonPart];
-      solution(assemblyInstruction, this.state.referenceRegisters)
+      solution(assemblyInstruction, this.state.referenceRegisters);
 
       this.setState({
         lessonCorrect : this.state.studentRegisters.compareRegisters(this.state.referenceRegisters),
@@ -236,10 +236,10 @@ class Terminal extends Component {
       var color, tooltipContent;
       if (studentValue == referenceValue) {
         color = "#00C851";
-        tooltipContent = "Great job! This is correct."
+        tooltipContent = "Great job! This is correct.";
       } else {
         color = "#ff4444";
-        tooltipContent = `Sorry, try again! We expected: ${referenceValue}`
+        tooltipContent = `Sorry, try again! We expected: ${referenceValue}`;
       }
 
       registerTable.push(<tr style={{textAlign: 'center', background: color}} className="source-code">
@@ -310,9 +310,9 @@ class Terminal extends Component {
               <i className="fa fa-stop" aria-hidden="true"></i>Close Help
             </Button>
           </PopoverBody>
-        </Popover>
+        </Popover>;
     } else {
-      stepExplanation = <div></div>
+      stepExplanation = <div></div>;
     }
 
     var implementExplanation;
