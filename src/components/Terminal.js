@@ -222,16 +222,28 @@ class Terminal extends Component {
     for (var i = 0; i < this.state.studentRegisters.usedRegisters.length; i++) {
       var register = this.state.studentRegisters.usedRegisters[i];
 
-      var color;
-      if (this.state.studentRegisters.registers_[register] == this.state.referenceRegisters.registers_[register]) {
+      var studentValue = `0x${this.state.studentRegisters.read(register).toString(16).toUpperCase()}`;
+      var referenceValue = `0x${this.state.referenceRegisters.read(register).toString(16).toUpperCase()}`;
+
+      var color, tooltipContent;
+      if (studentValue == referenceValue) {
         color = "#00C851";
+        tooltipContent = "Great job! This is correct."
       } else {
         color = "#ff4444";
+        tooltipContent = `Sorry, try again! We expected: ${referenceValue}`
       }
 
       registerTable.push(<tr style={{textAlign: 'center', background: color}} className="source-code">
-        <td><b>{registerToNameMap[register]}</b></td>
-        <td><b>0x{this.state.studentRegisters.read(register).toString(16).toUpperCase()}</b></td>
+        <td>{registerToNameMap[register]}</td>
+        <td>
+          <Tooltip
+            placement="top"
+            component="a"
+            tooltipContent={tooltipContent}>
+              {studentValue}
+          </Tooltip>
+        </td>
       </tr>);
     }
 
@@ -381,7 +393,10 @@ class Terminal extends Component {
 
         <Navbar color="default-color-dark" dark>
           <NavbarBrand href="#">
-            <Button outline onClick={() => this.setState({ showMenu : true })}>
+            <Button outline onClick={() => this.setState({
+                  selectedLesson : false,
+                  showMenu: false
+                })}>
               Main Menu
             </Button>
           </NavbarBrand>
