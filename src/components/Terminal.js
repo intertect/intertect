@@ -35,13 +35,19 @@ import 'font-awesome/css/font-awesome.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'mdbreact/dist/css/mdb.css';
 
-var lesson_1_part_1 = require('../references/lesson_1/part_1.js')
-var lesson_1_part_2 = require('../references/lesson_1/part_2.js')
+var lesson_1_part_1 = require('../references/lesson_1/part_1.js');
+var lesson_1_part_2 = require('../references/lesson_1/part_2.js');
+var lesson_1_part_3 = require('../references/lesson_1/part_3.js');
+var lesson_1_part_4 = require('../references/lesson_1/part_4.js');
+var lesson_1_part_5 = require('../references/lesson_1/part_5.js');
 
 const solutionsToFunctions = {
   "lesson_1/part_1" : lesson_1_part_1.solution,
-  "lesson_1/part_2" : lesson_1_part_2.solution
-}
+  "lesson_1/part_2" : lesson_1_part_2.solution,
+  "lesson_1/part_3" : lesson_1_part_3.solution,
+  "lesson_1/part_4" : lesson_1_part_4.solution,
+  "lesson_1/part_5" : lesson_1_part_5.solution,
+};
 
 // backup execute function in case student messes up the file
 // function execute(instruction, registers) {

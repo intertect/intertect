@@ -1,8 +1,3 @@
-addi $t5, $t0, 1
-addi $t6, $t1, 5
-addi $t7, $t4, 1
-addi $t8, $t3, 1
-
 addiu $s0, $t0, 1
 addiu $s1, $t1, 5
 addiu $s2, $t4, 1
