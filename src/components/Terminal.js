@@ -16,8 +16,6 @@ import FadeIn from 'react-fade-in';
 import ReactMarkdown from 'react-markdown';
 import AceEditor from 'react-ace';
 import SlidingPane from 'react-sliding-pane';
-import { withCookies, Cookies  } from 'react-cookie';
-import { instanceOf } from 'prop-types';
 
 import 'brace/mode/javascript';
 import 'brace/theme/chrome';
@@ -52,15 +50,8 @@ const solutionsToFunctions = {
 };
 
 class Terminal extends Component {
-  static propTypes = {
-    cookies: instanceOf(Cookies).isRequired
-  };
-
   constructor(props) {
     super(props);
-    const { cookies } = props;
-    console.log(cookies)
-
     this.state = {
       selectedLesson: false,
       theme: "solarized_dark",
@@ -74,18 +65,18 @@ class Terminal extends Component {
       showMenu: false,
       completedInstructions: false,
 
-      lesson: cookies.get('lesson') || 1,
-      lessonPart: cookies.get('lessonPart') || 1,
+      lesson: localStorage.getItem('lesson') || 1,
+      lessonPart: localStorage.getItem('lessonPart') || 1,
       lessonGlossary: "",
       glossaryItem: "",
       lessonContent: "",
       lessonTitle: "Starting Slowly",
-      resetCode: (cookies.get('studentProgram') || "") == "",
+      resetCode: localStorage.getItem('studentProgram') == null,
       loadLesson: true,
       lessonComplete: false,
       lessonCorrect: true,
 
-      studentProgram: cookies.get('studentProgram') || "",
+      studentProgram: localStorage.getItem('studentProgram') || "",
       assemblyProgram: [],
       memory: new Memory(),
 
@@ -116,10 +107,9 @@ class Terminal extends Component {
   }
 
   saveProgram() {
-    const { cookies } = this.props;
-    cookies.set('studentProgram', this.state.studentProgram, { path: '/' });
-    cookies.set('lesson', this.state.lesson, { path: '/' });
-    cookies.set('lessonPart', this.state.lessonPart, { path: '/' });
+    localStorage.setItem('studentProgram', this.state.studentProgram);
+    localStorage.setItem('lesson', this.state.lesson);
+    localStorage.setItem('lessonPart', this.state.lessonPart);
   }
 
   resetCode() {
@@ -635,4 +625,4 @@ class Terminal extends Component {
   }
 }
 
-export default withCookies(Terminal);
+export default Terminal;
