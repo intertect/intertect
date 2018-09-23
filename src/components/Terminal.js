@@ -469,7 +469,7 @@ class Terminal extends Component {
               <div className="col-sm-6">
                 <Button outline color="danger" style={{width:"100%"}}
                     onClick={() => {this.setState({ confirmRestart : true })}}>
-                  <i className="fa fa-refresh" aria-hidden="true"></i> Restart Level
+                  <i class="fa fa-warning" aria-hidden="true"></i> Restart Level
                 </Button>
               </div>
             </div>
@@ -547,7 +547,7 @@ class Terminal extends Component {
                 <br />
                 <Button outline color="danger" style={{width:"100%"}}
                   onClick={() => {this.setState({ confirmRestart : true })}}>
-                  <i className="fa fa-refresh" aria-hidden="true"></i> Restart Level
+                  <i class="fa fa-warning" aria-hidden="true"></i> Restart Level
                 </Button>
               </CardBody>
             </Card>
