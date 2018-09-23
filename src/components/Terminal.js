@@ -44,9 +44,9 @@ const solutionsToFunctions = {
 }
 
 // backup execute function in case student messes up the file
-// function execute(instruction, registers) {
-//   return;
-// }
+function backupExecute(instruction, registers) {
+  return;
+}
 
 class Terminal extends Component {
   constructor(props) {
@@ -199,7 +199,9 @@ class Terminal extends Component {
       }
 
       // eslint-disable-next-line
-      execute(assemblyInstruction, this.state.studentRegisters);
+      try {
+        execute(assemblyInstruction, this.state.studentRegisters);
+      } catch(e) {}
 
       var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
       var solution = solutionsToFunctions[lessonPart];
@@ -477,7 +479,7 @@ class Terminal extends Component {
         <Modal isOpen={this.state.confirmRestart} centered>
           <ModalHeader>Restart Level</ModalHeader>
           <ModalBody>
-            <b>Warning: </b> You will lose <b>all</b> your progress by hitting "Reset". Please make sure
+            <b>Warning: </b> You will lose <b>all</b> your progress by hitting "Continue". Please make sure
             this is what you want before clicking "Continue"
           </ModalBody>
           <ModalFooter>
