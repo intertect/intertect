@@ -117,7 +117,7 @@ class Terminal extends Component {
     });
 
     var studentProgram, assemblyProgram, initRegisters, targetRegisters;
-    var starterCode = `../starter/lesson_${this.state.lesson}-${this.state.lessonPart}.js`;
+    var starterCode = `../starter/lesson_${this.state.lesson}/part_${this.state.lessonPart}.js`;
     fetch(starterCode)
     .then((r)  => r.text())
     .then(text => {

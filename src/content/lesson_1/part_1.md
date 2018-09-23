@@ -8,13 +8,23 @@ on. If you don't like the code, feel free to delete all of it and do
 this however you want. In future lessons, you'll be implementing
 functionality on your own (with some written instructions like this).
 
-## The `addu` instruction
+## Your Task
+
+In this lesson, you'll be implementing the `subu` instruction! We've
+included relevant descriptions for the instructions in this lesson below.
+
+### The `addu` instruction
 
 The `addu` instruction is one of the most straightforward instructions
 in this architecture. It takes its second two operands, adds them, and
 writes the result into the first operand.
 
-## What's in a name?
+### The `subu` instruction
+
+The `subu` similarly takes its second two operands, calculates the second 
+minus the third, and writes the result into the first operand.
+
+#### What's in a name?
 
 Why is this instruction called `addu` and not `add`? I'll let you in
 on a little secret: There *is* an `add` instruction, but we're not
@@ -27,6 +37,7 @@ kernel) if there is an overflow. Since we most certainly do not have a
 kernel running on this emulator, these two instructions are exactly
 the same, and we felt it pointless for you to implement the same
 functionality twice.
+
 
 <!--
 Assumptions:
