@@ -17,6 +17,8 @@ import ReactMarkdown from 'react-markdown';
 import AceEditor from 'react-ace';
 import SlidingPane from 'react-sliding-pane';
 
+import { Route, BrowserRouter, Link } from 'react-router-dom'
+
 import 'brace/mode/javascript';
 import 'brace/theme/chrome';
 import 'brace/theme/dracula';
@@ -54,12 +56,15 @@ class Terminal extends Component {
       currentStep: 0,
       targetStep: 0,
 
-      isPaneOpen: true,
+      isIntroPaneOpen: true,
+      isGlossaryPaneOpen: false,
       showMenu: false,
       completedInstructions: false,
 
       lesson: 1,
       lessonPart: 1,
+      lessonGlossary: "",
+      glossaryItem: "",
       lessonContent: "",
       lessonTitle: "Starting Slowly",
       loadLesson: true,
@@ -117,6 +122,13 @@ class Terminal extends Component {
       this.setState({ lessonContent : text });
     })
 
+    var lessonGlossaryFile = `../content/lesson_${this.state.lesson}/introduction.md`;
+    fetch(lessonGlossaryFile)
+    .then((r)  => r.text())
+    .then(text => {
+      this.setState({ lessonGlossary : text });
+    })
+
     var lessonDir = `../lesson_programs/lesson_${this.state.lesson}/part_${this.state.lessonPart}/`;
     fetch(lessonDir + "prog.s")
     .then((r)  => r.text())
@@ -151,6 +163,11 @@ class Terminal extends Component {
   }
 
   render() {
+    const searchParams = new URLSearchParams(location.search);
+    // this.setState({
+    //   glossaryItem : searchParams.get('instruction') || ''
+    // });
+
     if (this.state.loadLesson) {
       this.loadLesson();
     }
@@ -323,7 +340,7 @@ class Terminal extends Component {
         <Button outline onClick={() => this.setState({
                       lessonPart : (i-1),
                       loadLesson : true,
-                      isPaneOpen: true,
+                      isIntroPaneOpen: true,
                       showTest: false,
                       showMenu: false
                     })}>
@@ -333,15 +350,25 @@ class Terminal extends Component {
 
     return (this.state.selectedLesson ?
 
+    <BrowserRouter>
       <div>
         <SlidingPane
-            isOpen={ this.state.isPaneOpen }
+            isOpen={ this.state.isIntroPaneOpen }
             width='50%'
             onRequestClose={ () => {
-              this.setState({ isPaneOpen: false });
+              this.setState({ isIntroPaneOpen: false });
             }}>
 
-          <ReactMarkdown source={this.state.lessonContent} />
+          <ReactMarkdown source={this.state.lessonContent} escapeHtml={false} />
+        </SlidingPane>
+
+        <SlidingPane
+            isOpen={ this.state.glossaryItem != "" }
+            width='50%'
+            from="left">
+
+          <ReactMarkdown source={this.state.lessonGlossary}/>
+          <a href="addu">I'M ADDDU</a>
         </SlidingPane>
 
         <SlidingPane
@@ -379,7 +406,7 @@ class Terminal extends Component {
           <Collapse isOpen={true}>
             <NavbarNav>
               <NavItem>
-                <Button outline onClick={() => this.setState({ isPaneOpen : true })}>
+                <Button outline onClick={() => this.setState({ isIntroPaneOpen : true })}>
                   Intro Text
                 </Button>
               </NavItem>
@@ -399,7 +426,7 @@ class Terminal extends Component {
                     this.setState({
                       lessonPart : this.state.lessonPart + 1,
                       loadLesson : true,
-                      isPaneOpen: true,
+                      isIntroPaneOpen: true,
                       showTest: false
                     });
                   }}> Next Lesson
@@ -511,11 +538,17 @@ class Terminal extends Component {
                   </thead>
                   <tbody> { registerTable } </tbody>
                 </Table>
+
+                <div>
+                  <Link to="/tacos" >Test</Link>
+                  <Route path="/tacos" component={Tacos}/>
+                </div>
               </CardBody>
             </Card>
           </div>
         </div>
       </div>
+    </BrowserRouter>
 
       :
 
@@ -544,5 +577,11 @@ class Terminal extends Component {
     );
   }
 }
+
+const Tacos  = ({ match }) => (
+  // here's a nested div
+  <div>TACOS
+  </div>
+)
 
 export default Terminal;
