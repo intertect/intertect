@@ -49,6 +49,41 @@ export var nameToRegisterMap = {
   "$ra" : 0x1f
 };
 
+export var registerToNameMap = {
+  0x0  : "$zero",
+  0x1  : "$at"  ,
+  0x2  : "$v0"  ,
+  0x3  : "$v1"  ,
+  0x4  : "$a0"  ,
+  0x5  : "$a1"  ,
+  0x6  : "$a2"  ,
+  0x7  : "$a3"  ,
+  0x8  : "$t0"  ,
+  0x9  : "$t1"  ,
+  0xa  : "$t2"  ,
+  0xb  : "$t3"  ,
+  0xc  : "$t4"  ,
+  0xd  : "$t5"  ,
+  0xe  : "$t6"  ,
+  0xf  : "$t7"  ,
+  0x10 : "$s0"  ,
+  0x11 : "$s1"  ,
+  0x12 : "$s2"  ,
+  0x13 : "$s3"  ,
+  0x14 : "$s4"  ,
+  0x15 : "$s5"  ,
+  0x16 : "$s6"  ,
+  0x17 : "$s7"  ,
+  0x18 : "$t8"  ,
+  0x19 : "$t9"  ,
+  0x1a : "$k0"  ,
+  0x1b : "$k1"  ,
+  0x1c : "$gp"  ,
+  0x1d : "$sp"  ,
+  0x1e : "$fp"  ,
+  0x1f : "$ra"
+};
+
 export class Registers {
   // Registers as a map for simplicity. Definitely fast enough
   constructor() {
