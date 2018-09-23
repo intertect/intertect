@@ -246,9 +246,8 @@ class Terminal extends Component {
         <td>
           <Tooltip
             placement="top"
-            component="a"
             tooltipContent={tooltipContent}>
-              {studentValue}
+              <a style={{textDecoration: "underline", color: "white"}}>{studentValue}</a>
           </Tooltip>
         </td>
       </tr>);
