@@ -9,15 +9,13 @@ import React, {Component} from 'react';
 import { Button, Card, CardBody, CardTitle, CardHeader,
   Table, Dropdown, DropdownToggle, DropdownMenu, DropdownItem,
   Tooltip, Popover, PopoverHeader, PopoverBody,
-  Modal, ModalHeader, ModalBody,
+  Modal, ModalHeader, ModalBody, ModalFooter,
   Navbar, NavItem, NavbarNav, NavbarBrand, Collapse } from 'mdbreact';
 
 import FadeIn from 'react-fade-in';
 import ReactMarkdown from 'react-markdown';
 import AceEditor from 'react-ace';
 import SlidingPane from 'react-sliding-pane';
-
-import { Route, BrowserRouter, Link } from 'react-router-dom'
 
 import 'brace/mode/javascript';
 import 'brace/theme/chrome';
@@ -45,6 +43,11 @@ const solutionsToFunctions = {
   "lesson_1/part_2" : lesson_1_part_2.solution
 }
 
+// backup execute function in case student messes up the file
+// function execute(instruction, registers) {
+//   return;
+// }
+
 class Terminal extends Component {
   constructor(props) {
     super(props);
@@ -58,6 +61,7 @@ class Terminal extends Component {
 
       isIntroPaneOpen: true,
       isGlossaryPaneOpen: false,
+      confirmRestart: false,
       showMenu: false,
       completedInstructions: false,
 
@@ -355,7 +359,6 @@ class Terminal extends Component {
 
     return (this.state.selectedLesson ?
 
-    <BrowserRouter>
       <div>
         <SlidingPane
             isOpen={ this.state.isIntroPaneOpen }
@@ -455,7 +458,7 @@ class Terminal extends Component {
           <ModalBody className="text-center">
             <div className="row">
               <div className="col-sm-6">
-                <Button outline color="warning" style={{width:"100%"}}
+                <Button outline style={{width:"100%"}}
                     onClick={() => {this.setState({ loadLesson : true })}}>
                   <i className="fa fa-refresh" aria-hidden="true"></i> Reset
                 </Button>
@@ -463,12 +466,39 @@ class Terminal extends Component {
 
               <div className="col-sm-6">
                 <Button outline color="danger" style={{width:"100%"}}
-                    onClick={() => {this.setState({ loadLesson : true, resetCode: true })}}>
+                    onClick={() => {this.setState({ confirmRestart : true })}}>
                   <i className="fa fa-refresh" aria-hidden="true"></i> Restart Level
                 </Button>
               </div>
             </div>
           </ModalBody>
+        </Modal>
+
+        <Modal isOpen={this.state.confirmRestart} centered>
+          <ModalHeader>Restart Level</ModalHeader>
+          <ModalBody>
+            <b>Warning: </b> You will lose <b>all</b> your progress by hitting "Reset". Please make sure
+            this is what you want before clicking "Continue"
+          </ModalBody>
+          <ModalFooter>
+            <div className="row">
+              <div className="col-sm-6">
+                <Button outline onClick={() => this.setState({confirmRestart : false})} style={{width:"100%"}}>
+                  Close
+                </Button>
+              </div>
+
+              <div className="col-sm-6">
+                <Button outline color="danger" style={{width:"100%"}}
+                  onClick={() => {this.setState({
+                    loadLesson : true,
+                    resetCode: true,
+                    confirmRestart : false })}}>
+                  Continue
+                </Button>
+              </div>
+            </div>
+          </ModalFooter>
         </Modal>
 
         <div className="row" >
@@ -481,11 +511,6 @@ class Terminal extends Component {
                 </CardTitle>
               </CardHeader>
               <CardBody>
-                <Button outline color="danger" style={{width:"100%"}}
-                  onClick={() => {this.setState({ loadLesson : true, resetCode: true })}}>
-                <i className="fa fa-refresh" aria-hidden="true"></i> Restart Level
-                </Button>
-                <br />
                 <AceEditor
                   mode="javascript"
                   theme={this.state.theme}
@@ -517,6 +542,11 @@ class Terminal extends Component {
                     <DropdownItem onClick={() => {this.setState({ theme : "twilight" })}} eventKey="twilight" className={this.state.theme == "twilight" ? "active" : "inactive"}>twilight</DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
+                <br />
+                <Button outline color="danger" style={{width:"100%"}}
+                  onClick={() => {this.setState({ confirmRestart : true })}}>
+                  <i className="fa fa-refresh" aria-hidden="true"></i> Restart Level
+                </Button>
               </CardBody>
             </Card>
           </div>
@@ -572,17 +602,11 @@ class Terminal extends Component {
                   </thead>
                   <tbody> { registerTable } </tbody>
                 </Table>
-
-                <div>
-                  <Link to="/tacos" >Test</Link>
-                  <Route path="/tacos" component={Tacos}/>
-                </div>
               </CardBody>
             </Card>
           </div>
         </div>
       </div>
-    </BrowserRouter>
 
       :
 
@@ -611,11 +635,5 @@ class Terminal extends Component {
     );
   }
 }
-
-const Tacos  = ({ match }) => (
-  // here's a nested div
-  <div>TACOS
-  </div>
-)
 
 export default Terminal;
