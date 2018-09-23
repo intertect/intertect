@@ -408,7 +408,7 @@ class Terminal extends Component {
 
               <div className="col-sm-6">
                 <Button outline color="danger" onClick={() => this.setState({ loadLesson : true })} style={{width:"100%"}}>
-                  Redo Lesson
+                  I Want To Stay Here
                 </Button>
               </div>
             </div>
