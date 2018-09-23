@@ -67,6 +67,7 @@ class Terminal extends Component {
       glossaryItem: "",
       lessonContent: "",
       lessonTitle: "Starting Slowly",
+      resetCode: true,
       loadLesson: true,
       lessonComplete: false,
       lessonCorrect: true,
@@ -88,6 +89,7 @@ class Terminal extends Component {
 
     this.handleSelect = this.handleSelect.bind(this);
     this.onChange = this.onChange.bind(this);
+    this.resetCode = this.resetCode.bind(this);
     this.loadLesson = this.loadLesson.bind(this);
   }
 
@@ -99,6 +101,17 @@ class Terminal extends Component {
     this.setState({ studentProgram: newValue});
   }
 
+  resetCode() {
+    var starterCode = `../starter/lesson_${this.state.lesson}/part_${this.state.lessonPart}.js`;
+    fetch(starterCode)
+    .then((r)  => r.text())
+    .then(text => {
+      this.setState({ studentProgram : text });
+    })
+
+    this.setState({ resetCode : false });
+  }
+
   loadLesson() {
     this.setState({
       lessonComplete: false,
@@ -108,13 +121,6 @@ class Terminal extends Component {
     });
 
     var initRegisters, referenceRegisters, targetRegisters;
-    var starterCode = `../starter/lesson_${this.state.lesson}/part_${this.state.lessonPart}.js`;
-    fetch(starterCode)
-    .then((r)  => r.text())
-    .then(text => {
-      this.setState({ studentProgram : text });
-    })
-
     var lessonContentFile = `../content/lesson_${this.state.lesson}/part_${this.state.lessonPart}.md`;
     fetch(lessonContentFile)
     .then((r)  => r.text())
@@ -163,13 +169,12 @@ class Terminal extends Component {
   }
 
   render() {
-    const searchParams = new URLSearchParams(location.search);
-    // this.setState({
-    //   glossaryItem : searchParams.get('instruction') || ''
-    // });
-
     if (this.state.loadLesson) {
       this.loadLesson();
+    }
+
+    if (this.state.resetCode) {
+      this.resetCode();
     }
 
     if (this.state.currentStep != this.state.targetStep) {
@@ -426,6 +431,7 @@ class Terminal extends Component {
                     this.setState({
                       lessonPart : this.state.lessonPart + 1,
                       loadLesson : true,
+                      resetCode : true,
                       isIntroPaneOpen: true,
                       showTest: false
                     });
@@ -442,6 +448,29 @@ class Terminal extends Component {
           </ModalBody>
         </Modal>
 
+        <Modal isOpen={!this.state.lessonCorrect && this.state.lessonComplete}
+          frame position="bottom">
+
+          <ModalHeader>Oops, let's try again!</ModalHeader>
+          <ModalBody className="text-center">
+            <div className="row">
+              <div className="col-sm-6">
+                <Button outline color="warning" style={{width:"100%"}}
+                    onClick={() => {this.setState({ loadLesson : true })}}>
+                  <i className="fa fa-refresh" aria-hidden="true"></i> Reset
+                </Button>
+              </div>
+
+              <div className="col-sm-6">
+                <Button outline color="danger" style={{width:"100%"}}
+                    onClick={() => {this.setState({ loadLesson : true, resetCode: true })}}>
+                  <i className="fa fa-refresh" aria-hidden="true"></i> Restart Level
+                </Button>
+              </div>
+            </div>
+          </ModalBody>
+        </Modal>
+
         <div className="row" >
           <div className="col-sm-6" style={{display: "flex"}}>
             <Card style={{ marginTop: '1rem', width:"100%"}} className="text-center">
@@ -452,6 +481,11 @@ class Terminal extends Component {
                 </CardTitle>
               </CardHeader>
               <CardBody>
+                <Button outline color="danger" style={{width:"100%"}}
+                  onClick={() => {this.setState({ loadLesson : true, resetCode: true })}}>
+                <i className="fa fa-refresh" aria-hidden="true"></i> Restart Level
+                </Button>
+                <br />
                 <AceEditor
                   mode="javascript"
                   theme={this.state.theme}
@@ -501,19 +535,19 @@ class Terminal extends Component {
                     <ul className="shell-body" style={{width:"100%"}}>{ assemblyList }</ul>
                   </div>
                   <div className="col-sm-12">
-                    <Button outline style={{width:"100%"}}
+                    <Button outline color="success" style={{width:"100%"}}
                       onClick={() => this.setState({ targetStep : this.state.assemblyProgram.length - 1 })}>
                         <i className="fa fa-play" aria-hidden="true"></i> Run
                     </Button>
                   </div>
                   <div className="col-sm-12">
-                    <Button outline style={{width:"100%"}}
+                    <Button outline color="default" style={{width:"100%"}}
                       onClick={() => this.setState({ targetStep : this.state.targetStep + 1 })}>
                         <i className="fa fa-forward" aria-hidden="true"></i> Step
                     </Button>
                   </div>
                   <div className="col-sm-12">
-                    <Button outline style={{width:"100%"}}
+                    <Button outline color="warning" style={{width:"100%"}}
                       onClick={() => {this.setState({ loadLesson : true })}}>
                       <i className="fa fa-refresh" aria-hidden="true"></i> Reset
                     </Button>
