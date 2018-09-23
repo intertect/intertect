@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 compiles unjoined lessons into final lessons
 """

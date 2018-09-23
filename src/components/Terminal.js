@@ -35,13 +35,19 @@ import 'font-awesome/css/font-awesome.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'mdbreact/dist/css/mdb.css';
 
-var lesson_1_part_1 = require('../references/lesson_1/part_1.js')
-var lesson_1_part_2 = require('../references/lesson_1/part_2.js')
+var lesson_1_part_1 = require('../references/lesson_1/part_1.js');
+var lesson_1_part_2 = require('../references/lesson_1/part_2.js');
+var lesson_1_part_3 = require('../references/lesson_1/part_3.js');
+var lesson_1_part_4 = require('../references/lesson_1/part_4.js');
+var lesson_1_part_5 = require('../references/lesson_1/part_5.js');
 
 const solutionsToFunctions = {
   "lesson_1/part_1" : lesson_1_part_1.solution,
-  "lesson_1/part_2" : lesson_1_part_2.solution
-}
+  "lesson_1/part_2" : lesson_1_part_2.solution,
+  "lesson_1/part_3" : lesson_1_part_3.solution,
+  "lesson_1/part_4" : lesson_1_part_4.solution,
+  "lesson_1/part_5" : lesson_1_part_5.solution,
+};
 
 class Terminal extends Component {
   constructor(props) {
@@ -84,7 +90,7 @@ class Terminal extends Component {
       unviewedImplementExplanation: true,
       unviewedMemoryExplanation: true,
       showTest: false
-    }
+    };
 
     this.handleSelect = this.handleSelect.bind(this);
     this.onChange = this.onChange.bind(this);
@@ -106,7 +112,7 @@ class Terminal extends Component {
     .then((r)  => r.text())
     .then(text => {
       this.setState({ studentProgram : text });
-    })
+    });
 
     this.setState({ resetCode : false });
   }
@@ -125,21 +131,21 @@ class Terminal extends Component {
     .then((r)  => r.text())
     .then(text => {
       this.setState({ lessonContent : text });
-    })
+    });
 
     var lessonGlossaryFile = `../content/lesson_${this.state.lesson}/introduction.md`;
     fetch(lessonGlossaryFile)
     .then((r)  => r.text())
     .then(text => {
       this.setState({ lessonGlossary : text });
-    })
+    });
 
     var lessonDir = `../lesson_programs/lesson_${this.state.lesson}/part_${this.state.lessonPart}/`;
     fetch(lessonDir + "prog.s")
     .then((r)  => r.text())
     .then(text => {
       this.setState({ assemblyProgram : text.split("\n") });
-    })
+    });
 
     fetch(lessonDir + "init.txt")
     .then((r)  => r.text())
@@ -154,7 +160,7 @@ class Terminal extends Component {
         studentRegisters : initRegisters,
         referenceRegisters : referenceRegisters
       });
-    })
+    });
 
     fetch(lessonDir + "final.txt")
     .then((r)  => r.text())
@@ -162,7 +168,7 @@ class Terminal extends Component {
       targetRegisters = new Registers();
       targetRegisters.load(text);
       this.setState({ targetRegisters : targetRegisters });
-    })
+    });
 
     this.setState({ loadLesson : false });
   }
@@ -202,7 +208,7 @@ class Terminal extends Component {
 
       var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
       var solution = solutionsToFunctions[lessonPart];
-      solution(assemblyInstruction, this.state.referenceRegisters)
+      solution(assemblyInstruction, this.state.referenceRegisters);
 
       this.setState({
         lessonCorrect : this.state.studentRegisters.compareRegisters(this.state.referenceRegisters),
@@ -229,10 +235,10 @@ class Terminal extends Component {
       var color, tooltipContent;
       if (studentValue == referenceValue) {
         color = "#00C851";
-        tooltipContent = "Great job! This is correct."
+        tooltipContent = "Great job! This is correct.";
       } else {
         color = "#ff4444";
-        tooltipContent = `Sorry, try again! We expected: ${referenceValue}`
+        tooltipContent = `Sorry, try again! We expected: ${referenceValue}`;
       }
 
       registerTable.push(<tr style={{textAlign: 'center', background: color}} className="source-code">
@@ -303,9 +309,9 @@ class Terminal extends Component {
               <i className="fa fa-stop" aria-hidden="true"></i>Close Help
             </Button>
           </PopoverBody>
-        </Popover>
+        </Popover>;
     } else {
-      stepExplanation = <div></div>
+      stepExplanation = <div></div>;
     }
 
     var implementExplanation;
