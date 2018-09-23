@@ -37,6 +37,8 @@ import 'font-awesome/css/font-awesome.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'mdbreact/dist/css/mdb.css';
 
+import {solution_part1} from '../references/lesson_1/part_1.js'
+
 const TransitionTerminal = posed.div({
   start: {
     x: "50%"
@@ -83,10 +85,12 @@ class Terminal extends Component {
       lessonTitle: "Starting Slowly",
       loadLesson: true,
 
+      referenceProgram: "",
       studentProgram: "",
       assemblyProgram: [],
       memory: new Memory(),
       registers: new Registers(),
+      referenceRegisters: new Registers(),
       targetRegisters: new Registers(),
 
       unviewedAssemblyExplanation: true,
@@ -99,6 +103,7 @@ class Terminal extends Component {
     this.handleSelect = this.handleSelect.bind(this);
     this.onChange = this.onChange.bind(this);
     this.loadLesson = this.loadLesson.bind(this);
+    this.runScript =  this.runScript.bind(this);
   }
 
   handleSelect(evt) {
@@ -116,7 +121,7 @@ class Terminal extends Component {
       targetStep : 0
     });
 
-    var studentProgram, assemblyProgram, initRegisters, targetRegisters;
+    var studentProgram, assemblyProgram, initRegisters, referenceRegisters, targetRegisters;
     var starterCode = `../starter/lesson_${this.state.lesson}/part_${this.state.lessonPart}.js`;
     fetch(starterCode)
     .then((r)  => r.text())
@@ -132,22 +137,29 @@ class Terminal extends Component {
       this.setState({ lessonContent : text });
     })
 
-    var lessonDir = `../lesson_programs/lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
-    fetch(lessonDir + "/prog.s")
+    var lessonDir = `../lesson_programs/lesson_${this.state.lesson}/part_${this.state.lessonPart}/`;
+    fetch(lessonDir + "prog.s")
     .then((r)  => r.text())
     .then(text => {
       this.setState({ assemblyProgram : text.split("\n") });
     })
 
-    fetch(lessonDir + "/init.txt")
+    fetch(lessonDir + "init.txt")
     .then((r)  => r.text())
     .then(text => {
       initRegisters = new Registers();
       initRegisters.load(text);
-      this.setState({ registers : initRegisters });
+
+      referenceRegisters = new Registers();
+      referenceRegisters.load(text);
+
+      this.setState({
+        registers : initRegisters,
+        referenceRegisters : referenceRegisters
+      });
     })
 
-    fetch(lessonDir + "/final.txt")
+    fetch(lessonDir + "final.txt")
     .then((r)  => r.text())
     .then(text => {
       targetRegisters = new Registers();
@@ -155,7 +167,18 @@ class Terminal extends Component {
       this.setState({ targetRegisters : targetRegisters });
     })
 
+    var referenceSolutionFile = `../references/lesson_${this.state.lesson}/part_${this.state.lessonPart}.js`;
+    fetch(referenceSolutionFile)
+    .then((r)  => r.text())
+    .then(text => {
+      this.setState({ referenceProgram : text });
+    })
+
     this.setState({ loadLesson : false });
+  }
+
+  runScript(scriptText, registers) {
+
   }
 
   render() {
@@ -168,6 +191,9 @@ class Terminal extends Component {
         currentStep : this.state.currentStep + 1
       });
 
+      var assemblyInstruction = this.state.assemblyProgram[this.state.currentStep]
+        .replace(/,/g,"")
+        .split(" ");
       var script = document.createElement('script');
       try {
         script.appendChild(document.createTextNode(this.state.studentProgram));
@@ -176,15 +202,12 @@ class Terminal extends Component {
         script.text = this.state.studentProgram;
         document.body.appendChild(script);
       }
-
-      execute(this.state.assemblyProgram[this.state.currentStep]
-        .replace(/,/g,"")
-        .split(" "),
-        this.state.registers)
+      execute(assemblyInstruction, this.state.registers)
+      solution_part1(assemblyInstruction, this.state.referenceRegisters)
 
       if (this.state.currentStep == (this.state.assemblyProgram.length - 2)) {
         this.setState({
-          lessonCorrect : this.state.registers.compareRegisters(this.state.targetRegisters)
+          lessonCorrect : this.state.registers.compareRegisters(this.state.referenceRegisters)
         });
       }
     }

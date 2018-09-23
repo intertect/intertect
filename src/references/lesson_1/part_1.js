@@ -2,7 +2,7 @@ function ToUint32(x) {
   return parseInt(x) % Math.pow(2, 32);
 }
 
-function execute(instruction, registers) {
+export function solution_part1(instruction, registers) {
   switch(instruction[0]) {
     case 'addu':
       var rd = nameToRegisterMap[instruction[1]];
