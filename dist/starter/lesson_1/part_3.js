@@ -2,23 +2,46 @@ function ToUint32(x) {
   return parseInt(x) % Math.pow(2, 32);
 }
 
-export function solution(instruction, registers) {
+function execute(instruction, registers) {
   var rd, rs, rt;
   var result;
   switch(instruction[0]) {
-    case 'addu':
+    case 'add':
       rd = nameToRegisterMap[instruction[1]];
       rs = nameToRegisterMap[instruction[2]];
       rt = nameToRegisterMap[instruction[3]];
       result = ToUint32(registers.read(rs) + registers.read(rt));
       registers.write(rd, result);
       break;
+    case 'addu':
+      // TODO
+      break;
+    case 'sub':
+      // TODO
+      break;
     case 'subu':
-      rd = nameToRegisterMap[instruction[1]];
-      rs = nameToRegisterMap[instruction[2]];
-      rt = nameToRegisterMap[instruction[3]];
-      result = ToUint32(registers.read(rs) - registers.read(rt));
-      registers.write(rd, result);
+      // TODO
+      break;
+    case 'and':
+      // TODO
+      break;
+    case 'or':
+      // TODO
+      break;
+    case 'nor':
+      // TODO
+      break;
+    case 'xor':
+      // TODO
+      break;
+    case 'sll':
+      // TODO
+      break;
+    case 'srl':
+      // TODO
+      break;
+    case 'sra':
+      // TODO
       break;
     default:
       // invalid/unsupported instruction passed in
@@ -60,3 +83,4 @@ var nameToRegisterMap = {
   "$fp" : 0x1e,
   "$ra" : 0x1f
 };
+

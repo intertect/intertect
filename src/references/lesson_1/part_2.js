@@ -2,7 +2,7 @@ function ToUint32(x) {
   return parseInt(x) % Math.pow(2, 32);
 }
 
-export function solution_lesson_1_part_2(instruction, registers) {
+export function solution(instruction, registers) {
   var rd, rs, rt;
   var result;
   switch(instruction[0]) {

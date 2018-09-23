@@ -35,12 +35,12 @@ import 'font-awesome/css/font-awesome.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'mdbreact/dist/css/mdb.css';
 
-import {solution_lesson_1_part_1} from '../references/lesson_1/part_1.js'
-import {solution_lesson_1_part_2} from '../references/lesson_1/part_2.js'
+var lesson_1_part_1 = require('../references/lesson_1/part_1.js')
+var lesson_1_part_2 = require('../references/lesson_1/part_2.js')
 
 const solutionsToFunctions = {
-  "lesson_1/part_1" : solution_lesson_1_part_1,
-  "lesson_1/part_2" : solution_lesson_1_part_2
+  "lesson_1/part_1" : lesson_1_part_1.solution,
+  "lesson_1/part_2" : lesson_1_part_2.solution
 }
 
 class Terminal extends Component {
@@ -74,7 +74,7 @@ class Terminal extends Component {
       referenceRegisters: new Registers(),
       targetRegisters: new Registers(),
 
-      unviewedAssemblyExplanation: true,
+      // unviewedAssemblyExplanation: true,
       unviewedStepExplanation: true,
       unviewedImplementExplanation: true,
       unviewedMemoryExplanation: true,
@@ -244,13 +244,13 @@ class Terminal extends Component {
         <div></div>
       </div>;
 
-    var assemblyExplanation;
+    /* var assemblyExplanation;
     if (this.state.unviewedAssemblyExplanation) {
       assemblyExplanation =
         <Popover placement="right" component="a" popoverBody={pulsatingInterest}>
           <PopoverHeader></PopoverHeader>
           <PopoverBody>This is the assembly code you will be testing your program with! Each lesson
-          will have a different assembly file targetting the instructions you&aposll be implementing in
+          will have a different assembly file targetting the instructions you{"'"} ll be implementing in
           that lesson.
             <Button outline style={{width:"100%"}}
               onClick={() => this.setState({ unviewedAssemblyExplanation : false })}>
@@ -260,14 +260,14 @@ class Terminal extends Component {
         </Popover>
     } else {
       assemblyExplanation = <div></div>
-    }
+    } */
 
     var stepExplanation;
     if (this.state.unviewedStepExplanation) {
       stepExplanation =
         <Popover placement="right" component="a" popoverBody={pulsatingInterest}>
           <PopoverHeader></PopoverHeader>
-          <PopoverBody>This is how you&aposll be running your code!
+          <PopoverBody>This is how you{"'"}ll be running your code!
             <ul>
               <li><b>Run</b>: Execute the entire assembly program with your implementation</li>
               <li><b>Step</b>: Execute just the highlighted line with your implementation</li>
@@ -288,7 +288,7 @@ class Terminal extends Component {
       implementExplanation =
         <Popover placement="right" component="a" popoverBody={pulsatingInterest}>
           <PopoverHeader></PopoverHeader>
-          <PopoverBody>This is where you&aposll be implementing your code for the lesson! We&aposve provided
+          <PopoverBody>This is where you{"'"}ll be implementing your code for the lesson! We{"'"}ve provided
           you with a template to get started.
             <Button outline style={{width:"100%"}}
               onClick={() => this.setState({ unviewedImplementExplanation : false })}>
@@ -305,8 +305,8 @@ class Terminal extends Component {
       memoryExplanation =
         <Popover placement="right" component="a" popoverBody={pulsatingInterest}>
           <PopoverHeader></PopoverHeader>
-          <PopoverBody>This is debug corner! You&aposll see all the values of registers and memory in this
-          area, which you can use for debugging what&aposs is going on when you run your program.
+          <PopoverBody>This is debug corner! You{"'"}ll see all the values of registers and memory in this
+          area, which you can use for debugging what{"'"}s is going on when you run your program.
             <Button outline style={{width:"100%"}}
               onClick={() => this.setState({ unviewedMemoryExplanation : false })}>
               <i className="fa fa-stop" aria-hidden="true"></i> Close Help
@@ -469,7 +469,6 @@ class Terminal extends Component {
                 </CardTitle>
               </CardHeader>
               <CardBody>
-                {assemblyExplanation}
                 <div className="col-sm-12">
                   <div className="col-sm-12">
                     <ul className="shell-body" style={{width:"100%"}}>{ assemblyList }</ul>
