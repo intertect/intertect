@@ -1,5 +1,4 @@
 # Part 5: Jump Around!
-
 Now it's time to implement control flow.  With this, your emulator will be
 Turing Complete.  Congratulations! You will have a processor in the JavaScript
 virtual machine, in your browser, on you Operating System, running on a real
@@ -25,24 +24,20 @@ branch instruction.  Once the bits have been shifted, they are also sign
 extended and then added to the address of the next instruction.
 
 ## Jump Instruction
-<<<<<<< HEAD
 
-Jump instructions are much more straightforward. `jr` resets the
-program counter with the address contained in whatever register is
-passed in. This allows us to go to any place in memory we could
-possibly want.
+Jump instructions are much more straightforward. `jr` resets the program counter
+with the address contained in whatever register is passed in.  This allows us to
+go to any place in memory we could possibly want.
 
-`j` and `jal` use the same format, while their semantics are slightly
-different. Both of them are an opcode followed by as many bits of
-address as possible, which happens to be 26. They both use the same
-divide-by-four trick as before, so we actually end up with 28 bits in
-the end. Instead of using these as an offset, the target is instead
-overlaid on the program counter. This means the new address is the top
-4 bits of the program counter <!-- TODO: Must check if program counter
-for current or next instruction --> and then 28 bits of address.
+`j` and `jal` use the same format, while their semantics are slightly different.
+Both of them are an opcode followed by as many bits of address as possible,
+which happens to be 26.  They both use the same divide-by-four trick as before,
+so we actually end up with 28 bits in the end.  Instead of using these as an
+offset, the target is instead overlaid on the program counter.  This means the
+new address is the top 4 bits of the program counter (for the next instruction)
+and then 28 bits of address.
 
-`j` is an unconditional jump, which means it always goes to its
-target. `jal` is unconditional as well, but it also saves the address
-of the next instruction into the `$ra` or Return Address
-register. This allows the programmer to implement returning from
-function calls.
+`j` is an unconditional jump, which means it always goes to its target. `jal` is
+unconditional as well, but it also saves the address of the next instruction
+into the `$ra` or Return Address register.  This allows the programmer to
+implement returning from function calls.
