@@ -7,8 +7,8 @@
 
 import React, {Component} from 'react';
 import { Button, Card, CardBody, CardTitle, CardHeader,
-  Table, Dropdown, DropdownToggle, DropdownMenu, DropdownItem,
-  Tooltip, Popover, PopoverHeader, PopoverBody, Badge,
+  Dropdown, DropdownToggle, DropdownMenu, DropdownItem,
+  Popover, PopoverHeader, PopoverBody,
   Modal, ModalHeader, ModalBody, ModalFooter, ListGroup, ListGroupItem,
   Navbar, NavItem, NavbarNav, NavbarBrand, Collapse } from 'mdbreact';
 
@@ -27,7 +27,7 @@ import 'brace/theme/solarized_dark';
 import 'brace/theme/solarized_light';
 import 'brace/theme/twilight';
 
-import {Memory, Registers, nameToRegisterMap, registerToNameMap} from '../utils/util.js';
+import {Memory, Registers} from '../utils/util.js';
 import MemoryTable from './MemoryTable.js'
 import RegistersTable from './RegistersTable.js'
 
@@ -132,8 +132,6 @@ class Terminal extends Component {
   }
 
   loadLesson() {
-    console.log(this.state.completedParts)
-    console.log(this.state.lessonPart)
     if (this.state.lessonPart > this.state.completedParts) {
       this.setState({ completedParts : this.state.lessonPart })
     }

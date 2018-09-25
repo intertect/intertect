@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { Card, CardHeader, CardTitle, CardBody, Button, Tooltip,
-  Popover, PopoverHeader, PopoverBody, Table  } from 'mdbreact';
+import { Card, CardHeader, CardTitle, CardBody, Table  } from 'mdbreact';
+import PropTypes from 'prop-types';
 
-import {nameToRegisterMap, registerToNameMap} from '../utils/util.js';
+import {Memory} from '../utils/util.js';
 
 import '../styles/intro.css';
 
@@ -46,4 +46,9 @@ class MemoryTable extends Component {
     );
   }
 }
+
+MemoryTable.propTypes = {
+   memory: PropTypes.instanceOf(Memory)
+}
+
 export default MemoryTable;
