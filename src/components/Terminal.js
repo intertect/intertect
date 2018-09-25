@@ -8,8 +8,8 @@
 import React, {Component} from 'react';
 import { Button, Card, CardBody, CardTitle, CardHeader,
   Table, Dropdown, DropdownToggle, DropdownMenu, DropdownItem,
-  Tooltip, Popover, PopoverHeader, PopoverBody,
-  Modal, ModalHeader, ModalBody, ModalFooter,
+  Tooltip, Popover, PopoverHeader, PopoverBody, Badge,
+  Modal, ModalHeader, ModalBody, ModalFooter, ListGroup, ListGroupItem,
   Navbar, NavItem, NavbarNav, NavbarBrand, Collapse } from 'mdbreact';
 
 import FadeIn from 'react-fade-in';
@@ -28,6 +28,7 @@ import 'brace/theme/solarized_light';
 import 'brace/theme/twilight';
 
 import {Memory, Registers, nameToRegisterMap, registerToNameMap} from '../utils/util.js';
+import MemoryTable from './MemoryTable.js'
 
 import '../styles/intro.css';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
@@ -61,6 +62,7 @@ class Terminal extends Component {
 
       isIntroPaneOpen: true,
       isGlossaryPaneOpen: false,
+      revealCompletedLevels: false,
       confirmRestart: false,
       showMenu: false,
       completedInstructions: false,
@@ -75,6 +77,9 @@ class Terminal extends Component {
       loadLesson: true,
       lessonComplete: false,
       lessonCorrect: true,
+
+      completedLessons: 1,
+      completedParts: 1,
 
       studentProgram: localStorage.getItem('studentProgram') || "",
       assemblyProgram: [],
@@ -96,6 +101,7 @@ class Terminal extends Component {
     this.resetCode = this.resetCode.bind(this);
     this.loadLesson = this.loadLesson.bind(this);
     this.saveProgram = this.saveProgram.bind(this);
+    console.log(this.state.lessonPart)
   }
 
   handleSelect(evt) {
@@ -124,6 +130,16 @@ class Terminal extends Component {
   }
 
   loadLesson() {
+    console.log(this.state.lessonPart)
+
+    if (this.state.lessonPart > this.state.completedParts) {
+      this.setState({ completedParts : this.state.lessonPart })
+    }
+
+    if (this.state.lesson > this.state.completedLessons) {
+      this.setState({ completedLessons : this.state.lesson })
+    }
+
     this.setState({
       lessonComplete: false,
       lessonCorrect: true,
@@ -230,48 +246,6 @@ class Terminal extends Component {
         </span>);
     }
 
-    var registerTable = [];
-    var register;
-    for (i = 0; i < this.state.studentRegisters.usedRegisters.length; i++) {
-      register = this.state.studentRegisters.usedRegisters[i];
-
-      var studentValue = `0x${this.state.studentRegisters.read(register).toString(16).toUpperCase()}`;
-      var referenceValue = `0x${this.state.referenceRegisters.read(register).toString(16).toUpperCase()}`;
-
-      var color, tooltipContent;
-      if (studentValue == referenceValue) {
-        color = "#00C851";
-        tooltipContent = "Great job! This is correct.";
-      } else {
-        color = "#ff4444";
-        tooltipContent = `Sorry, try again! We expected: ${referenceValue}`;
-      }
-
-      registerTable.push(<tr style={{textAlign: 'center', background: color}} className="source-code">
-        <td>{registerToNameMap[register]}</td>
-        <td>
-          <Tooltip
-            placement="top"
-            tooltipContent={tooltipContent}>
-              <a style={{textDecoration: "underline", color: "white"}}>{studentValue}</a>
-          </Tooltip>
-        </td>
-      </tr>);
-    }
-
-    var registers = Object.keys(nameToRegisterMap);
-    for (i = 0; i < registers.length; i++) {
-      register = registers[i];
-      if (this.state.studentRegisters.usedRegisters.indexOf(register) != -1) {
-        continue;
-      }
-
-      registerTable.push(<tr style={{textAlign: 'center'}} className="source-code">
-          <td>{register}</td>
-          <td>0x{this.state.studentRegisters.read(nameToRegisterMap[register]).toString(16).toUpperCase()}</td>
-        </tr>);
-    }
-
     var pulsatingInterest =
       <div className="pulsating-dot__ripple">
         <span></span>
@@ -279,24 +253,6 @@ class Terminal extends Component {
         <div></div>
         <div></div>
       </div>;
-
-    /* var assemblyExplanation;
-    if (this.state.unviewedAssemblyExplanation) {
-      assemblyExplanation =
-        <Popover placement="right" component="a" popoverBody={pulsatingInterest}>
-          <PopoverHeader></PopoverHeader>
-          <PopoverBody>This is the assembly code you will be testing your program with! Each lesson
-          will have a different assembly file targetting the instructions you{"'"} ll be implementing in
-          that lesson.
-            <Button outline style={{width:"100%"}}
-              onClick={() => this.setState({ unviewedAssemblyExplanation : false })}>
-              <i className="fa fa-stop" aria-hidden="true"></i> Close Help
-            </Button>
-          </PopoverBody>
-        </Popover>
-    } else {
-      assemblyExplanation = <div></div>
-    } */
 
     var stepExplanation;
     if (this.state.unviewedStepExplanation) {
@@ -336,35 +292,35 @@ class Terminal extends Component {
       implementExplanation = <div></div>
     }
 
-    var memoryExplanation;
-    if (this.state.unviewedMemoryExplanation) {
-      memoryExplanation =
-        <Popover placement="right" component="a" popoverBody={pulsatingInterest}>
-          <PopoverHeader></PopoverHeader>
-          <PopoverBody>This is debug corner! You{"'"}ll see all the values of registers and memory in this
-          area, which you can use for debugging what{"'"}s is going on when you run your program.
-            <Button outline style={{width:"100%"}}
-              onClick={() => this.setState({ unviewedMemoryExplanation : false })}>
-              <i className="fa fa-stop" aria-hidden="true"></i> Close Help
-            </Button>
-          </PopoverBody>
-        </Popover>
-    } else {
-      memoryExplanation = <div></div>
-    }
 
-    var lessonsCompleted = [];
-    for (i = 1; i < this.state.lessonPart; i++) {
-      lessonsCompleted.push(
-        <Button outline onClick={() => this.setState({
-                      lessonPart : (i-1),
+
+    var completedLessons = [];
+    for (i = 1; i <= this.state.completedLessons; i++) {
+      completedLessons.push(<ListGroupItem active>Level {i}</ListGroupItem>)
+      for (var j = 1; j <= this.state.completedParts; j++) {
+        completedLessons.push(
+          <ListGroupItem>
+            <div className="row align-middle">
+              <div className="col-sm-3">Part {j}</div>
+              <div className="col-sm-9">
+                <Button outline onClick={() => {
+                    this.setState({
+                      lessonPart : k,
                       loadLesson : true,
+                      resetCode : true,
                       isIntroPaneOpen: true,
                       showTest: false,
-                      showMenu: false
-                    })}>
-          Lesson {i}
-        </Button>)
+                      revealCompletedLevels: false
+                    });
+                    console.log(j)
+
+                  }} style={{width:"100%"}}>
+                  Redo
+                </Button>
+              </div>
+            </div>
+          </ListGroupItem>)
+      }
     }
 
     return (this.state.selectedLesson ?
@@ -392,6 +348,10 @@ class Terminal extends Component {
           <Collapse isOpen={true}>
             <NavbarNav>
               <NavItem>
+                <Button outline onClick={() => this.setState({ revealCompletedLevels : true })}>
+                  Previous Levels
+                </Button>
+
                 <Button outline onClick={() => this.setState({ isIntroPaneOpen : true })}>
                   Intro Text
                 </Button>
@@ -399,6 +359,23 @@ class Terminal extends Component {
             </NavbarNav>
           </Collapse>
         </Navbar>
+
+        <Modal isOpen={this.state.revealCompletedLevels} centered>
+          <ModalHeader>Completed Levels</ModalHeader>
+          <ModalBody>
+            <ListGroup> {completedLessons} </ListGroup>
+          </ModalBody>
+          <ModalFooter>
+            <div className="row">
+              <div className="col-sm-12">
+                <Button outline onClick={() => this.setState({revealCompletedLevels : false})} style={{width:"100%"}}>
+                  Close
+                </Button>
+              </div>
+            </div>
+          </ModalFooter>
+        </Modal>
+
 
         <Modal isOpen={this.state.lessonCorrect && this.state.lessonComplete}
           frame position="bottom">
@@ -573,25 +550,10 @@ class Terminal extends Component {
                   </div>
                 </div>
               </CardBody>
-            </Card>
-            <Card style={{ marginTop: '1rem', width:"100%"}} className="text-center">
-              <CardHeader color="default-color">
-                {memoryExplanation}
-                <CardTitle componentclassName="h1">
-                  CPU & Memory
-                </CardTitle>
-              </CardHeader>
-              <CardBody>
-                <Table hover condensed>
-                  <thead>
-                    <tr>
-                      <th style={{textAlign: 'center'}}>Register</th>
-                      <th style={{textAlign: 'center'}}>Value</th>
-                    </tr>
-                  </thead>
-                  <tbody> { registerTable } </tbody>
-                </Table>
-              </CardBody>
+              <MemoryTable
+                studentRegisters={this.state.studentRegisters}
+                referenceRegisters={this.state.referenceRegisters}
+              />
             </Card>
           </div>
         </div>
