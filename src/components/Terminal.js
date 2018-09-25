@@ -51,6 +51,8 @@ const solutionsToFunctions = {
   "lesson_1/part_5" : lesson_1_part_5.solution,
 };
 
+Array.range = (start, end) => Array.from({length: (end - start)}, (v, k) => k + start);
+
 class Terminal extends Component {
   constructor(props) {
     super(props);
@@ -310,17 +312,20 @@ class Terminal extends Component {
     }
 
     var completedLessons = [];
-    for (i = 1; i <= this.state.completedLessons; i++) {
-      completedLessons.push(<ListGroupItem active>Level {i}</ListGroupItem>)
-      for (var j = 1; j <= this.state.completedParts; j++) {
+
+    var lessons = Array.range(1, this.state.completedLessons + 1)
+    var lessonParts = Array.range(1, this.state.completedParts + 1)
+    lessons.map((lesson) => {
+      completedLessons.push(<ListGroupItem active>Level {lesson}</ListGroupItem>);
+      lessonParts.map((part) => {
         completedLessons.push(
           <ListGroupItem>
             <div className="row align-middle">
-              <div className="col-sm-3">Part {j}</div>
+              <div className="col-sm-3">Part {part}</div>
               <div className="col-sm-9">
                 <Button outline onClick={() => {
                     this.setState({
-                      lessonPart : 1,
+                      lessonPart : part,
                       loadLesson : true,
                       resetCode : true,
                       isIntroPaneOpen: true,
@@ -333,8 +338,9 @@ class Terminal extends Component {
               </div>
             </div>
           </ListGroupItem>)
+        });
       }
-    }
+    )
 
     return (this.state.selectedLesson ?
 
