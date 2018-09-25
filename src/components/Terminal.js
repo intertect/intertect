@@ -92,7 +92,7 @@ class Terminal extends Component {
       referenceRegisters: new Registers(),
       targetRegisters: new Registers(),
 
-      showRegisters: false,
+      showRegisters: true,
       showMemory: false,
 
       unviewedStepExplanation: true,
@@ -583,7 +583,7 @@ class Terminal extends Component {
                   <div className="col-sm-6">
                     <Button outline
                       onClick={() => this.setState({ showRegisters : !this.state.showRegisters })} style={{width:"100%"}}>
-                      Show CPU (Registers)
+                      {this.state.showRegisters ? "Hide" : "Show" } CPU (Registers)
                     </Button>
 
                     <Collapse isOpen={this.state.showRegisters}>
@@ -597,7 +597,7 @@ class Terminal extends Component {
                   <div className="col-sm-6">
                     <Button outline
                       onClick={() => this.setState({ showMemory : !this.state.showMemory })} style={{width:"100%"}}>
-                      Show Memory
+                      {this.state.showMemory ? "Hide" : "Show"} Memory
                     </Button>
 
                     <Collapse isOpen={this.state.showMemory}>
