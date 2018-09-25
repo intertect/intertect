@@ -29,6 +29,7 @@ import 'brace/theme/twilight';
 
 import {Memory, Registers, nameToRegisterMap, registerToNameMap} from '../utils/util.js';
 import MemoryTable from './MemoryTable.js'
+import RegistersTable from './RegistersTable.js'
 
 import '../styles/intro.css';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
@@ -564,7 +565,7 @@ class Terminal extends Component {
                     </Button>
 
                     <Collapse isOpen={this.state.showRegisters}>
-                      <MemoryTable
+                      <RegistersTable
                         studentRegisters={this.state.studentRegisters}
                         referenceRegisters={this.state.referenceRegisters}
                       />
@@ -579,8 +580,7 @@ class Terminal extends Component {
 
                     <Collapse isOpen={this.state.showMemory}>
                       <MemoryTable
-                        studentRegisters={this.state.studentRegisters}
-                        referenceRegisters={this.state.referenceRegisters}
+                        memory={this.state.memory}
                       />
                     </Collapse>
                   </div>
