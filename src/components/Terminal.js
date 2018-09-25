@@ -292,6 +292,23 @@ class Terminal extends Component {
       implementExplanation = <div></div>
     }
 
+    var memoryExplanation;
+    if (this.state.unviewedMemoryExplanation) {
+      memoryExplanation =
+        <Popover placement="right" component="a" popoverBody={pulsatingInterest}>
+          <PopoverHeader></PopoverHeader>
+          <PopoverBody>This is debug corner! You{"'"}ll see all the values of registers and memory in this
+          area, which you can use for debugging what{"'"}s is going on when you run your program.
+            <Button outline style={{width:"100%"}}
+              onClick={() => this.setState({ unviewedMemoryExplanation : false })}>
+              <i className="fa fa-stop" aria-hidden="true"></i> Close Help
+            </Button>
+          </PopoverBody>
+        </Popover>
+    } else {
+      memoryExplanation = <div></div>
+    }
+
     var completedLessons = [];
     for (i = 1; i <= this.state.completedLessons; i++) {
       completedLessons.push(<ListGroupItem active>Level {i}</ListGroupItem>)
@@ -550,6 +567,7 @@ class Terminal extends Component {
 
             <Card style={{ marginTop: '1rem', width:"100%"}}>
               <CardHeader color="default-color" className="text-center">
+                {memoryExplanation}
                 <CardTitle componentclassName="h4">
                   Debugging
                 </CardTitle>
