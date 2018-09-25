@@ -89,7 +89,9 @@ class Terminal extends Component {
       referenceRegisters: new Registers(),
       targetRegisters: new Registers(),
 
-      // unviewedAssemblyExplanation: true,
+      showRegisters: false,
+      showMemory: false,
+
       unviewedStepExplanation: true,
       unviewedImplementExplanation: true,
       unviewedMemoryExplanation: true,
@@ -101,7 +103,6 @@ class Terminal extends Component {
     this.resetCode = this.resetCode.bind(this);
     this.loadLesson = this.loadLesson.bind(this);
     this.saveProgram = this.saveProgram.bind(this);
-    console.log(this.state.lessonPart)
   }
 
   handleSelect(evt) {
@@ -130,8 +131,8 @@ class Terminal extends Component {
   }
 
   loadLesson() {
+    console.log(this.state.completedParts)
     console.log(this.state.lessonPart)
-
     if (this.state.lessonPart > this.state.completedParts) {
       this.setState({ completedParts : this.state.lessonPart })
     }
@@ -292,8 +293,6 @@ class Terminal extends Component {
       implementExplanation = <div></div>
     }
 
-
-
     var completedLessons = [];
     for (i = 1; i <= this.state.completedLessons; i++) {
       completedLessons.push(<ListGroupItem active>Level {i}</ListGroupItem>)
@@ -305,15 +304,13 @@ class Terminal extends Component {
               <div className="col-sm-9">
                 <Button outline onClick={() => {
                     this.setState({
-                      lessonPart : k,
+                      lessonPart : 1,
                       loadLesson : true,
                       resetCode : true,
                       isIntroPaneOpen: true,
                       showTest: false,
                       revealCompletedLevels: false
                     });
-                    console.log(j)
-
                   }} style={{width:"100%"}}>
                   Redo
                 </Button>
@@ -550,10 +547,45 @@ class Terminal extends Component {
                   </div>
                 </div>
               </CardBody>
-              <MemoryTable
-                studentRegisters={this.state.studentRegisters}
-                referenceRegisters={this.state.referenceRegisters}
-              />
+            </Card>
+
+            <Card style={{ marginTop: '1rem', width:"100%"}}>
+              <CardHeader color="default-color" className="text-center">
+                <CardTitle componentclassName="h4">
+                  Debugging
+                </CardTitle>
+              </CardHeader>
+              <CardBody>
+                <div className="row">
+                  <div className="col-sm-6">
+                    <Button outline
+                      onClick={() => this.setState({ showRegisters : !this.state.showRegisters })} style={{width:"100%"}}>
+                      Show CPU (Registers)
+                    </Button>
+
+                    <Collapse isOpen={this.state.showRegisters}>
+                      <MemoryTable
+                        studentRegisters={this.state.studentRegisters}
+                        referenceRegisters={this.state.referenceRegisters}
+                      />
+                    </Collapse>
+                  </div>
+
+                  <div className="col-sm-6">
+                    <Button outline
+                      onClick={() => this.setState({ showMemory : !this.state.showMemory })} style={{width:"100%"}}>
+                      Show Memory
+                    </Button>
+
+                    <Collapse isOpen={this.state.showMemory}>
+                      <MemoryTable
+                        studentRegisters={this.state.studentRegisters}
+                        referenceRegisters={this.state.referenceRegisters}
+                      />
+                    </Collapse>
+                  </div>
+                </div>
+              </CardBody>
             </Card>
           </div>
         </div>

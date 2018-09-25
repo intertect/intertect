@@ -87,7 +87,7 @@ class MemoryTable extends Component {
         <CardHeader color="default-color">
           {memoryExplanation}
           <CardTitle componentclassName="h1">
-            CPU & Memory
+            Registers
           </CardTitle>
         </CardHeader>
         <CardBody>
