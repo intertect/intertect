@@ -90,7 +90,6 @@ class Terminal extends Component {
 
       studentRegisters: new Registers(),
       referenceRegisters: new Registers(),
-      targetRegisters: new Registers(),
 
       showRegisters: true,
       showMemory: false,
@@ -155,7 +154,7 @@ class Terminal extends Component {
       studentRegisters : newStudentRegisters
     });
 
-    var initRegisters, referenceRegisters, targetRegisters;
+    var initRegisters, referenceRegisters;
     var lessonContentFile = `../content/lesson_${this.state.lesson}/part_${this.state.lessonPart}.md`;
     fetch(lessonContentFile)
     .then((r)  => r.text())
@@ -190,14 +189,6 @@ class Terminal extends Component {
         studentRegisters : initRegisters,
         referenceRegisters : referenceRegisters
       });
-    });
-
-    fetch(lessonDir + "final.txt")
-    .then((r)  => r.text())
-    .then(text => {
-      targetRegisters = new Registers();
-      targetRegisters.load(text);
-      this.setState({ targetRegisters : targetRegisters });
     });
 
     this.setState({ loadLesson : false });
