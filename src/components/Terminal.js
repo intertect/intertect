@@ -27,7 +27,7 @@ import 'brace/theme/solarized_dark';
 import 'brace/theme/solarized_light';
 import 'brace/theme/twilight';
 
-import {Memory, Registers} from '../utils/util.js';
+import {Memory, Registers, nameToRegisterMap} from '../utils/util.js';
 import MemoryTable from './MemoryTable.js'
 import RegistersTable from './RegistersTable.js'
 
@@ -203,8 +203,8 @@ class Terminal extends Component {
   }
 
   render() {
-    if (this.state.targetStep != this.state.studentRegisters.registers_[0x20]) {
-      this.setState({ targetStep : this.state.studentRegisters.registers_[0x20]})
+    if (this.state.targetStep != this.state.studentRegisters.read(nameToRegisterMap["$pc"])) {
+      this.setState({ currentStep : this.state.studentRegisters.read(nameToRegisterMap["$pc"])})
     }
 
     if (this.state.loadLesson) {
@@ -564,8 +564,8 @@ class Terminal extends Component {
                         var newStudentRegisters = this.copyRegisters(this.state.studentRegisters);
                         var newReferenceRegisters  = this.copyRegisters(this.state.referenceRegisters);
 
-                        newStudentRegisters.registers_[0x20] = this.state.assemblyProgram.length - 1;
-                        newReferenceRegisters.registers_[0x20]  = this.state.assemblyProgram.length - 1;
+                        newStudentRegisters.registers_[nameToRegisterMap["$pc"]] = this.state.assemblyProgram.length - 1;
+                        newReferenceRegisters.registers_[nameToRegisterMap["$pc"]]  = this.state.assemblyProgram.length - 1;
 
                         this.setState({
                           targetStep : this.state.assemblyProgram.length - 1,
@@ -582,8 +582,8 @@ class Terminal extends Component {
                         var newStudentRegisters = this.copyRegisters(this.state.studentRegisters);
                         var newReferenceRegisters  = this.copyRegisters(this.state.referenceRegisters);
 
-                        newStudentRegisters.registers_[0x20] += 1;
-                        newReferenceRegisters.registers_[0x20] += 1;
+                        newStudentRegisters.registers_[nameToRegisterMap["$pc"]] += 1;
+                        newReferenceRegisters.registers_[nameToRegisterMap["$pc"]] += 1;
 
                         this.setState({
                           targetStep : this.state.targetStep + 1,
