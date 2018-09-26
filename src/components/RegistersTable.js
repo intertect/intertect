@@ -6,6 +6,10 @@ import {Registers, nameToRegisterMap, registerToNameMap} from '../utils/util.js'
 
 import '../styles/intro.css';
 
+function ToUint32(x) {
+  return x >>> 0;
+}
+
 class RegistersTable extends Component {
   constructor(props) {
     super(props);
@@ -19,8 +23,8 @@ class RegistersTable extends Component {
     for (var i = 0; i < this.props.studentRegisters.usedRegisters.length; i++) {
       register = this.props.studentRegisters.usedRegisters[i];
 
-      var studentValue = `0x${this.props.studentRegisters.read(register).toString(16).toUpperCase()}`;
-      var referenceValue = `0x${this.props.referenceRegisters.read(register).toString(16).toUpperCase()}`;
+      var studentValue = `0x${ToUint32(this.props.studentRegisters.read(register)).toString(16).toUpperCase()}`;
+      var referenceValue = `0x${ToUint32(this.props.referenceRegisters.read(register)).toString(16).toUpperCase()}`;
 
       var color, tooltipContent;
       if (studentValue == referenceValue) {

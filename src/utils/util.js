@@ -138,11 +138,6 @@ export class Registers {
   }
 
   write(register, value) {
-    if (register > 31 || register < 0) {
-      // TODO: Should also signal an error in the interface
-      return
-    }
-
     if (this.usedRegisters.indexOf(register) != -1) {
       this.usedRegisters = this.usedRegisters.filter(function(value){
         return value != register;

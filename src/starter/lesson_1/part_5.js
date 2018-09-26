@@ -1,5 +1,5 @@
 function ToUint32(x) {
-  return parseInt(x) % Math.pow(2, 32);
+  return x >>> 0;
 }
 
 function execute(instruction, registers) {
@@ -117,6 +117,7 @@ var nameToRegisterMap = {
   "$gp" : 0x1c,
   "$sp" : 0x1d,
   "$fp" : 0x1e,
-  "$ra" : 0x1f
+  "$ra" : 0x1f,
+  "$pc" : 0x20
 };
 
