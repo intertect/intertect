@@ -46,7 +46,8 @@ export var nameToRegisterMap = {
   "$gp" : 0x1c,
   "$sp" : 0x1d,
   "$fp" : 0x1e,
-  "$ra" : 0x1f
+  "$ra" : 0x1f,
+  "$pc" : 0x20 // chosen arbitrarily
 };
 
 export var registerToNameMap = {
@@ -81,7 +82,8 @@ export var registerToNameMap = {
   0x1c : "$gp"  ,
   0x1d : "$sp"  ,
   0x1e : "$fp"  ,
-  0x1f : "$ra"
+  0x1f : "$ra"  ,
+  0x20 : "$pc"
 };
 
 export class Registers {
@@ -126,16 +128,12 @@ export class Registers {
       0x1c: 0,
       0x1d: 0,
       0x1e: 0,
-      0x1f: 0
+      0x1f: 0,
+      0x20: 0
     }
   }
 
   read(register) {
-    if (register > 31 || register < 0) {
-      // TODO: Should also signal an error in the interface
-      return
-    }
-
     return this.registers_[register];
   }
 

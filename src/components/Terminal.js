@@ -106,6 +106,7 @@ class Terminal extends Component {
     this.resetCode = this.resetCode.bind(this);
     this.loadLesson = this.loadLesson.bind(this);
     this.saveProgram = this.saveProgram.bind(this);
+    this.copyRegisters = this.copyRegisters.bind(this);
   }
 
   handleSelect(evt) {
@@ -142,11 +143,14 @@ class Terminal extends Component {
       this.setState({ completedLessons : this.state.lesson })
     }
 
+    var newStudentRegisters = new Registers();
+
     this.setState({
       lessonComplete: false,
       lessonCorrect: true,
       currentStep : 0,
-      targetStep : 0
+      targetStep : 0,
+      studentRegisters : newStudentRegisters
     });
 
     var initRegisters, referenceRegisters, targetRegisters;
@@ -197,7 +201,19 @@ class Terminal extends Component {
     this.setState({ loadLesson : false });
   }
 
+  copyRegisters(srcRegisters) {
+    var newRegisters = new Registers();
+    newRegisters.registers_ = srcRegisters.registers_;
+    newRegisters.recentRegister = srcRegisters.recentRegister;
+    newRegisters.usedRegisters = srcRegisters.usedRegisters;
+    return newRegisters;
+  }
+
   render() {
+    if (this.state.targetStep != this.state.studentRegisters.registers_[0x20]) {
+      this.setState({ targetStep : this.state.studentRegisters.registers_[0x20]})
+    }
+
     if (this.state.loadLesson) {
       this.loadLesson();
     }
@@ -551,13 +567,37 @@ class Terminal extends Component {
                   </div>
                   <div className="col-sm-12">
                     <Button outline color="success" style={{width:"100%"}}
-                      onClick={() => this.setState({ targetStep : this.state.assemblyProgram.length - 1 })}>
-                        <i className="fa fa-play" aria-hidden="true"></i> Run
+                      onClick={() => {
+                        var newStudentRegisters = this.copyRegisters(this.state.studentRegisters);
+                        var newReferenceRegisters  = this.copyRegisters(this.state.referenceRegisters);
+
+                        newStudentRegisters.registers_[0x20] = this.state.assemblyProgram.length - 1;
+                        newReferenceRegisters.registers_[0x20]  = this.state.assemblyProgram.length - 1;
+
+                        this.setState({
+                          targetStep : this.state.assemblyProgram.length - 1,
+                          studentRegisters : newStudentRegisters,
+                          referenceRegisters : newReferenceRegisters
+                        })
+                      }}>
+                      <i className="fa fa-play" aria-hidden="true"></i> Run
                     </Button>
                   </div>
                   <div className="col-sm-12">
                     <Button outline color="default" style={{width:"100%"}}
-                      onClick={() => this.setState({ targetStep : this.state.targetStep + 1 })}>
+                      onClick={() => {
+                        var newStudentRegisters = this.copyRegisters(this.state.studentRegisters);
+                        var newReferenceRegisters  = this.copyRegisters(this.state.referenceRegisters);
+
+                        newStudentRegisters.registers_[0x20] += 1;
+                        newReferenceRegisters.registers_[0x20] += 1;
+
+                        this.setState({
+                          targetStep : this.state.targetStep + 1,
+                          studentRegisters : newStudentRegisters,
+                          referenceRegisters : newReferenceRegisters
+                        })
+                      }}>
                         <i className="fa fa-forward" aria-hidden="true"></i> Step
                     </Button>
                   </div>
