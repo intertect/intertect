@@ -137,10 +137,12 @@ class Terminal extends Component {
   loadLesson() {
     if (this.state.lessonPart > this.state.completedParts) {
       this.setState({ completedParts : this.state.lessonPart })
+      localStorage.setItem('lessonPart', this.state.lessonPart);
     }
 
     if (this.state.lesson > this.state.completedLessons) {
       this.setState({ completedLessons : this.state.lesson })
+      localStorage.setItem('lesson', this.state.lesson);
     }
 
     var newStudentRegisters = new Registers();
