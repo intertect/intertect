@@ -37,18 +37,74 @@ import 'font-awesome/css/font-awesome.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'mdbreact/dist/css/mdb.css';
 
+import * as lesson_1_part_1_content from '../content/lesson_1/part_1.md';
+import * as lesson_1_part_2_content from '../content/lesson_1/part_2.md';
+import * as lesson_1_part_3_content from '../content/lesson_1/part_3.md';
+import * as lesson_1_part_4_content from '../content/lesson_1/part_4.md';
+import * as lesson_1_part_5_content from '../content/lesson_1/part_5.md';
+
+var lesson_1_part_1_init = require('../lesson_programs/lesson_1/part_1/init.txt');
+var lesson_1_part_2_init = require('../lesson_programs/lesson_1/part_2/init.txt');
+var lesson_1_part_3_init = require('../lesson_programs/lesson_1/part_3/init.txt');
+var lesson_1_part_4_init = require('../lesson_programs/lesson_1/part_4/init.txt');
+var lesson_1_part_5_init = require('../lesson_programs/lesson_1/part_5/init.txt');
+
+var lesson_1_part_1_assembly = require('../lesson_programs/lesson_1/part_1/prog.txt');
+var lesson_1_part_2_assembly = require('../lesson_programs/lesson_1/part_2/prog.txt');
+var lesson_1_part_3_assembly = require('../lesson_programs/lesson_1/part_3/prog.txt');
+var lesson_1_part_4_assembly = require('../lesson_programs/lesson_1/part_4/prog.txt');
+var lesson_1_part_5_assembly = require('../lesson_programs/lesson_1/part_5/prog.txt');
+
+var lesson_1_part_1_starter = require('../starter/lesson_1/part_1.txt');
+var lesson_1_part_2_starter = require('../starter/lesson_1/part_2.txt');
+var lesson_1_part_3_starter = require('../starter/lesson_1/part_3.txt');
+var lesson_1_part_4_starter = require('../starter/lesson_1/part_4.txt');
+var lesson_1_part_5_starter = require('../starter/lesson_1/part_5.txt');
+
 var lesson_1_part_1 = require('../references/lesson_1/part_1.js');
 var lesson_1_part_2 = require('../references/lesson_1/part_2.js');
 var lesson_1_part_3 = require('../references/lesson_1/part_3.js');
 var lesson_1_part_4 = require('../references/lesson_1/part_4.js');
 var lesson_1_part_5 = require('../references/lesson_1/part_5.js');
 
-const solutionsToFunctions = {
+const lessonContent = {
+  "lesson_1/part_1" : lesson_1_part_1_content,
+  "lesson_1/part_2" : lesson_1_part_2_content,
+  "lesson_1/part_3" : lesson_1_part_3_content,
+  "lesson_1/part_4" : lesson_1_part_4_content,
+  "lesson_1/part_5" : lesson_1_part_5_content
+};
+
+const lessonRegisterInits = {
+  "lesson_1/part_1" : lesson_1_part_1_init,
+  "lesson_1/part_2" : lesson_1_part_2_init,
+  "lesson_1/part_3" : lesson_1_part_3_init,
+  "lesson_1/part_4" : lesson_1_part_4_init,
+  "lesson_1/part_5" : lesson_1_part_5_init
+};
+
+const lessonAssembly = {
+  "lesson_1/part_1" : lesson_1_part_1_assembly,
+  "lesson_1/part_2" : lesson_1_part_2_assembly,
+  "lesson_1/part_3" : lesson_1_part_3_assembly,
+  "lesson_1/part_4" : lesson_1_part_4_assembly,
+  "lesson_1/part_5" : lesson_1_part_5_assembly
+}
+
+const lessonStarterCode = {
+  "lesson_1/part_1" : lesson_1_part_1_starter,
+  "lesson_1/part_2" : lesson_1_part_2_starter,
+  "lesson_1/part_3" : lesson_1_part_3_starter,
+  "lesson_1/part_4" : lesson_1_part_4_starter,
+  "lesson_1/part_5" : lesson_1_part_5_starter
+};
+
+const lessonReferenceSolutions = {
   "lesson_1/part_1" : lesson_1_part_1.solution,
   "lesson_1/part_2" : lesson_1_part_2.solution,
   "lesson_1/part_3" : lesson_1_part_3.solution,
   "lesson_1/part_4" : lesson_1_part_4.solution,
-  "lesson_1/part_5" : lesson_1_part_5.solution,
+  "lesson_1/part_5" : lesson_1_part_5.solution
 };
 
 Array.range = (start, end) => Array.from({length: (end - start)}, (v, k) => k + start);
@@ -57,32 +113,25 @@ class Terminal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedLesson: false,
-      theme: "solarized_dark",
-
       currentStep: 0,
       targetStep: 0,
 
       isIntroPaneOpen: true,
-      isGlossaryPaneOpen: false,
       revealCompletedLevels: false,
       confirmRestart: false,
       showMenu: false,
-      completedInstructions: false,
 
-      lesson: parseInt(localStorage.getItem('lesson') || "1"),
-      lessonPart: parseInt(localStorage.getItem('lessonPart') || "1"),
-      lessonGlossary: "",
-      glossaryItem: "",
+      lesson: null,
+      lessonPart: null,
       lessonContent: "",
-      lessonTitle: "Starting Slowly",
+
+      completedLessons: localStorage.getItem('completedLessons') || 1,
+      completedParts: localStorage.getItem('completedParts') || 1,
+
       resetCode: localStorage.getItem('studentProgram') == null,
-      loadLesson: true,
+      loadLesson: false,
       lessonComplete: false,
       lessonCorrect: true,
-
-      completedLessons: 1,
-      completedParts: 1,
 
       studentProgram: localStorage.getItem('studentProgram') || "",
       assemblyProgram: [],
@@ -97,7 +146,9 @@ class Terminal extends Component {
       unviewedStepExplanation: true,
       unviewedImplementExplanation: true,
       unviewedMemoryExplanation: true,
-      showTest: false
+      showTest: false,
+
+      theme: "solarized_dark"
     };
 
     this.handleSelect = this.handleSelect.bind(this);
@@ -118,80 +169,50 @@ class Terminal extends Component {
 
   saveProgram() {
     localStorage.setItem('studentProgram', this.state.studentProgram);
-    localStorage.setItem('lesson', this.state.lesson);
-    localStorage.setItem('lessonPart', this.state.lessonPart);
+    localStorage.setItem('completedLessons', this.state.lesson);
+    localStorage.setItem('completedParts', this.state.lessonPart);
   }
 
   resetCode() {
-    var starterCode = `../starter/lesson_${this.state.lesson}/part_${this.state.lessonPart}.js`;
-    fetch(starterCode)
-    .then((r)  => r.text())
-    .then(text => {
-      this.setState({ studentProgram : text });
+    var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
+    this.setState({
+      resetCode : false,
+      studentProgram : lessonStarterCode[lessonPart]
     });
-
-    this.setState({ resetCode : false });
   }
 
   loadLesson() {
     if (this.state.lessonPart > this.state.completedParts) {
       this.setState({ completedParts : this.state.lessonPart })
-      localStorage.setItem('lessonPart', this.state.lessonPart);
+      localStorage.setItem('completedParts', this.state.lessonPart);
     }
 
     if (this.state.lesson > this.state.completedLessons) {
       this.setState({ completedLessons : this.state.lesson })
-      localStorage.setItem('lesson', this.state.lesson);
+      localStorage.setItem('completedLessons', this.state.lesson);
     }
 
-    var newStudentRegisters = new Registers();
+    var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
+    var initRegisters = new Registers();
+    var referenceRegisters = new Registers();
+
+    initRegisters.load(lessonRegisterInits[lessonPart]);
+    referenceRegisters.load(lessonRegisterInits[lessonPart]);
 
     this.setState({
       lessonComplete: false,
       lessonCorrect: true,
       currentStep : 0,
       targetStep : 0,
-      studentRegisters : newStudentRegisters
-    });
 
-    var initRegisters, referenceRegisters;
-    var lessonContentFile = `../content/lesson_${this.state.lesson}/part_${this.state.lessonPart}.md`;
-    fetch(lessonContentFile)
-    .then((r)  => r.text())
-    .then(text => {
-      this.setState({ lessonContent : text });
-    });
+      lessonContent : Object.values(lessonContent[lessonPart]).join(""),
+      assemblyProgram : lessonAssembly[lessonPart].split("\n"),
+      studentProgram : lessonStarterCode[lessonPart],
 
-    var lessonGlossaryFile = `../content/lesson_${this.state.lesson}/introduction.md`;
-    fetch(lessonGlossaryFile)
-    .then((r)  => r.text())
-    .then(text => {
-      this.setState({ lessonGlossary : text });
-    });
-
-    var lessonDir = `../lesson_programs/lesson_${this.state.lesson}/part_${this.state.lessonPart}/`;
-    fetch(lessonDir + "prog.s")
-    .then((r)  => r.text())
-    .then(text => {
-      this.setState({ assemblyProgram : text.split("\n") });
-    });
-
-    fetch(lessonDir + "init.txt")
-    .then((r)  => r.text())
-    .then(text => {
-      initRegisters = new Registers();
-      initRegisters.load(text);
-
-      referenceRegisters = new Registers();
-      referenceRegisters.load(text);
-
-      this.setState({
-        studentRegisters : initRegisters,
-        referenceRegisters : referenceRegisters
-      });
-    });
-
-    this.setState({ loadLesson : false });
+      studentRegisters : initRegisters,
+      referenceRegisters : referenceRegisters,
+      loadLesson : false
+    })
   }
 
   copyRegisters(srcRegisters) {
@@ -240,7 +261,7 @@ class Terminal extends Component {
       }
 
       var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
-      var solution = solutionsToFunctions[lessonPart];
+      var solution = lessonReferenceSolutions[lessonPart];
       solution(assemblyInstruction, this.state.referenceRegisters);
 
       this.setState({
@@ -321,37 +342,53 @@ class Terminal extends Component {
     }
 
     var completedLessons = [];
+    var lessonMenuButtons = [];
 
-    var lessons = Array.range(1, this.state.completedLessons + 1)
+    var lessons = Array.range(1, 5)
     var lessonParts = Array.range(1, this.state.completedParts + 1)
     lessons.map((lesson) => {
-      completedLessons.push(<ListGroupItem active>Level {lesson}</ListGroupItem>);
-      lessonParts.map((part) => {
-        completedLessons.push(
-          <ListGroupItem>
-            <div className="row align-middle">
-              <div className="col-sm-3">Part {part}</div>
-              <div className="col-sm-9">
-                <Button outline onClick={() => {
-                    this.setState({
-                      lessonPart : part,
-                      loadLesson : true,
-                      resetCode : true,
-                      isIntroPaneOpen: true,
-                      showTest: false,
-                      revealCompletedLevels: false
-                    });
-                  }} style={{width:"100%"}}>
-                  Redo
-                </Button>
+      lessonMenuButtons.push(
+        <Button outline onClick={() => {
+            this.setState({
+              lesson : lesson,
+              lessonPart : 1,
+              loadLesson : true
+            })
+          }}
+          className={(lesson <= this.state.completedLessons) ? "enabled" : "disabled"}
+          style={{width:"75%"}}>
+
+          Lesson {lesson}
+        </Button>)
+
+      if (lesson <= this.state.completedLessons) {
+        completedLessons.push(<ListGroupItem active>Level {lesson}</ListGroupItem>);
+        lessonParts.map((part) => {
+          completedLessons.push(
+            <ListGroupItem>
+              <div className="row align-middle">
+                <div className="col-sm-3">Part {part}</div>
+                <div className="col-sm-9">
+                  <Button outline onClick={() => {
+                      this.setState({
+                        lessonPart : part,
+                        loadLesson : true,
+                        resetCode : true,
+                        isIntroPaneOpen: true,
+                        showTest: false,
+                        revealCompletedLevels: false
+                      });
+                    }} style={{width:"100%"}}>
+                    Redo
+                  </Button>
+                </div>
               </div>
-            </div>
-          </ListGroupItem>)
-        });
+            </ListGroupItem>)
+          });
+        }
       }
     )
-
-    return (this.state.selectedLesson ?
+    return (this.state.lesson ?
 
       <div>
         <SlidingPane
@@ -367,7 +404,7 @@ class Terminal extends Component {
         <Navbar color="default-color-dark" dark>
           <NavbarBrand href="#">
             <Button outline onClick={() => this.setState({
-                  selectedLesson : false,
+                  lesson : null,
                   showMenu: false
                 })}>
               Main Menu
@@ -656,15 +693,7 @@ class Terminal extends Component {
                 <CardTitle componentclassName="h1">Intertect</CardTitle>
               </CardHeader>
               <CardBody>
-                <FadeIn>
-                  <Button outline onClick={() => {
-                    this.setState({ selectedLesson : true })}} style={{width:"75%"}}>
-                    Lesson 1
-                  </Button><br />
-                  <Button outline disabled style={{width:"75%"}}>Lesson 2</Button><br />
-                  <Button outline disabled style={{width:"75%"}}>Lesson 3</Button><br />
-                  <Button outline disabled style={{width:"75%"}}>Lesson 4</Button>
-                </FadeIn>
+                <FadeIn> {lessonMenuButtons} </FadeIn>
               </CardBody>
             </Card>
           </div>

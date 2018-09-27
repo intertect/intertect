@@ -1,7 +1,7 @@
 import webpack from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import path from 'path';
-import HardSourceWebpackPlugin from 'hard-source-webpack-plugin'; 
+import HardSourceWebpackPlugin from 'hard-source-webpack-plugin';
 
 export default {
   resolve: {
@@ -37,6 +37,26 @@ export default {
   ],
   module: {
     rules: [
+      {
+        test: /\.md$/,
+        use: [
+          {
+            loader: 'html-loader',
+          },
+          {
+            loader: 'markdown-loader',
+          },
+        ],
+        include: path.resolve(__dirname, '../')
+      },
+      {
+        test: /\.txt$/,
+        use: 'raw-loader'
+      },
+      {
+        test: /\.txt$/,
+        use: 'raw-loader'
+      },
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
