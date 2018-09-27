@@ -151,16 +151,11 @@ class Terminal extends Component {
       theme: "solarized_dark"
     };
 
-    this.handleSelect = this.handleSelect.bind(this);
     this.onChange = this.onChange.bind(this);
     this.resetCode = this.resetCode.bind(this);
     this.loadLesson = this.loadLesson.bind(this);
     this.saveProgram = this.saveProgram.bind(this);
     this.copyRegisters = this.copyRegisters.bind(this);
-  }
-
-  handleSelect(evt) {
-    this.setState({ theme: evt });
   }
 
   onChange(newValue) {

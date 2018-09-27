@@ -54,7 +54,7 @@ export default {
         use: 'raw-loader'
       },
       {
-        test: /\.txt$/,
+        test: /\.s$/,
         use: 'raw-loader'
       },
       {
