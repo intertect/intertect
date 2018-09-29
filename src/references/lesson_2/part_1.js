@@ -58,17 +58,51 @@ export function solution(instruction, registers) {
     }
   }
 
-  // J isntructions case
-  // TODO: Fill this condition
-  else if (true) {
+  else if (opcode == 0x2 || opcode == 0x3) {
     // J format: oooooott ttttttt tttttttt tttttttt
-    // TODO: Fill this area
+    var target = instruction | 0x3FFFFFF ;
+
+    op_str = opcode == 0x2 ? "j" : "jal";
+
+    // TODO
+    switch(op_str) {
+      case 'j':
+        break;
+      case 'jal':
+        break;
+      default:
+        break;
+    }
   }
 
-  // I instructions case
   else {
     // I format: ooooooss sssttttt iiiiiiii iiiiiiii
-    // TODO: Fill this area
+    rs = (instruction >> 21) & 0x1F;
+    rt = (instruction >> 16) & 0x1F;
+    var imm = (instruction >> 0) & 0xFFFF;
+
+    op_str = opcodeMap[opcode];
+
+    switch(op_str) {
+      case 'addiu':
+        result = ToUint32(registers.read(rs) + imm);
+        registers.write(rt, result);
+        break;
+      case 'andi':
+        result = ToUint32(registers.read(rs) & imm);
+        registers.write(rt, result);
+        break;
+      case 'ori':
+        result = ToUint32(registers.read(rs) | imm);
+        registers.write(rt, result);
+        break;
+      case 'xori':
+        result = ToUint32(registers.read(rs) ^ imm);
+        registers.write(rt, result);
+        break;
+      default:
+        break;
+    }
   }
 }
 

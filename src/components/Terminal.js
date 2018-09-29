@@ -335,9 +335,9 @@ class Terminal extends Component {
 
     var currentInstruction;
     this.state.lesson > 1 ?
-      currentInstruction = <div>
-        Current Instruction: {this.state.binaryProgram[this.state.currentStep]}
-      </div>
+      currentInstruction = <Button outline style={{width:"100%"}}>
+        Current Instruction: 0b{this.state.binaryProgram[this.state.currentStep]}
+      </Button>
       : currentInstruction = <div></div>
 
     return (this.state.lesson ?
