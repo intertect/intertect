@@ -25,6 +25,9 @@ var lesson_1_part_6_assembly = require('../lesson_programs/lesson_1/part_6/prog.
 
 var lesson_2_part_1_assembly = require('../lesson_programs/lesson_2/part_1/prog.s');
 
+// binary only starts becoming relevant in lesson 2, so no need to import for lesson 1
+var lesson_2_part_1_binary = require('../lesson_programs/lesson_2/part_1/prog.bin');
+
 var lesson_1_part_1_starter = require('../starter/lesson_1/part_1.txt');
 var lesson_1_part_2_starter = require('../starter/lesson_1/part_2.txt');
 var lesson_1_part_3_starter = require('../starter/lesson_1/part_3.txt');
@@ -42,6 +45,7 @@ var lesson_1_part_5_reference = require('../references/lesson_1/part_5.js');
 var lesson_1_part_6_reference = require('../references/lesson_1/part_6.js');
 
 var lesson_2_part_1_reference = require('../references/lesson_2/part_1.js');
+
 
 export const lessonContent = {
   "lesson_1/part_1" : lesson_1_part_1_content,
@@ -74,6 +78,10 @@ export const lessonAssembly = {
   "lesson_1/part_6" : lesson_1_part_6_assembly,
 
   "lesson_2/part_1" : lesson_2_part_1_assembly
+}
+
+export const lessonBinaryCode = {
+  "lesson_2/part_1" : lesson_2_part_1_binary
 }
 
 export const lessonStarterCode = {

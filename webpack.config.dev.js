@@ -58,6 +58,10 @@ export default {
         use: 'raw-loader'
       },
       {
+        test: /\.bin$/,
+        use: 'binary-loader'
+      },
+      {
         test: /\.jsx?$/,
         exclude: /node_modules/,
         use: ['babel-loader']

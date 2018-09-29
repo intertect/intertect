@@ -30,6 +30,7 @@
   "license": "None",
   "dependencies": {
     "babel-core": "6.26.3",
+    "binary-loader": "0.0.1",
     "markdown-loader": "4.0.0",
     "marked": "0.5.1",
     "mdbreact": "4.7.1",

@@ -29,7 +29,7 @@ import 'brace/theme/twilight';
 
 import {Memory, Registers, nameToRegisterMap} from '../utils/util.js';
 import {lessonContent, lessonRegisterInits, lessonAssembly,
-  lessonStarterCode, lessonReferenceSolutions} from '../utils/lessonItems.js';
+  lessonStarterCode, lessonReferenceSolutions, lessonBinaryCode} from '../utils/lessonItems.js';
 
 import MemoryTable from './MemoryTable.js'
 import RegistersTable from './RegistersTable.js'
@@ -58,7 +58,7 @@ class Terminal extends Component {
       lessonPart: null,
       lessonContent: "",
 
-      completedLessons: localStorage.getItem('completedLessons') || 1,
+      completedLessons: localStorage.getItem('completedLessons') || 2,
       completedParts: localStorage.getItem('completedParts') || 1,
 
       resetCode: localStorage.getItem('studentProgram') == null,
@@ -68,6 +68,7 @@ class Terminal extends Component {
 
       studentProgram: localStorage.getItem('studentProgram') || "",
       assemblyProgram: [],
+      binaryProgram: [],
       memory: new Memory(),
 
       studentRegisters: new Registers(),
@@ -127,6 +128,13 @@ class Terminal extends Component {
     initRegisters.load(lessonRegisterInits[lessonPart]);
     referenceRegisters.load(lessonRegisterInits[lessonPart]);
 
+    // only need the binary code available for lessons 2 and up
+    if (this.state.lesson > 1) {
+      this.setState({
+        binaryProgram : lessonBinaryCode[lessonPart].replace(/\s/g, '').match(/.{1,8}/g),
+      })
+    }
+
     this.setState({
       lessonComplete: false,
       lessonCorrect: true,
@@ -169,9 +177,16 @@ class Terminal extends Component {
         currentStep : this.state.currentStep + 1
       });
 
-      var assemblyInstruction = this.state.assemblyProgram[this.state.currentStep]
-        .replace(/,/g,"")
-        .split(" ");
+      // instruction is passed as assembly for lesson 1 and binary for all others
+      if (this.state.lesson == 1) {
+        instruction = this.state.assemblyProgram[this.state.currentStep]
+          .replace(/,/g,"")
+          .split(" ");
+      } else {
+        instruction = parseInt(this.state.binaryProgram[this.state.currentStep],
+          16).toString(2).padStart(32, '0');
+      }
+
       var script = document.createElement('script');
       try {
         script.appendChild(document.createTextNode(this.state.studentProgram));
@@ -183,14 +198,14 @@ class Terminal extends Component {
 
       try {
         // eslint-disable-next-line
-        execute(assemblyInstruction, this.state.studentRegisters);
+        execute(instruction, this.state.studentRegisters);
       } catch(e) {
         // student renamed function -- no execution
       }
 
       var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
       var solution = lessonReferenceSolutions[lessonPart];
-      solution(assemblyInstruction, this.state.referenceRegisters);
+      solution(instruction, this.state.referenceRegisters);
 
       this.setState({
         lessonCorrect : this.state.studentRegisters.compareRegisters(this.state.referenceRegisters),
@@ -316,6 +331,7 @@ class Terminal extends Component {
         }
       }
     )
+
     return (this.state.lesson ?
 
       <div>
@@ -521,6 +537,7 @@ class Terminal extends Component {
               <CardBody>
                 <div className="col-sm-12">
                   <div className="col-sm-12">
+                    Current Instruction: {this.state.binaryProgram[this.state.currentStep]}
                     <ul className="shell-body" style={{width:"100%"}}>{ assemblyList }</ul>
                   </div>
                   <div className="col-sm-12">
