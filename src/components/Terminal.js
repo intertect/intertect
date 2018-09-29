@@ -60,7 +60,7 @@ class Terminal extends Component {
       loadedLesson: false,
 
       completedLessons: localStorage.getItem('completedLessons') || 2,
-      completedParts: localStorage.getItem('completedParts') || 0,
+      completedParts: localStorage.getItem('completedParts') || 1,
 
       resetCode: false,
       loadLesson: false,
@@ -201,12 +201,21 @@ class Terminal extends Component {
         currentStep : this.state.currentStep + 1
       });
 
-      // instruction is passed as assembly for lesson 1 and binary for all others
+      // instruction is passed as assembly for lesson 1 and binary for all
+      // others
       var instruction;
       if (this.state.lesson == 1) {
         instruction = this.state.assemblyProgram[this.state.currentStep]
-          .replace(/,/g,"")
+          .replace(/[,)]/g,"")
+          .replace(/\(/," ")
           .split(" ");
+        // Unfortunately we have to special-case the loads and stores because
+        // they have a different syntax
+        if (["lw", "lh", "lb", "sw", "sh", "sb"].indexOf(instruction[0]) >= 0) {
+          var temp = instruction[2];
+          instruction[2] = instruction[3];
+          instruction[3] = temp;
+        }
       } else {
         instruction = parseInt(this.state.binaryProgram[this.state.currentStep],
           16).toString(2).padStart(32, '0');
