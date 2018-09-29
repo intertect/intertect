@@ -4,6 +4,7 @@ function ToUint32(x) {
 
 export function solution(instruction, registers) {
   var rd, rs, rt;
+  var shamt;
   var result;
   switch(instruction[0]) {
     case 'addu':
@@ -43,23 +44,23 @@ export function solution(instruction, registers) {
       break;
     case 'sll':
       rd = nameToRegisterMap[instruction[1]];
-      rs = nameToRegisterMap[instruction[2]];
-      rt = nameToRegisterMap[instruction[3]];
-      result = ToUint32(registers.read(rs) << registers.read(rd));
+      rt = nameToRegisterMap[instruction[2]];
+      shamt = ToUint32(instruction[3]);
+      result = ToUint32(registers.read(rs)) << shamt;
       registers.write(rd, result);
       break;
     case 'srl':
       rd = nameToRegisterMap[instruction[1]];
-      rs = nameToRegisterMap[instruction[2]];
-      rt = nameToRegisterMap[instruction[3]];
-      result = ToUint32(registers.read(rs) >>> registers.read(rd));
+      rt = nameToRegisterMap[instruction[2]];
+      shamt = ToUint32(instruction[3]);
+      result = ToUint32(registers.read(rs)) >>> shamt;
       registers.write(rd, result);
       break;
     case 'sra':
       rd = nameToRegisterMap[instruction[1]];
-      rs = nameToRegisterMap[instruction[2]];
-      rt = nameToRegisterMap[instruction[3]];
-      result = ToUint32(registers.read(rs) >> registers.read(rd));
+      rt = nameToRegisterMap[instruction[2]];
+      shamt = ToUint32(instruction[3]);
+      result = ToUint32(registers.read(rs)) >> shamt;
       registers.write(rd, result);
       break;
     default:
