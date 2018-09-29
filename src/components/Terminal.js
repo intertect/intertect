@@ -59,14 +59,17 @@ class Terminal extends Component {
       lessonContent: "",
 
       completedLessons: localStorage.getItem('completedLessons') || 2,
-      completedParts: localStorage.getItem('completedParts') || 1,
+      completedParts: localStorage.getItem('completedParts') || 0,
 
-      resetCode: localStorage.getItem('studentProgram') == null,
+      resetCode: false,
       loadLesson: false,
       lessonComplete: false,
       lessonCorrect: true,
 
-      studentProgram: localStorage.getItem('studentProgram') || "",
+      // program the student starts this particular lesson with
+      // starterProgram: localStorage.getItem('starterProgram') || {},
+
+      studentProgram: "",
       assemblyProgram: [],
       binaryProgram: [],
       memory: new Memory(),
@@ -84,6 +87,11 @@ class Terminal extends Component {
 
       theme: "solarized_dark"
     };
+
+    localStorage.clear()
+    if (localStorage.getItem('starterProgram') == null) {
+      localStorage.setItem('starterProgram', JSON.stringify({}));
+    }
 
     this.onChange = this.onChange.bind(this);
     this.resetCode = this.resetCode.bind(this);
@@ -106,14 +114,28 @@ class Terminal extends Component {
     var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
     this.setState({
       resetCode : false,
-      studentProgram : lessonStarterCode[lessonPart]
+      studentProgram : JSON.parse(localStorage.getItem('starterProgram'))[lessonPart]
     });
   }
 
   loadLesson() {
+    var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
     if (this.state.lessonPart > this.state.completedParts) {
       this.setState({ completedParts : this.state.lessonPart })
       localStorage.setItem('completedParts', this.state.lessonPart);
+
+      // lesson parts are made incrementally to keep student code in tact
+      var insertionPoint = this.state.studentProgram.indexOf("default:");
+      var studentProgram =
+        this.state.studentProgram.substr(0,insertionPoint) +
+        `${lessonStarterCode[lessonPart]}\n` +
+        this.state.studentProgram.substr(insertionPoint,);
+
+      var localStorageStarter = JSON.parse(localStorage.getItem('starterProgram'));
+      if (localStorageStarter[lessonPart] == null) {
+        localStorageStarter[lessonPart] = studentProgram;
+        localStorage.setItem('starterProgram', JSON.stringify(localStorageStarter));
+      }
     }
 
     if (this.state.lesson > this.state.completedLessons) {
@@ -121,7 +143,6 @@ class Terminal extends Component {
       localStorage.setItem('completedLessons', this.state.lesson);
     }
 
-    var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
     var initRegisters = new Registers();
     var referenceRegisters = new Registers();
 
@@ -143,7 +164,7 @@ class Terminal extends Component {
 
       lessonContent : Object.values(lessonContent[lessonPart]).join(""),
       assemblyProgram : lessonAssembly[lessonPart].split("\n"),
-      studentProgram : lessonStarterCode[lessonPart],
+      studentProgram : JSON.parse(localStorage.getItem('starterProgram'))[lessonPart],
 
       studentRegisters : initRegisters,
       referenceRegisters : referenceRegisters,
@@ -336,7 +357,7 @@ class Terminal extends Component {
     var currentInstruction;
     this.state.lesson > 1 ?
       currentInstruction = <Button outline style={{width:"100%"}}>
-        Current Instruction: 0b{this.state.binaryProgram[this.state.currentStep]}
+        Current Instruction: {this.state.binaryProgram[this.state.currentStep]}
       </Button>
       : currentInstruction = <div></div>
 
@@ -406,7 +427,6 @@ class Terminal extends Component {
                     this.setState({
                       lessonPart : this.state.lessonPart + 1,
                       loadLesson : true,
-                      resetCode : true,
                       isIntroPaneOpen: true,
                       showTest: false
                     });
