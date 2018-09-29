@@ -178,6 +178,7 @@ class Terminal extends Component {
       });
 
       // instruction is passed as assembly for lesson 1 and binary for all others
+      var instruction;
       if (this.state.lesson == 1) {
         instruction = this.state.assemblyProgram[this.state.currentStep]
           .replace(/,/g,"")
@@ -186,6 +187,8 @@ class Terminal extends Component {
         instruction = parseInt(this.state.binaryProgram[this.state.currentStep],
           16).toString(2).padStart(32, '0');
       }
+
+      console.log(instruction)
 
       var script = document.createElement('script');
       try {
@@ -331,6 +334,13 @@ class Terminal extends Component {
         }
       }
     )
+
+    var currentInstruction;
+    this.state.lesson > 1 ?
+      currentInstruction = <div>
+        Current Instruction: {this.state.binaryProgram[this.state.currentStep]}
+      </div>
+      : currentInstruction = <div></div>
 
     return (this.state.lesson ?
 
@@ -537,7 +547,7 @@ class Terminal extends Component {
               <CardBody>
                 <div className="col-sm-12">
                   <div className="col-sm-12">
-                    Current Instruction: {this.state.binaryProgram[this.state.currentStep]}
+                    {currentInstruction}
                     <ul className="shell-body" style={{width:"100%"}}>{ assemblyList }</ul>
                   </div>
                   <div className="col-sm-12">
