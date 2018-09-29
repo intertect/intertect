@@ -57,6 +57,7 @@ class Terminal extends Component {
       lesson: null,
       lessonPart: null,
       lessonContent: "",
+      loadedLesson: false,
 
       completedLessons: localStorage.getItem('completedLessons') || 2,
       completedParts: localStorage.getItem('completedParts') || 0,
@@ -106,15 +107,15 @@ class Terminal extends Component {
 
   saveProgram() {
     localStorage.setItem('studentProgram', this.state.studentProgram);
-    localStorage.setItem('completedLessons', this.state.lesson);
-    localStorage.setItem('completedParts', this.state.lessonPart);
   }
 
   resetCode() {
     var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
+    var studentProgram = JSON.parse(localStorage.getItem('starterProgram'))[lessonPart];
     this.setState({
       resetCode : false,
-      studentProgram : JSON.parse(localStorage.getItem('starterProgram'))[lessonPart]
+      studentProgram : studentProgram,
+      loadedLesson: true
     });
   }
 
@@ -136,6 +137,9 @@ class Terminal extends Component {
         localStorageStarter[lessonPart] = studentProgram;
         localStorage.setItem('starterProgram', JSON.stringify(localStorageStarter));
       }
+
+      // only want to load code AFTER setting localStorage (race condition otherwise)
+      this.setState({ resetCode : true });
     }
 
     if (this.state.lesson > this.state.completedLessons) {
@@ -164,7 +168,6 @@ class Terminal extends Component {
 
       lessonContent : Object.values(lessonContent[lessonPart]).join(""),
       assemblyProgram : lessonAssembly[lessonPart].split("\n"),
-      studentProgram : JSON.parse(localStorage.getItem('starterProgram'))[lessonPart],
 
       studentRegisters : initRegisters,
       referenceRegisters : referenceRegisters,
@@ -361,7 +364,7 @@ class Terminal extends Component {
       </Button>
       : currentInstruction = <div></div>
 
-    return (this.state.lesson ?
+    return (this.state.loadedLesson ?
 
       <div>
         <SlidingPane
@@ -377,6 +380,7 @@ class Terminal extends Component {
         <Navbar color="default-color-dark" dark>
           <NavbarBrand href="#">
             <Button outline onClick={() => this.setState({
+                  loadedLesson : false,
                   lesson : null,
                   showMenu: false
                 })}>
