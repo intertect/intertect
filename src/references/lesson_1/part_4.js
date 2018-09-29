@@ -5,7 +5,10 @@ function ToUint32(x) {
 export function solution(instruction, registers) {
   var rd, rs, rt;
   var imm;
+  var target
+  var offset;
   var result;
+  var pc, pc_val, rs;
   switch(instruction[0]) {
   case 'addu':
     rd = nameToRegisterMap[instruction[1]];
@@ -63,7 +66,6 @@ export function solution(instruction, registers) {
     result = ToUint32(registers.read(rs) >> registers.read(rd));
     registers.write(rd, result);
     break;
-
   case 'addiu':
     rt = nameToRegisterMap[instruction[1]];
     rs = nameToRegisterMap[instruction[2]];
@@ -92,7 +94,6 @@ export function solution(instruction, registers) {
     result = ToUint32(registers.read(rs) ^ imm);
     registers.write(rt, result);
     break;
-
   default:
     // invalid/unsupported instruction passed in
     return;
