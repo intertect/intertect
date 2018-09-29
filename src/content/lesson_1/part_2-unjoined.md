@@ -1,4 +1,4 @@
-# Part 2: Headed Off On Your Own
+# Part 2: Heading Off On Your Own
 
 In this lesson, you'll be implementing the [`subu`](#subu) instruction.  Over the course
 of these lessons you'll be adding to your code over so by the end you'll have a

@@ -188,8 +188,6 @@ class Terminal extends Component {
           16).toString(2).padStart(32, '0');
       }
 
-      console.log(instruction)
-
       var script = document.createElement('script');
       try {
         script.appendChild(document.createTextNode(this.state.studentProgram));
