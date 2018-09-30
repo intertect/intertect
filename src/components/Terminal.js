@@ -168,7 +168,7 @@ class Terminal extends Component {
       targetStep : 0,
 
       lesson : lesson,
-      lessonPart : lessonPart,
+      lessonPart : lessonPartNum,
 
       lessonContent : Object.values(lessonContent[lessonPart]).join(""),
       assemblyProgram : lessonAssembly[lessonPart].split("\n"),
