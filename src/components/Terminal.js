@@ -113,7 +113,6 @@ class Terminal extends Component {
 
   loadLesson(lesson, lessonPartNum, resetCode) {
     var lessonPart = `lesson_${lesson}/part_${lessonPartNum}`;
-    console.log(lessonPart)
     if (lessonPartNum > this.state.completedParts) {
       this.setState({ completedParts : lessonPartNum - 1 })
       localStorage.setItem('completedParts', lessonPartNum - 1);
@@ -461,6 +460,8 @@ class Terminal extends Component {
 
         <Modal isOpen={!this.state.lessonCorrect && this.state.lessonComplete}
           frame position="bottom">
+
+          {console.log(this.state.lessonCorrect)}
 
           <ModalHeader>Oops, let{"'"}s try again!</ModalHeader>
           <ModalBody className="text-center">

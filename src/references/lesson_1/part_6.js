@@ -1,5 +1,5 @@
 function ToUint32(x) {
-  return parseInt(x) % Math.pow(2, 32);
+  return x >>> 0;
 }
 
 export function solution(instruction, registers, memory) {

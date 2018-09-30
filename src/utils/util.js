@@ -167,9 +167,11 @@ export class Registers {
     if (this.registers_.size !== other.registers_.size) {
         return false;
     }
-    var registers = Object.keys(this.registers_);
-    for (var i = 0; i < registers.length; i++) {
-      if (this.registers_[registers[i]] != other.registers_[registers[i]]) {
+    for (var register = 0; register < 0x20; register++) {
+      if (this.registers_[register] != other.registers_[register]) {
+        console.log(register)
+        console.log(this.registers_[register])
+        console.log(other.registers_[register])
         return false;
       }
     }
