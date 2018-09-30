@@ -189,22 +189,12 @@ class Terminal extends Component {
     return newRegisters;
   }
 
-  // TODO: Make sure we unmount and remount whenever we switch lessons
-
-
   render() {
     /*
     if (this.state.targetStep != this.state.studentRegisters.read(nameToRegisterMap["$pc"])) {
       this.setState({ currentStep : this.state.studentRegisters.read(nameToRegisterMap["$pc"])})
     }
-
-    if (this.state.loadLesson) {
-      this.loadLesson();
-    }
-
-    if (this.state.loadCode) {
-      this.loadCode();
-    }
+    */
 
     if (this.state.currentStep != this.state.targetStep) {
       this.setState({
