@@ -50,7 +50,7 @@ class RegistersTable extends Component {
     var registers = Object.keys(nameToRegisterMap);
     for (i = 0; i < registers.length; i++) {
       register = registers[i];
-      if (this.props.studentRegisters.usedRegisters.indexOf(register) != -1) {
+      if (this.props.studentRegisters.usedRegisters.indexOf(nameToRegisterMap[register]) != -1) {
         continue;
       }
 

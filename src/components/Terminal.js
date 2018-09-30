@@ -179,6 +179,7 @@ class Terminal extends Component {
       studentMemory : studentMemory,
       referenceMemory : referenceMemory,
 
+      incorrectWarning: "",
       loadedLesson : true,
     })
   }
@@ -367,7 +368,6 @@ class Terminal extends Component {
                       });
                     // TODO: Make a reset() function.  This might not be necessary
                     this.loadLesson(this.state.lesson, part);
-                    // TODO: Is this necessary?
                     this.loadCode(this.state.lesson, part);
                     }} style={{width:"100%"}}>
                     Redo
@@ -457,7 +457,6 @@ class Terminal extends Component {
                     });
 
                       this.loadLesson(this.state.lesson, this.state.lessonPart + 1);
-                      // TODO: Maybe not needed
                       this.loadCode(this.state.lesson, this.state.lessonPart + 1);
                   }}> Next Lesson
                 </Button>
@@ -595,7 +594,6 @@ class Terminal extends Component {
               <CardBody>
                 <div className="col-sm-12">
                   <div className="col-sm-12">
-                    <code>{this.state.incorrectWarning}</code>
                     {currentInstruction}
                     <ul className="shell-body" style={{width:"100%"}}>{ assemblyList }</ul>
                   </div>
@@ -656,6 +654,7 @@ class Terminal extends Component {
                 </CardTitle>
               </CardHeader>
               <CardBody>
+                <code>{this.state.incorrectWarning}</code>
                 <div className="row">
                   <div className="col-sm-6">
                     <Button outline
