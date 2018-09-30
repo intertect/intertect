@@ -13,13 +13,6 @@ export function solution(instruction, registers) {
       result = ToUint32(registers.read(rs) + registers.read(rt));
       registers.write(rd, result);
       break;
-    case 'subu':
-      rd = nameToRegisterMap[instruction[1]];
-      rs = nameToRegisterMap[instruction[2]];
-      rt = nameToRegisterMap[instruction[3]];
-      result = ToUint32(registers.read(rs) - registers.read(rt));
-      registers.write(rd, result);
-      break;
     default:
       // invalid/unsupported instruction passed in
       return;

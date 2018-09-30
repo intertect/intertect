@@ -45,6 +45,7 @@ Array.range = (start, end) => Array.from({length: (end - start)}, (v, k) => k + 
 class Terminal extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       // TODO: Make this a program counter variable, copying to and from the student registers
       // FIXME: This will require knowing which lines of the program contain code
@@ -79,6 +80,7 @@ class Terminal extends Component {
       showRegisters: true,
       showMemory: false,
 
+      incorrectWarning: "",
       unviewedStepExplanation: true,
       unviewedImplementExplanation: true,
       unviewedMemoryExplanation: true,
@@ -183,7 +185,6 @@ class Terminal extends Component {
   copyRegisters(srcRegisters) {
     var newRegisters = new Registers();
     newRegisters.registers_ = srcRegisters.registers_;
-    newRegisters.recentRegister = srcRegisters.recentRegister;
     newRegisters.usedRegisters = srcRegisters.usedRegisters;
     return newRegisters;
   }
@@ -204,7 +205,6 @@ class Terminal extends Component {
     if (this.state.loadCode) {
       this.loadCode();
     }
-    */
 
     if (this.state.currentStep != this.state.targetStep) {
       this.setState({
@@ -251,10 +251,24 @@ class Terminal extends Component {
       var solution = lessonReferenceSolutions[lessonPart];
       solution(instruction, this.state.referenceRegisters, this.state.referenceMemory);
 
+      var incorrectWarning;
+      if (this.state.studentRegisters.lastOperation != this.state.referenceRegisters.lastOperation ||
+        this.state.studentRegisters.lastUsedRegister != this.state.referenceRegisters.lastUsedRegister) {
+
+        incorrectWarning = `Oops! You
+          ${this.state.studentRegisters.lastOperation} to
+          ${this.state.studentRegisters.lastUsedRegister} instead of
+          ${this.state.referenceRegisters.lastOperation} to
+          ${this.state.referenceRegisters.lastUsedRegister}`
+      } else {
+        incorrectWarning = ""
+      }
+
       this.setState({
         // TODO: Also compare memory
         lessonCorrect : this.state.studentRegisters.compareRegisters(this.state.referenceRegisters),
-        lessonComplete : (this.state.currentStep == (this.state.assemblyProgram.length - 2))
+        lessonComplete : (this.state.currentStep == (this.state.assemblyProgram.length - 2)),
+        incorrectWarning : incorrectWarning
       });
     }
 
@@ -588,6 +602,7 @@ class Terminal extends Component {
               </CardHeader>
               <CardBody>
                 <div className="col-sm-12">
+                  Incorrect: {this.state.incorrectWarning}
                   <div className="col-sm-12">
                     {currentInstruction}
                     <ul className="shell-body" style={{width:"100%"}}>{ assemblyList }</ul>
