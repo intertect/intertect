@@ -76,9 +76,6 @@ class Terminal extends Component {
       binaryProgram: [],
       memory: new Memory(),
 
-      studentRegisters: new Registers(),
-      referenceRegisters: new Registers(),
-
       showRegisters: true,
       showMemory: false,
 
@@ -115,11 +112,11 @@ class Terminal extends Component {
     });
   }
 
-  loadLesson() {
-    var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
-    if (this.state.lessonPart > this.state.completedParts) {
-      this.setState({ completedParts : this.state.lessonPart })
-      localStorage.setItem('completedParts', this.state.lessonPart);
+  loadLesson(lesson, lessonPart) {
+    var lessonPart = `lesson_${lesson}/part_${lessonPart}`;
+    if (lessonPart > this.state.completedParts) {
+      this.setState({ completedParts : lessonPart - 1 })
+      localStorage.setItem('completedParts', lessonPart - 1);
 
       // lesson parts are made incrementally to keep student code in tact
       var insertionPoint = this.state.studentProgram.indexOf("default:");
@@ -140,9 +137,9 @@ class Terminal extends Component {
       }
     }
 
-    if (this.state.lesson > this.state.completedLessons) {
-      this.setState({ completedLessons : this.state.lesson })
-      localStorage.setItem('completedLessons', this.state.lesson);
+    if (lesson > this.state.completedLessons) {
+      this.setState({ completedLessons : lesson - 1 })
+      localStorage.setItem('completedLessons', lesson - 1);
     }
 
     var studentRegisters = new Registers();
@@ -166,6 +163,9 @@ class Terminal extends Component {
       lessonCorrect: true,
       currentStep : 0,
       targetStep : 0,
+
+      lesson : lesson,
+      lessonPart : lessonPart,
 
       lessonContent : Object.values(lessonContent[lessonPart]).join(""),
       assemblyProgram : lessonAssembly[lessonPart].split("\n"),
@@ -192,11 +192,11 @@ class Terminal extends Component {
 
 
   render() {
+    /*
     if (this.state.targetStep != this.state.studentRegisters.read(nameToRegisterMap["$pc"])) {
       this.setState({ currentStep : this.state.studentRegisters.read(nameToRegisterMap["$pc"])})
     }
 
-    /*
     if (this.state.loadLesson) {
       this.loadLesson();
     }
@@ -337,12 +337,7 @@ class Terminal extends Component {
     lessons.map((lesson) => {
       lessonMenuButtons.push(
         <Button outline onClick={() => {
-            this.setState({
-              lesson : lesson,
-              lessonPart : 1,
-            });
-
-            this.loadLesson();
+            this.loadLesson(lesson, 1);
           }}
           className={(lesson <= this.state.completedLessons) ? "enabled" : "disabled"}
           style={{width:"75%"}}>
@@ -360,19 +355,12 @@ class Terminal extends Component {
                 <div className="col-sm-9">
                   <Button outline onClick={() => {
                       this.setState({
-                        lessonPart : part,
-
-                        // TODO: These two lines should probably be replaced with just straight up loading the lesson and the code
-                        // loadLesson : true,
-                        // loadCode : true,
-
-
                         isIntroPaneOpen: true,
                         showTest: false,
                         revealCompletedLevels: false
                       });
                     // TODO: Make a reset() function.  This might not be necessary
-                    this.loadLesson();
+                    this.loadLesson(this.state.lesson, part);
                     // TODO: Is this necessary?
                     this.loadCode();
                     }} style={{width:"100%"}}>
@@ -458,12 +446,11 @@ class Terminal extends Component {
                 <Button outline style={{width:"100%"}}
                     onClick={() => {
                     this.setState({
-                      lessonPart : this.state.lessonPart + 1,
                       isIntroPaneOpen: true,
                       showTest: false
                     });
 
-                      this.loadLesson();
+                      this.loadLesson(this.state.lesson, this.state.lessonPart + 1);
                       // TODO: Maybe not needed
                       this.loadCode();
                   }}> Next Lesson
@@ -471,7 +458,7 @@ class Terminal extends Component {
               </div>
 
               <div className="col-sm-6">
-                <Button outline color="danger" onClick={() => this.setState({ loadLesson : true })} style={{width:"100%"}}>
+                <Button outline color="danger" onClick={() => this.loadLesson(this.state.lesson, this.state.lessonPart)} style={{width:"100%"}}>
                   I Want To Stay Here
                 </Button>
               </div>
@@ -487,7 +474,7 @@ class Terminal extends Component {
             <div className="row">
               <div className="col-sm-6">
                 <Button outline style={{width:"100%"}}
-                    onClick={() => {this.setState({ loadLesson : true })}}>
+                  onClick={() => this.loadLesson(this.state.lesson, this.state.lessonPart)}>
                   <i className="fa fa-refresh" aria-hidden="true"></i> Reset
                 </Button>
               </div>
@@ -520,7 +507,7 @@ class Terminal extends Component {
                 <Button outline color="danger" style={{width:"100%"}}
                   onClick={() => {
                     this.setState({confirmRestart : false })
-                    this.loadLesson();
+                    this.loadLesson(this.state.lesson, this.state.lessonPart);
                     this.loadCode();
                   }}>
                   Continue
@@ -646,7 +633,7 @@ class Terminal extends Component {
                   </div>
                   <div className="col-sm-12">
                     <Button outline color="warning" style={{width:"100%"}}
-                      onClick={() => {this.setState({ loadLesson : true })}}>
+                      onClick={() => { this.loadLesson(this.state.lesson, this.state.lessonPart) }}>
                       <i className="fa fa-refresh" aria-hidden="true"></i> Reset
                     </Button>
                   </div>
