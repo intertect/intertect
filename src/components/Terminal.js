@@ -46,7 +46,10 @@ class Terminal extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      // TODO: Make this a program counter variable, copying to and from the student registers
+      // FIXME: This will require knowing which lines of the program contain code
       currentStep: 0,
+      // TODO: This will become unecessary if on run we loop and exit when we leave the program window
       targetStep: 0,
 
       isIntroPaneOpen: true,
@@ -62,8 +65,6 @@ class Terminal extends Component {
       completedLessons: localStorage.getItem('completedLessons') || 2,
       completedParts: localStorage.getItem('completedParts') || 1,
 
-      loadCode: false,
-      loadLesson: false,
       lessonComplete: false,
       lessonCorrect: true,
 
@@ -109,7 +110,6 @@ class Terminal extends Component {
   loadCode() {
     var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
     this.setState({
-      loadCode : false,
       studentProgram : this.state.starterProgram[lessonPart],
       loadedLesson: true
     });
@@ -133,9 +133,9 @@ class Terminal extends Component {
         updatedStarterProgram[lessonPart] = studentProgram;
         this.setState({
           starterProgram: updatedStarterProgram,
-          loadCode : true
         })
 
+        this.loadCode();
         localStorage.setItem('starterProgram', updatedStarterProgram);
       }
     }
@@ -145,10 +145,13 @@ class Terminal extends Component {
       localStorage.setItem('completedLessons', this.state.lesson);
     }
 
-    var initRegisters = new Registers();
+    var studentRegisters = new Registers();
     var referenceRegisters = new Registers();
 
-    initRegisters.load(lessonRegisterInits[lessonPart]);
+    var studentMemory = new Memory();
+    var referenceMemory = new Memory();
+
+    studentRegisters.load(lessonRegisterInits[lessonPart]);
     referenceRegisters.load(lessonRegisterInits[lessonPart]);
 
     // only need the binary code available for lessons 2 and up
@@ -167,9 +170,13 @@ class Terminal extends Component {
       lessonContent : Object.values(lessonContent[lessonPart]).join(""),
       assemblyProgram : lessonAssembly[lessonPart].split("\n"),
 
-      studentRegisters : initRegisters,
+      studentRegisters : studentRegisters,
       referenceRegisters : referenceRegisters,
-      loadLesson : false
+
+      studentMemory : studentMemory,
+      referenceMemory : referenceMemory,
+
+      loadedLesson : true,
     })
   }
 
@@ -181,11 +188,15 @@ class Terminal extends Component {
     return newRegisters;
   }
 
+  // TODO: Make sure we unmount and remount whenever we switch lessons
+
+
   render() {
     if (this.state.targetStep != this.state.studentRegisters.read(nameToRegisterMap["$pc"])) {
       this.setState({ currentStep : this.state.studentRegisters.read(nameToRegisterMap["$pc"])})
     }
 
+    /*
     if (this.state.loadLesson) {
       this.loadLesson();
     }
@@ -193,6 +204,7 @@ class Terminal extends Component {
     if (this.state.loadCode) {
       this.loadCode();
     }
+    */
 
     if (this.state.currentStep != this.state.targetStep) {
       this.setState({
@@ -230,16 +242,17 @@ class Terminal extends Component {
 
       try {
         // eslint-disable-next-line
-        execute(instruction, this.state.studentRegisters);
+        execute(instruction, this.state.studentRegisters, this.state.studentMemory);
       } catch(e) {
         // student renamed function -- no execution
       }
 
       var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
       var solution = lessonReferenceSolutions[lessonPart];
-      solution(instruction, this.state.referenceRegisters);
+      solution(instruction, this.state.referenceRegisters, this.state.referenceMemory);
 
       this.setState({
+        // TODO: Also compare memory
         lessonCorrect : this.state.studentRegisters.compareRegisters(this.state.referenceRegisters),
         lessonComplete : (this.state.currentStep == (this.state.assemblyProgram.length - 2))
       });
@@ -327,8 +340,9 @@ class Terminal extends Component {
             this.setState({
               lesson : lesson,
               lessonPart : 1,
-              loadLesson : true
-            })
+            });
+
+            this.loadLesson();
           }}
           className={(lesson <= this.state.completedLessons) ? "enabled" : "disabled"}
           style={{width:"75%"}}>
@@ -347,12 +361,20 @@ class Terminal extends Component {
                   <Button outline onClick={() => {
                       this.setState({
                         lessonPart : part,
-                        loadLesson : true,
-                        loadCode : true,
+
+                        // TODO: These two lines should probably be replaced with just straight up loading the lesson and the code
+                        // loadLesson : true,
+                        // loadCode : true,
+
+
                         isIntroPaneOpen: true,
                         showTest: false,
                         revealCompletedLevels: false
                       });
+                    // TODO: Make a reset() function.  This might not be necessary
+                    this.loadLesson();
+                    // TODO: Is this necessary?
+                    this.loadCode();
                     }} style={{width:"100%"}}>
                     Redo
                   </Button>
@@ -437,10 +459,13 @@ class Terminal extends Component {
                     onClick={() => {
                     this.setState({
                       lessonPart : this.state.lessonPart + 1,
-                      loadLesson : true,
                       isIntroPaneOpen: true,
                       showTest: false
                     });
+
+                      this.loadLesson();
+                      // TODO: Maybe not needed
+                      this.loadCode();
                   }}> Next Lesson
                 </Button>
               </div>
@@ -493,10 +518,11 @@ class Terminal extends Component {
 
               <div className="col-sm-6">
                 <Button outline color="danger" style={{width:"100%"}}
-                  onClick={() => {this.setState({
-                    loadLesson : true,
-                    loadCode: true,
-                    confirmRestart : false })}}>
+                  onClick={() => {
+                    this.setState({confirmRestart : false })
+                    this.loadLesson();
+                    this.loadCode();
+                  }}>
                   Continue
                 </Button>
               </div>
@@ -599,10 +625,13 @@ class Terminal extends Component {
                   </div>
                   <div className="col-sm-12">
                     <Button outline color="default" style={{width:"100%"}}
+                      // TODO: Factor this out into a method so it can be called not just from here. Running a program is really just calling step() repeatedly
                       onClick={() => {
                         var newStudentRegisters = this.copyRegisters(this.state.studentRegisters);
                         var newReferenceRegisters  = this.copyRegisters(this.state.referenceRegisters);
 
+                        // FIXME: All operations on the program counter should be in multiples of 4
+                        // TODO: See comment on targetStep and currentStep at top of file
                         newStudentRegisters.registers_[nameToRegisterMap["$pc"]] += 1;
                         newReferenceRegisters.registers_[nameToRegisterMap["$pc"]] += 1;
 
