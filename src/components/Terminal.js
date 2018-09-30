@@ -62,13 +62,13 @@ class Terminal extends Component {
       completedLessons: localStorage.getItem('completedLessons') || 2,
       completedParts: localStorage.getItem('completedParts') || 0,
 
-      resetCode: false,
+      loadCode: false,
       loadLesson: false,
       lessonComplete: false,
       lessonCorrect: true,
 
       // program the student starts this particular lesson with
-      // starterProgram: localStorage.getItem('starterProgram') || {},
+      starterProgram: localStorage.getItem('starterProgram') || {},
 
       studentProgram: "",
       assemblyProgram: [],
@@ -90,12 +90,9 @@ class Terminal extends Component {
     };
 
     localStorage.clear()
-    if (localStorage.getItem('starterProgram') == null) {
-      localStorage.setItem('starterProgram', JSON.stringify({}));
-    }
 
     this.onChange = this.onChange.bind(this);
-    this.resetCode = this.resetCode.bind(this);
+    this.loadCode = this.loadCode.bind(this);
     this.loadLesson = this.loadLesson.bind(this);
     this.saveProgram = this.saveProgram.bind(this);
     this.copyRegisters = this.copyRegisters.bind(this);
@@ -109,12 +106,11 @@ class Terminal extends Component {
     localStorage.setItem('studentProgram', this.state.studentProgram);
   }
 
-  resetCode() {
+  loadCode() {
     var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
-    var studentProgram = JSON.parse(localStorage.getItem('starterProgram'))[lessonPart];
     this.setState({
-      resetCode : false,
-      studentProgram : studentProgram,
+      loadCode : false,
+      studentProgram : this.state.starterProgram[lessonPart],
       loadedLesson: true
     });
   }
@@ -132,14 +128,16 @@ class Terminal extends Component {
         `${lessonStarterCode[lessonPart]}\n` +
         this.state.studentProgram.substr(insertionPoint,);
 
-      var localStorageStarter = JSON.parse(localStorage.getItem('starterProgram'));
-      if (localStorageStarter[lessonPart] == null) {
-        localStorageStarter[lessonPart] = studentProgram;
-        localStorage.setItem('starterProgram', JSON.stringify(localStorageStarter));
-      }
+      if (this.state.starterProgram[lessonPart] == null) {
+        var updatedStarterProgram = Object.assign({}, this.state.starterProgram);
+        updatedStarterProgram[lessonPart] = studentProgram;
+        this.setState({
+          starterProgram: updatedStarterProgram,
+          loadCode : true
+        })
 
-      // only want to load code AFTER setting localStorage (race condition otherwise)
-      this.setState({ resetCode : true });
+        localStorage.setItem('starterProgram', updatedStarterProgram);
+      }
     }
 
     if (this.state.lesson > this.state.completedLessons) {
@@ -192,8 +190,8 @@ class Terminal extends Component {
       this.loadLesson();
     }
 
-    if (this.state.resetCode) {
-      this.resetCode();
+    if (this.state.loadCode) {
+      this.loadCode();
     }
 
     if (this.state.currentStep != this.state.targetStep) {
@@ -341,7 +339,7 @@ class Terminal extends Component {
                       this.setState({
                         lessonPart : part,
                         loadLesson : true,
-                        resetCode : true,
+                        loadCode : true,
                         isIntroPaneOpen: true,
                         showTest: false,
                         revealCompletedLevels: false
@@ -488,7 +486,7 @@ class Terminal extends Component {
                 <Button outline color="danger" style={{width:"100%"}}
                   onClick={() => {this.setState({
                     loadLesson : true,
-                    resetCode: true,
+                    loadCode: true,
                     confirmRestart : false })}}>
                   Continue
                 </Button>
