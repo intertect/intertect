@@ -129,7 +129,7 @@ class Terminal extends Component {
       var insertionPoint = this.state.studentProgram.indexOf("default:");
       var studentProgram =
         this.state.studentProgram.substr(0,insertionPoint) +
-        `${lessonStarterCode[lessonPart]}\n` +
+        `\n${lessonStarterCode[lessonPart]}\t\t` +
         this.state.studentProgram.substr(insertionPoint,);
 
       starterProgram = Object.assign({}, this.state.starterProgram);
@@ -460,8 +460,6 @@ class Terminal extends Component {
 
         <Modal isOpen={!this.state.lessonCorrect && this.state.lessonComplete}
           frame position="bottom">
-
-          {console.log(this.state.lessonCorrect)}
 
           <ModalHeader>Oops, let{"'"}s try again!</ModalHeader>
           <ModalBody className="text-center">
