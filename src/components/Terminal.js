@@ -247,9 +247,9 @@ class Terminal extends Component {
         this.state.studentRegisters.lastUsedRegister != this.state.referenceRegisters.lastUsedRegister) {
 
         incorrectWarning = `Oops! You
-          ${this.state.studentRegisters.lastOperation} to
+          ${this.state.studentRegisters.lastOperation}
           ${this.state.studentRegisters.lastUsedRegister} instead of
-          ${this.state.referenceRegisters.lastOperation} to
+          ${this.state.referenceRegisters.lastOperation}
           ${this.state.referenceRegisters.lastUsedRegister}`
       } else {
         incorrectWarning = ""
@@ -594,8 +594,8 @@ class Terminal extends Component {
               </CardHeader>
               <CardBody>
                 <div className="col-sm-12">
-                  Incorrect: {this.state.incorrectWarning}
                   <div className="col-sm-12">
+                    <code>{this.state.incorrectWarning}</code>
                     {currentInstruction}
                     <ul className="shell-body" style={{width:"100%"}}>{ assemblyList }</ul>
                   </div>

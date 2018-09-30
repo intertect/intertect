@@ -135,8 +135,8 @@ export class Registers {
   }
 
   read(register) {
-    this.lastOperation = "read";
-    this.lastUsedRegister = register;
+    this.lastOperation = "read from";
+    this.lastUsedRegister = registerToNameMap[register];
     return this.registers_[register];
   }
 
@@ -149,8 +149,8 @@ export class Registers {
 
     this.usedRegisters.unshift(register);
 
-    this.lastOperation = "write";
-    this.lastUsedRegister = register;
+    this.lastOperation = "wrote to";
+    this.lastUsedRegister = registerToNameMap[register];
 
     this.registers_[register] = value;
   }
