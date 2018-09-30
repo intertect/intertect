@@ -90,7 +90,8 @@ export class Registers {
   // Registers as a map for simplicity. Definitely fast enough
   constructor() {
     this.registers_ = {};
-    this.recentRegister = null;
+    this.lastOperation = null;
+    this.lastUsedRegister = null;
     this.usedRegisters = [];
     this.reset();
   }
@@ -134,6 +135,8 @@ export class Registers {
   }
 
   read(register) {
+    this.lastOperation = "read";
+    this.lastUsedRegister = register;
     return this.registers_[register];
   }
 
@@ -145,7 +148,10 @@ export class Registers {
     }
 
     this.usedRegisters.unshift(register);
-    this.recentRegister = register;
+
+    this.lastOperation = "write";
+    this.lastUsedRegister = register;
+
     this.registers_[register] = value;
   }
 

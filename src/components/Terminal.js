@@ -176,7 +176,8 @@ class Terminal extends Component {
   copyRegisters(srcRegisters) {
     var newRegisters = new Registers();
     newRegisters.registers_ = srcRegisters.registers_;
-    newRegisters.recentRegister = srcRegisters.recentRegister;
+    newRegisters.lastOperation = srcRegisters.lastOperation;
+    newRegisters.lastUsedRegister = srcRegisters.lastUsedRegister;
     newRegisters.usedRegisters = srcRegisters.usedRegisters;
     return newRegisters;
   }
@@ -202,6 +203,7 @@ class Terminal extends Component {
       // instruction is passed as assembly for lesson 1 and binary for all
       // others
       var instruction;
+      var incorrectWarning;
       if (this.state.lesson == 1) {
         instruction = this.state.assemblyProgram[this.state.currentStep]
           .replace(/[,)]/g,"")
@@ -238,6 +240,18 @@ class Terminal extends Component {
       var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
       var solution = lessonReferenceSolutions[lessonPart];
       solution(instruction, this.state.referenceRegisters);
+
+      if (this.state.studentRegisters.lastOperation != this.state.referenceRegisters.lastOperation ||
+        this.state.studentRegisters.lastUsedRegister != this.state.referenceRegisters.lastUsedRegister) {
+
+        incorrectWarning = `Oops! You
+          ${this.state.studentRegisters.lastOperation} to
+          ${this.state.studentRegisters.lastUsedRegister} instead of
+          ${this.state.referenceRegisters.lastOperation} to
+          ${this.state.referenceRegisters.lastUsedRegister}`
+      } else {
+        incorrectWarning = ""
+      }
 
       this.setState({
         lessonCorrect : this.state.studentRegisters.compareRegisters(this.state.referenceRegisters),
@@ -575,6 +589,7 @@ class Terminal extends Component {
               </CardHeader>
               <CardBody>
                 <div className="col-sm-12">
+                  {incorrectWarning}
                   <div className="col-sm-12">
                     {currentInstruction}
                     <ul className="shell-body" style={{width:"100%"}}>{ assemblyList }</ul>
