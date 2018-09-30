@@ -4,98 +4,98 @@ function ToUint32(x) {
 
 export function solution(instruction, registers) {
   var rd, rs, rt;
-  var imm;
   var result;
+  var imm;
+  var target;
+  var offset;
   switch(instruction[0]) {
-  case 'addu':
-    rd = nameToRegisterMap[instruction[1]];
-    rs = nameToRegisterMap[instruction[2]];
-    rt = nameToRegisterMap[instruction[3]];
-    result = ToUint32(registers.read(rs) + registers.read(rt));
-    registers.write(rd, result);
-    break;
-  case 'subu':
-    rd = nameToRegisterMap[instruction[1]];
-    rs = nameToRegisterMap[instruction[2]];
-    rt = nameToRegisterMap[instruction[3]];
-    result = ToUint32(registers.read(rs) - registers.read(rt));
-    registers.write(rd, result);
-    break;
-  case 'and':
-    rd = nameToRegisterMap[instruction[1]];
-    rs = nameToRegisterMap[instruction[2]];
-    rt = nameToRegisterMap[instruction[3]];
-    result = ToUint32(registers.read(rs) & registers.read(rd));
-    registers.write(rd, result);
-    break;
-  case 'or':
-    rd = nameToRegisterMap[instruction[1]];
-    rs = nameToRegisterMap[instruction[2]];
-    rt = nameToRegisterMap[instruction[3]];
-    result = ToUint32(registers.read(rs) | registers.read(rd));
-    registers.write(rd, result);
-    break;
-  case 'xor':
-    rd = nameToRegisterMap[instruction[1]];
-    rs = nameToRegisterMap[instruction[2]];
-    rt = nameToRegisterMap[instruction[3]];
-    result = ToUint32(registers.read(rs) ^ registers.read(rd));
-    registers.write(rd, result);
-    break;
-  case 'sll':
-    rd = nameToRegisterMap[instruction[1]];
-    rs = nameToRegisterMap[instruction[2]];
-    rt = nameToRegisterMap[instruction[3]];
-    result = ToUint32(registers.read(rs) << registers.read(rd));
-    registers.write(rd, result);
-    break;
-  case 'srl':
-    rd = nameToRegisterMap[instruction[1]];
-    rs = nameToRegisterMap[instruction[2]];
-    rt = nameToRegisterMap[instruction[3]];
-    result = ToUint32(registers.read(rs) >>> registers.read(rd));
-    registers.write(rd, result);
-    break;
-  case 'sra':
-    rd = nameToRegisterMap[instruction[1]];
-    rs = nameToRegisterMap[instruction[2]];
-    rt = nameToRegisterMap[instruction[3]];
-    result = ToUint32(registers.read(rs) >> registers.read(rd));
-    registers.write(rd, result);
-    break;
-
-  case 'addiu':
-    rt = nameToRegisterMap[instruction[1]];
-    rs = nameToRegisterMap[instruction[2]];
-    imm = instruction[3];
-    result = ToUint32(registers.read(rs) + imm);
-    registers.write(rt, result);
-    break;
-  case 'andi':
-    rt = nameToRegisterMap[instruction[1]];
-    rs = nameToRegisterMap[instruction[2]];
-    imm = instruction[3];
-    result = ToUint32(registers.read(rs) & imm);
-    registers.write(rt, result);
-    break;
-  case 'ori':
-    rt = nameToRegisterMap[instruction[1]];
-    rs = nameToRegisterMap[instruction[2]];
-    imm = instruction[3];
-    result = ToUint32(registers.read(rs) | imm);
-    registers.write(rt, result);
-    break;
-  case 'xori':
-    rt = nameToRegisterMap[instruction[1]];
-    rs = nameToRegisterMap[instruction[2]];
-    imm = instruction[3];
-    result = ToUint32(registers.read(rs) ^ imm);
-    registers.write(rt, result);
-    break;
-
-  default:
-    // invalid/unsupported instruction passed in
-    return;
+    case 'addu':
+      rd = nameToRegisterMap[instruction[1]];
+      rs = nameToRegisterMap[instruction[2]];
+      rt = nameToRegisterMap[instruction[3]];
+      result = ToUint32(registers.read(rs) + registers.read(rt));
+      registers.write(rd, result);
+      break;
+    case 'subu':
+      rd = nameToRegisterMap[instruction[1]];
+      rs = nameToRegisterMap[instruction[2]];
+      rt = nameToRegisterMap[instruction[3]];
+      result = ToUint32(registers.read(rs) - registers.read(rt));
+      registers.write(rd, result);
+      break;
+    case 'and':
+      rd = nameToRegisterMap[instruction[1]];
+      rs = nameToRegisterMap[instruction[2]];
+      rt = nameToRegisterMap[instruction[3]];
+      result = ToUint32(registers.read(rs) & registers.read(rd));
+      registers.write(rd, result);
+      break;
+    case 'or':
+      rd = nameToRegisterMap[instruction[1]];
+      rs = nameToRegisterMap[instruction[2]];
+      rt = nameToRegisterMap[instruction[3]];
+      result = ToUint32(registers.read(rs) | registers.read(rd));
+      registers.write(rd, result);
+      break;
+    case 'xor':
+      rd = nameToRegisterMap[instruction[1]];
+      rs = nameToRegisterMap[instruction[2]];
+      rt = nameToRegisterMap[instruction[3]];
+      result = ToUint32(registers.read(rs) ^ registers.read(rd));
+      registers.write(rd, result);
+      break;
+    case 'sll':
+      rd = nameToRegisterMap[instruction[1]];
+      rs = nameToRegisterMap[instruction[2]];
+      rt = nameToRegisterMap[instruction[3]];
+      result = ToUint32(registers.read(rs) << registers.read(rd));
+      registers.write(rd, result);
+      break;
+    case 'srl':
+      rd = nameToRegisterMap[instruction[1]];
+      rs = nameToRegisterMap[instruction[2]];
+      rt = nameToRegisterMap[instruction[3]];
+      result = ToUint32(registers.read(rs) >>> registers.read(rd));
+      registers.write(rd, result);
+      break;
+    case 'sra':
+      rd = nameToRegisterMap[instruction[1]];
+      rs = nameToRegisterMap[instruction[2]];
+      rt = nameToRegisterMap[instruction[3]];
+      result = ToUint32(registers.read(rs) >> registers.read(rd));
+      registers.write(rd, result);
+      break;
+    case 'addiu':
+      rt = nameToRegisterMap[instruction[1]];
+      rs = nameToRegisterMap[instruction[2]];
+      imm = instruction[3];
+      result = ToUint32(registers.read(rs) + imm);
+      registers.write(rt, result);
+      break;
+    case 'andi':
+      rt = nameToRegisterMap[instruction[1]];
+      rs = nameToRegisterMap[instruction[2]];
+      imm = instruction[3];
+      result = ToUint32(registers.read(rs) & imm);
+      registers.write(rt, result);
+      break;
+    case 'ori':
+      rt = nameToRegisterMap[instruction[1]];
+      rs = nameToRegisterMap[instruction[2]];
+      imm = instruction[3];
+      result = ToUint32(registers.read(rs) | imm);
+      registers.write(rt, result);
+      break;
+    case 'xori':
+      rt = nameToRegisterMap[instruction[1]];
+      rs = nameToRegisterMap[instruction[2]];
+      imm = instruction[3];
+      result = ToUint32(registers.read(rs) ^ imm);
+      registers.write(rt, result);
+      break;
+    default:
+      // invalid/unsupported instruction passed in
+      return;
   }
 }
 
