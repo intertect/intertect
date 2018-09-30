@@ -169,9 +169,6 @@ export class Registers {
     }
     for (var register = 0; register < 0x20; register++) {
       if (this.registers_[register] != other.registers_[register]) {
-        console.log(register)
-        console.log(this.registers_[register])
-        console.log(other.registers_[register])
         return false;
       }
     }

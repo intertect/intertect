@@ -328,7 +328,7 @@ class Terminal extends Component {
     var lessonMenuButtons = [];
 
     var lessons = Array.range(1, 5)
-    var lessonParts = Array.range(1, this.state.completedParts + 1)
+    var lessonParts = Array.range(1, this.state.completedParts + 2)
     lessons.map((lesson) => {
       lessonMenuButtons.push(
         <Button outline onClick={() => {
