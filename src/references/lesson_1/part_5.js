@@ -9,7 +9,7 @@ export function solution(instruction, registers) {
   var imm;
   var target;
   var offset;
-  var pc, pc_val, rs;
+  var pc, pc_val, ra;
   switch(instruction[0]) {
     case 'addu':
       rd = nameToRegisterMap[instruction[1]];

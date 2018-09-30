@@ -2,14 +2,17 @@ function ToUint32(x) {
   return parseInt(x) % Math.pow(2, 32);
 }
 
-export function solution(instruction, registers) {
+export function solution(instruction, registers, memory) {
   var rd, rs, rt;
   var shamt;
   var result;
   var imm;
   var target
   var offset;
-  var pc, pc_val, rs;
+  var pc, pc_val, ra;
+  var byte_1, byte_2, byte_3, byte_4;
+  var value;
+  var start_address;
   switch(instruction[0]) {
     case 'addu':
       rd = nameToRegisterMap[instruction[1]];
@@ -149,14 +152,14 @@ export function solution(instruction, registers) {
       rt = nameToRegisterMap[instruction[2]];
       offset = [3];
 
-      var start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
-      var value = ToUint32(registers.read(rt));
+      start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
+      value = ToUint32(registers.read(rt));
 
       // From most to least significant
-      var byte_1 = (value >> 24) & 0xFF;
-      var byte_2 = (value >> 16) & 0xFF;
-      var byte_3 = (value >> 8) & 0xFF;
-      var byte_4 = value & 0xFF;
+      byte_1 = (value >> 24) & 0xFF;
+      byte_2 = (value >> 16) & 0xFF;
+      byte_3 = (value >> 8) & 0xFF;
+      byte_4 = value & 0xFF;
 
       memory.write(start_address, byte_1);
       memory.write(start_address + 1, byte_2);
@@ -169,12 +172,12 @@ export function solution(instruction, registers) {
       rt = nameToRegisterMap[instruction[2]];
       offset = [3];
 
-      var start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
-      var value = ToUint32(registers.read(rt));
+      start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
+      value = ToUint32(registers.read(rt));
 
       // From most to least significant
-      var byte_1 = (value >> 8) & 0xFF;
-      var byte_2 = value & 0xFF;
+      byte_1 = (value >> 8) & 0xFF;
+      byte_2 = value & 0xFF;
 
       memory.write(start_address, byte_1);
       memory.write(start_address + 1, byte_2);
@@ -185,11 +188,11 @@ export function solution(instruction, registers) {
       rt = nameToRegisterMap[instruction[2]];
       offset = [3];
 
-      var start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
-      var value = ToUint32(registers.read(rt));
+      start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
+      value = ToUint32(registers.read(rt));
 
       // From most to least significant
-      var byte_1 = value & 0xFF;
+      byte_1 = value & 0xFF;
 
       memory.write(start_address, byte_1);
 
@@ -197,17 +200,17 @@ export function solution(instruction, registers) {
     case 'lw':
       rs = nameToRegisterMap[instruction[1]];
       rt = nameToRegisterMap[instruction[2]];
-      var offset = [3];
+      offset = [3];
 
-      var start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
+      start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
 
       // From most to least significant
-      var byte_1 = memory.write(start_address);
-      var byte_2 = memory.write(start_address + 1);
-      var byte_3 = memory.write(start_address + 2);
-      var byte_4 = memory.write(start_address + 3);
+      byte_1 = memory.write(start_address);
+      byte_2 = memory.write(start_address + 1);
+      byte_3 = memory.write(start_address + 2);
+      byte_4 = memory.write(start_address + 3);
 
-      var value = byte_4;
+      value = byte_4;
       value |= byte_3 << 8;
       value |= byte_2 << 16;
       value |= byte_1 << 24;
@@ -216,29 +219,29 @@ export function solution(instruction, registers) {
     case 'lh':
       rs = nameToRegisterMap[instruction[1]];
       rt = nameToRegisterMap[instruction[2]];
-      var offset = [3];
+      offset = [3];
 
-      var start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
+      start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
 
       // From most to least significant
-      var byte_1 = memory.write(start_address);
-      var byte_2 = memory.write(start_address + 1);
+      byte_1 = memory.write(start_address);
+      byte_2 = memory.write(start_address + 1);
 
-      var value = byte_2;
+      value = byte_2;
       value |= byte_1 << 8;
 
       break;
     case 'lb':
       rs = nameToRegisterMap[instruction[1]];
       rt = nameToRegisterMap[instruction[2]];
-      var offset = [3];
+      offset = [3];
 
-      var start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
+      start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
 
       // From most to least significant
-      var byte_1 = memory.write(start_address);
+      byte_1 = memory.write(start_address);
 
-      var value = byte_1;
+      value = byte_1;
 
       break;
     default:
