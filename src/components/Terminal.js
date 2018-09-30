@@ -47,16 +47,13 @@ class Terminal extends Component {
     super(props);
 
     this.state = {
-      // TODO: Make this a program counter variable, copying to and from the student registers
-      // FIXME: This will require knowing which lines of the program contain code
-      currentStep: 0,
-      // TODO: This will become unnecessary if on run we loop and exit when we leave the program window
-      targetStep: 0,
-
       isIntroPaneOpen: true,
       revealCompletedLevels: false,
       confirmRestart: false,
       showMenu: false,
+
+      programCounter: 0,
+      running: false,
 
       lesson: null,
       lessonPart: null,
@@ -99,6 +96,16 @@ class Terminal extends Component {
   }
 
   saveProgram(lesson, lessonPartNum, starterProgram) {
+    localStorage.setItem('studentProgram', this.state.studentProgram);
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.running) {
+      this.step();
+    }
+  }
+
+  loadCode(lesson, lessonPartNum, starterProgram) {
     var lessonPart = `lesson_${lesson}/part_${lessonPartNum}`;
 
     // lesson parts are made incrementally to keep student code in tact
@@ -129,7 +136,7 @@ class Terminal extends Component {
       var insertionPoint = this.state.studentProgram.indexOf("default:");
       var studentProgram =
         this.state.studentProgram.substr(0,insertionPoint) +
-        `\n${lessonStarterCode[lessonPart]}\t\t` +
+        `${lessonStarterCode[lessonPart]}\n` +
         this.state.studentProgram.substr(insertionPoint,);
 
       starterProgram = Object.assign({}, this.state.starterProgram);
@@ -157,17 +164,17 @@ class Terminal extends Component {
     referenceRegisters.load(lessonRegisterInits[lessonPart]);
 
     // only need the binary code available for lessons 2 and up
-    if (this.state.lesson > 1) {
+    if (lesson > 1) {
       this.setState({
-        binaryProgram : lessonBinaryCode[lessonPart].replace(/\s/g, '').match(/.{1,8}/g),
+        binaryProgram : lessonBinaryCode[lessonPart],
       })
     }
 
     this.setState({
       lessonComplete: false,
       lessonCorrect: true,
-      currentStep : 0,
-      targetStep : 0,
+
+      programCounter: 0,
 
       lesson : lesson,
       lessonPart : lessonPartNum,
@@ -194,38 +201,77 @@ class Terminal extends Component {
     return newRegisters;
   }
 
-  render() {
-    /*
-    if (this.state.targetStep != this.state.studentRegisters.read(nameToRegisterMap["$pc"])) {
-      this.setState({ currentStep : this.state.studentRegisters.read(nameToRegisterMap["$pc"])})
-    }
-    */
+  pcToLineNumber(programCounter) {
+    var assemblyProgram = this.state.assemblyProgram;
 
-    if (this.state.currentStep != this.state.targetStep) {
-      this.setState({
-        currentStep : this.state.currentStep + 1
-      });
+    var targetInstruction = programCounter / 4;
 
-      // instruction is passed as assembly for lesson 1 and binary for all
-      // others
-      var instruction;
-      if (this.state.lesson == 1) {
-        instruction = this.state.assemblyProgram[this.state.currentStep]
-          .replace(/[,)]/g,"")
-          .replace(/\(/," ")
-          .split(" ");
-        // Unfortunately we have to special-case the loads and stores because
-        // they have a different syntax
-        if (["lw", "lh", "lb", "sw", "sh", "sb"].indexOf(instruction[0]) >= 0) {
-          var temp = instruction[2];
-          instruction[2] = instruction[3];
-          instruction[3] = temp;
-        }
+    var line;
+    for (line = 0; targetInstruction > 0; line++) {
+      if (line >= assemblyProgram.length) {
+        return -1;
+      }
+      if (assemblyProgram[line] == "") {
+        continue;
       } else {
-        instruction = parseInt(this.state.binaryProgram[this.state.currentStep],
-          16).toString(2).padStart(32, '0');
+        targetInstruction--;
+      }
+    }
+
+    if (line >= assemblyProgram.length || assemblyProgram[line] == "") {
+      return -1;
+    } else {
+      return line;
+    }
+  }
+
+  // Return the next instruction to execute
+  // Returns undefined if we have reached the end of the file
+  getNextInstruction() {
+    // instruction is passed as assembly for lesson 1 and binary for all
+    // others
+    var instruction;
+    if (this.state.lesson == 1) {
+      var line_num = this.pcToLineNumber(this.state.programCounter);
+      if (line_num == -1) {
+        return undefined;
+      }
+      instruction = this.state.assemblyProgram[line_num]
+        .replace(/[,)]/g,"")
+        .replace(/\(/," ")
+        .split(" ");
+      // Unfortunately we have to special-case the loads and stores because
+      // they have a different syntax
+      if (["lw", "lh", "lb", "sw", "sh", "sb"].indexOf(instruction[0]) >= 0) {
+        var temp = instruction[2];
+        instruction[2] = instruction[3];
+        instruction[3] = temp;
+      }
+    } else {
+      if (this.state.programCounter >= this.state.binaryProgram.length) {
+        return undefined;
       }
 
+      var byte_1 = this.state.binaryProgram[this.state.programCounter];
+      var byte_2 = this.state.binaryProgram[this.state.programCounter + 1];
+      var byte_3 = this.state.binaryProgram[this.state.programCounter + 2];
+      var byte_4 = this.state.binaryProgram[this.state.programCounter + 3];
+
+      instruction = byte_4;
+      instruction |= byte_3 << 8;
+      instruction |= byte_2 << 16;
+      instruction |= byte_1 << 24;
+    }
+
+    return instruction;
+  }
+
+  // Step one instruction forward and execute
+  step() {
+    var instruction = this.getNextInstruction();
+    var lessonComplete = typeof(instruction) === 'undefined';
+
+    if (!lessonComplete) {
       var script = document.createElement('script');
       try {
         script.appendChild(document.createTextNode(this.state.studentProgram));
@@ -253,10 +299,27 @@ class Terminal extends Component {
       });
     }
 
+    this.setState({
+      // TODO: Also compare memory
+      lessonCorrect : this.state.studentRegisters.compareRegisters(this.state.referenceRegisters),
+      lessonComplete : lessonComplete,
+      running : lessonComplete ? false : this.state.running,
+    });
+
+    var pc = this.state.programCounter + 4;
+
+    this.setState({
+      programCounter : pc,
+    });
+
+  }
+
+  render() {
     var assemblyList = [];
+    var lineNum = this.pcToLineNumber(this.state.programCounter);
     for (var i = 0; i < this.state.assemblyProgram.length-1; i++) {
       assemblyList.push(
-        <span className={this.state.currentStep == i ? "active" : "inactive"}>
+        <span className={lineNum == i ? "active" : "inactive"}>
           {this.state.assemblyProgram[i]}<br/>
         </span>);
     }
@@ -370,7 +433,9 @@ class Terminal extends Component {
     var currentInstruction;
     this.state.lesson > 1 ?
       currentInstruction = <Button outline style={{width:"100%"}}>
-        Current Instruction: {this.state.binaryProgram[this.state.currentStep]}
+        Current Instruction: {
+          typeof(this.getNextInstruction()) === 'undefined' ? "Done!" : this.getNextInstruction().toString(2)
+        }
       </Button>
       : currentInstruction = <div></div>
 
@@ -587,17 +652,7 @@ class Terminal extends Component {
                   <div className="col-sm-12">
                     <Button outline color="success" style={{width:"100%"}}
                       onClick={() => {
-                        var newStudentRegisters = this.copyRegisters(this.state.studentRegisters);
-                        var newReferenceRegisters  = this.copyRegisters(this.state.referenceRegisters);
-
-                        newStudentRegisters.registers_[nameToRegisterMap["$pc"]] = this.state.assemblyProgram.length - 1;
-                        newReferenceRegisters.registers_[nameToRegisterMap["$pc"]]  = this.state.assemblyProgram.length - 1;
-
-                        this.setState({
-                          targetStep : this.state.assemblyProgram.length - 1,
-                          studentRegisters : newStudentRegisters,
-                          referenceRegisters : newReferenceRegisters
-                        })
+                        this.setState({running: true})
                       }}>
                       <i className="fa fa-play" aria-hidden="true"></i> Run
                     </Button>
@@ -606,19 +661,7 @@ class Terminal extends Component {
                     <Button outline color="default" style={{width:"100%"}}
                       // TODO: Factor this out into a method so it can be called not just from here. Running a program is really just calling step() repeatedly
                       onClick={() => {
-                        var newStudentRegisters = this.copyRegisters(this.state.studentRegisters);
-                        var newReferenceRegisters  = this.copyRegisters(this.state.referenceRegisters);
-
-                        // FIXME: All operations on the program counter should be in multiples of 4
-                        // TODO: See comment on targetStep and currentStep at top of file
-                        newStudentRegisters.registers_[nameToRegisterMap["$pc"]] += 1;
-                        newReferenceRegisters.registers_[nameToRegisterMap["$pc"]] += 1;
-
-                        this.setState({
-                          targetStep : this.state.targetStep + 1,
-                          studentRegisters : newStudentRegisters,
-                          referenceRegisters : newReferenceRegisters
-                        })
+                        this.step()
                       }}>
                         <i className="fa fa-forward" aria-hidden="true"></i> Step
                     </Button>

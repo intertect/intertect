@@ -25,8 +25,20 @@ const lesson_1_part_6_assembly = require('../lesson_programs/lesson_1/part_6/pro
 
 const lesson_2_part_1_assembly = require('../lesson_programs/lesson_2/part_1/prog.s');
 
+function rawToBinaryArray(raw) {
+  var buffer = new ArrayBuffer(raw.length * 8);
+  var array = new Int8Array(buffer, 0, raw.length);
+
+  for (var i = 0; i < raw.length; i++) {
+    array[i] = parseInt(raw[i], 16);
+  }
+
+  return array;
+}
+
 // binary only starts becoming relevant in lesson 2, so no need to import for lesson 1
-const lesson_2_part_1_binary = require('../lesson_programs/lesson_2/part_1/prog.bin');
+const lesson_2_part_1_binary_raw = require('../lesson_programs/lesson_2/part_1/prog.bin').split(' ');
+const lesson_2_part_1_binary = rawToBinaryArray(lesson_2_part_1_binary_raw);
 
 const lesson_1_part_1_starter = require('../starter/lesson_1/part_1.txt');
 const lesson_1_part_2_starter = require('../starter/lesson_1/part_2.txt');

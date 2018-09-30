@@ -3,7 +3,7 @@ function ToUint32(x) {
 }
 
 export function solution(instruction, registers) {
-  var opcode = parseInt(instruction.substr(0,6), 2);
+  var opcode = instruction >> 27;
 
   // All R (register) instructions start with 0s
   var rs, rt, rd;
@@ -11,11 +11,11 @@ export function solution(instruction, registers) {
 
   if (opcode == 0x0) {
     // TODO: Fill this area
-    rs = parseInt(instruction.substr(6,5),2);
-    rt = parseInt(instruction.substr(11,5),2);
-    rd = parseInt(instruction.substr(16,5),2);
-    var shamt = parseInt(instruction.substr(21,5),2);
-    var funct = parseInt(instruction.substr(26,6),2);
+    rs = instruction >> 21 & 0x1f
+    rt = instruction >> 16 & 0x1f
+    rd = instruction >> 11 & 0x1f
+    var shamt = instruction >> 6 & 0x1f
+    var funct = instruction & 0x3f
 
     op_str = functMap[funct];
 
