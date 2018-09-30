@@ -80,7 +80,6 @@ class Terminal extends Component {
       showRegisters: true,
       showMemory: false,
 
-      incorrectWarning: "",
       unviewedStepExplanation: true,
       unviewedImplementExplanation: true,
       unviewedMemoryExplanation: true,
@@ -179,7 +178,6 @@ class Terminal extends Component {
       studentMemory : studentMemory,
       referenceMemory : referenceMemory,
 
-      incorrectWarning: "",
       loadedLesson : true,
     })
   }
@@ -188,6 +186,8 @@ class Terminal extends Component {
     var newRegisters = new Registers();
     newRegisters.registers_ = srcRegisters.registers_;
     newRegisters.usedRegisters = srcRegisters.usedRegisters;
+    newRegisters.lastOperation = srcRegisters.lastOperation;
+    newRegisters.lastUsedRegister = srcRegisters.lastUsedRegister;
     return newRegisters;
   }
 
@@ -243,24 +243,10 @@ class Terminal extends Component {
       var solution = lessonReferenceSolutions[lessonPart];
       solution(instruction, this.state.referenceRegisters, this.state.referenceMemory);
 
-      var incorrectWarning;
-      if (this.state.studentRegisters.lastOperation != this.state.referenceRegisters.lastOperation ||
-        this.state.studentRegisters.lastUsedRegister != this.state.referenceRegisters.lastUsedRegister) {
-
-        incorrectWarning = `Oops! You
-          ${this.state.studentRegisters.lastOperation}
-          ${this.state.studentRegisters.lastUsedRegister} instead of
-          ${this.state.referenceRegisters.lastOperation}
-          ${this.state.referenceRegisters.lastUsedRegister}`
-      } else {
-        incorrectWarning = ""
-      }
-
       this.setState({
         // TODO: Also compare memory
         lessonCorrect : this.state.studentRegisters.compareRegisters(this.state.referenceRegisters),
         lessonComplete : (this.state.currentStep == (this.state.assemblyProgram.length - 2)),
-        incorrectWarning : incorrectWarning
       });
     }
 
@@ -654,7 +640,6 @@ class Terminal extends Component {
                 </CardTitle>
               </CardHeader>
               <CardBody>
-                <code>{this.state.incorrectWarning}</code>
                 <div className="row">
                   <div className="col-sm-6">
                     <Button outline

@@ -21,22 +21,30 @@ class RegistersTable extends Component {
     var registerTable = [];
     var register;
     for (var i = 0; i < this.props.studentRegisters.usedRegisters.length; i++) {
-      register = this.props.studentRegisters.usedRegisters[i];
+      var studentRegister = this.props.studentRegisters.usedRegisters[i];
+      var referenceRegister = this.props.referenceRegisters.usedRegisters[i];
 
-      var studentValue = `0x${ToUint32(this.props.studentRegisters.read(register)).toString(16).toUpperCase()}`;
-      var referenceValue = `0x${ToUint32(this.props.referenceRegisters.read(register)).toString(16).toUpperCase()}`;
+      var studentValue = `0x${ToUint32(this.props.studentRegisters.read(studentRegister)).toString(16).toUpperCase()}`;
+      var referenceValue = `0x${ToUint32(this.props.referenceRegisters.read(referenceRegister)).toString(16).toUpperCase()}`;
 
       var color, tooltipContent;
-      if (studentValue == referenceValue) {
-        color = "#00C851";
-        tooltipContent = "Great job! This is correct.";
-      } else {
+
+      if (studentRegister != referenceRegister) {
         color = "#ff4444";
-        tooltipContent = `Sorry, try again! We expected: ${referenceValue}`;
+        tooltipContent = `Oops! You wrote to ${registerToNameMap[studentRegister]}
+          instead of ${registerToNameMap[referenceRegister]}`
+      } else {
+        if (studentValue == referenceValue) {
+          color = "#00C851";
+          tooltipContent = "Great job! This is correct.";
+        } else {
+          color = "#ff4444";
+          tooltipContent = `Sorry, try again! We expected: ${referenceValue}`;
+        }
       }
 
       registerTable.push(<tr style={{textAlign: 'center', background: color}} className="source-code">
-        <td>{registerToNameMap[register]}</td>
+        <td>{registerToNameMap[studentRegister]}</td>
         <td>
           <Tooltip
             placement="top"
