@@ -89,12 +89,9 @@ class Terminal extends Component {
     };
 
     this.onChange = this.onChange.bind(this);
-    this.loadCode = this.loadCode.bind(this);
     this.loadLesson = this.loadLesson.bind(this);
     this.saveProgram = this.saveProgram.bind(this);
     this.copyRegisters = this.copyRegisters.bind(this);
-
-    console.log(JSON.parse(localStorage.getItem('starterProgram')))
   }
 
   onChange(newValue) {
@@ -114,46 +111,41 @@ class Terminal extends Component {
     localStorage.setItem('starterProgram', JSON.stringify(updatedStarterProgram));
   }
 
-  loadCode(lesson, lessonPartNum, starterProgram) {
+  loadLesson(lesson, lessonPartNum, resetCode) {
     var lessonPart = `lesson_${lesson}/part_${lessonPartNum}`;
-    this.setState({
-      studentProgram : starterProgram[lessonPart],
-      loadedLesson: true
-    });
-  }
-
-  loadLesson(lesson, lessonPartNum) {
-    var lessonPart = `lesson_${lesson}/part_${lessonPartNum}`;
+    console.log(lessonPart)
     if (lessonPartNum > this.state.completedParts) {
       this.setState({ completedParts : lessonPartNum - 1 })
       localStorage.setItem('completedParts', lessonPartNum - 1);
-
-      var starterProgram;
-      if (this.state.starterProgram[lessonPart] == null) {
-        // lesson parts are made incrementally to keep student code in tact
-        var insertionPoint = this.state.studentProgram.indexOf("default:");
-        studentProgram =
-          this.state.studentProgram.substr(0,insertionPoint) +
-          `${lessonStarterCode[lessonPart]}\n` +
-          this.state.studentProgram.substr(insertionPoint,);
-
-        starterProgram = Object.assign({}, this.state.starterProgram);
-        starterProgram[lessonPart] = studentProgram;
-        this.setState({
-          starterProgram: starterProgram,
-        })
-
-        localStorage.setItem('starterProgram', JSON.stringify(starterProgram));
-      } else {
-        starterProgram = this.state.starterProgram;
-      }
-
-      this.loadCode(lesson, lessonPartNum, starterProgram);
     }
 
     if (lesson > this.state.completedLessons) {
       this.setState({ completedLessons : lesson - 1 })
       localStorage.setItem('completedLessons', lesson - 1);
+    }
+
+    var starterProgram;
+    if (this.state.starterProgram[lessonPart] == null) {
+      // lesson parts are made incrementally to keep student code in tact
+      var insertionPoint = this.state.studentProgram.indexOf("default:");
+      var studentProgram =
+        this.state.studentProgram.substr(0,insertionPoint) +
+        `${lessonStarterCode[lessonPart]}\n` +
+        this.state.studentProgram.substr(insertionPoint,);
+
+      starterProgram = Object.assign({}, this.state.starterProgram);
+      starterProgram[lessonPart] = studentProgram;
+      this.setState({
+        starterProgram: starterProgram,
+      })
+
+      localStorage.setItem('starterProgram', JSON.stringify(starterProgram));
+    } else {
+      starterProgram = this.state.starterProgram;
+    }
+
+    if (resetCode) {
+      this.setState({ studentProgram : starterProgram[lessonPart] });
     }
 
     var studentRegisters = new Registers();
@@ -341,8 +333,7 @@ class Terminal extends Component {
     lessons.map((lesson) => {
       lessonMenuButtons.push(
         <Button outline onClick={() => {
-            this.loadLesson(lesson, 1);
-            this.loadCode(lesson, 1);
+            this.loadLesson(lesson, 1, true);
           }}
           className={(lesson <= this.state.completedLessons + 1) ? "enabled" : "disabled"}
           style={{width:"75%"}}>
@@ -365,8 +356,7 @@ class Terminal extends Component {
                         revealCompletedLevels: false
                       });
                     // TODO: Make a reset() function.  This might not be necessary
-                    this.loadLesson(this.state.lesson, part);
-                    this.loadCode(this.state.lesson, part);
+                    this.loadLesson(this.state.lesson, part, true);
                     }} style={{width:"100%"}}>
                     Redo
                   </Button>
@@ -454,14 +444,14 @@ class Terminal extends Component {
                       showTest: false
                     });
 
-                      this.loadLesson(this.state.lesson, this.state.lessonPart + 1);
-                      this.loadCode(this.state.lesson, this.state.lessonPart + 1);
+                    this.loadLesson(this.state.lesson, this.state.lessonPart + 1, true);
                   }}> Next Lesson
                 </Button>
               </div>
 
               <div className="col-sm-6">
-                <Button outline color="danger" onClick={() => this.loadLesson(this.state.lesson, this.state.lessonPart)} style={{width:"100%"}}>
+                <Button outline color="danger" onClick={() =>
+                  this.loadLesson(this.state.lesson, this.state.lessonPart, false)} style={{width:"100%"}}>
                   I Want To Stay Here
                 </Button>
               </div>
@@ -477,7 +467,7 @@ class Terminal extends Component {
             <div className="row">
               <div className="col-sm-6">
                 <Button outline style={{width:"100%"}}
-                  onClick={() => this.loadLesson(this.state.lesson, this.state.lessonPart)}>
+                  onClick={() => this.loadLesson(this.state.lesson, this.state.lessonPart, false)}>
                   <i className="fa fa-refresh" aria-hidden="true"></i> Reset
                 </Button>
               </div>
@@ -510,8 +500,7 @@ class Terminal extends Component {
                 <Button outline color="danger" style={{width:"100%"}}
                   onClick={() => {
                     this.setState({confirmRestart : false })
-                    this.loadLesson(this.state.lesson, this.state.lessonPart);
-                    this.loadCode(this.state.lesson, this.state.lessonPart);
+                    this.loadLesson(this.state.lesson, this.state.lessonPart, true);
                   }}>
                   Continue
                 </Button>
@@ -637,7 +626,7 @@ class Terminal extends Component {
                   </div>
                   <div className="col-sm-12">
                     <Button outline color="warning" style={{width:"100%"}}
-                      onClick={() => { this.loadLesson(this.state.lesson, this.state.lessonPart) }}>
+                      onClick={() => { this.loadLesson(this.state.lesson, this.state.lessonPart, false) }}>
                       <i className="fa fa-refresh" aria-hidden="true"></i> Reset
                     </Button>
                   </div>
