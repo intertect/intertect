@@ -63,8 +63,8 @@ class Terminal extends Component {
       lessonContent: "",
       loadedLesson: false,
 
-      completedLessons: localStorage.getItem('completedLessons') || 2,
-      completedParts: localStorage.getItem('completedParts') || 1,
+      completedLessons: localStorage.getItem('completedLessons') || 0,
+      completedParts: localStorage.getItem('completedParts') || 0,
 
       lessonComplete: false,
       lessonCorrect: true,
@@ -106,19 +106,19 @@ class Terminal extends Component {
     localStorage.setItem('studentProgram', this.state.studentProgram);
   }
 
-  loadCode(lesson, lessonPart) {
-    var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
+  loadCode(lesson, lessonPartNum, starterProgram) {
+    var lessonPart = `lesson_${lesson}/part_${lessonPartNum}`;
     this.setState({
-      studentProgram : this.state.starterProgram[lessonPart],
+      studentProgram : starterProgram[lessonPart],
       loadedLesson: true
     });
   }
 
-  loadLesson(lesson, lessonPart) {
-    var lessonPart = `lesson_${lesson}/part_${lessonPart}`;
-    if (lessonPart > this.state.completedParts) {
-      this.setState({ completedParts : lessonPart - 1 })
-      localStorage.setItem('completedParts', lessonPart - 1);
+  loadLesson(lesson, lessonPartNum) {
+    var lessonPart = `lesson_${lesson}/part_${lessonPartNum}`;
+    if (lessonPartNum > this.state.completedParts) {
+      this.setState({ completedParts : lessonPartNum - 1 })
+      localStorage.setItem('completedParts', lessonPartNum - 1);
 
       // lesson parts are made incrementally to keep student code in tact
       var insertionPoint = this.state.studentProgram.indexOf("default:");
@@ -127,14 +127,15 @@ class Terminal extends Component {
         `${lessonStarterCode[lessonPart]}\n` +
         this.state.studentProgram.substr(insertionPoint,);
 
+      var updatedStarterProgram;
       if (this.state.starterProgram[lessonPart] == null) {
-        var updatedStarterProgram = Object.assign({}, this.state.starterProgram);
+        updatedStarterProgram = Object.assign({}, this.state.starterProgram);
         updatedStarterProgram[lessonPart] = studentProgram;
         this.setState({
           starterProgram: updatedStarterProgram,
         })
 
-        this.loadCode(lesson, lessonPart);
+        this.loadCode(lesson, lessonPartNum, updatedStarterProgram);
         localStorage.setItem('starterProgram', updatedStarterProgram);
       }
     }
@@ -342,14 +343,15 @@ class Terminal extends Component {
       lessonMenuButtons.push(
         <Button outline onClick={() => {
             this.loadLesson(lesson, 1);
+            this.loadCode(lesson, 1);
           }}
-          className={(lesson <= this.state.completedLessons) ? "enabled" : "disabled"}
+          className={(lesson <= this.state.completedLessons + 1) ? "enabled" : "disabled"}
           style={{width:"75%"}}>
 
           Lesson {lesson}
         </Button>)
 
-      if (lesson <= this.state.completedLessons) {
+      if (lesson <= this.state.completedLessons + 1) {
         completedLessons.push(<ListGroupItem active>Level {lesson}</ListGroupItem>);
         lessonParts.map((part) => {
           completedLessons.push(
