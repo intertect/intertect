@@ -50,7 +50,7 @@ class Terminal extends Component {
       // TODO: Make this a program counter variable, copying to and from the student registers
       // FIXME: This will require knowing which lines of the program contain code
       currentStep: 0,
-      // TODO: This will become unecessary if on run we loop and exit when we leave the program window
+      // TODO: This will become unnecessary if on run we loop and exit when we leave the program window
       targetStep: 0,
 
       isIntroPaneOpen: true,
@@ -106,7 +106,7 @@ class Terminal extends Component {
     localStorage.setItem('studentProgram', this.state.studentProgram);
   }
 
-  loadCode() {
+  loadCode(lesson, lessonPart) {
     var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
     this.setState({
       studentProgram : this.state.starterProgram[lessonPart],
@@ -134,7 +134,7 @@ class Terminal extends Component {
           starterProgram: updatedStarterProgram,
         })
 
-        this.loadCode();
+        this.loadCode(lesson, lessonPart);
         localStorage.setItem('starterProgram', updatedStarterProgram);
       }
     }
@@ -366,7 +366,7 @@ class Terminal extends Component {
                     // TODO: Make a reset() function.  This might not be necessary
                     this.loadLesson(this.state.lesson, part);
                     // TODO: Is this necessary?
-                    this.loadCode();
+                    this.loadCode(this.state.lesson, part);
                     }} style={{width:"100%"}}>
                     Redo
                   </Button>
@@ -456,7 +456,7 @@ class Terminal extends Component {
 
                       this.loadLesson(this.state.lesson, this.state.lessonPart + 1);
                       // TODO: Maybe not needed
-                      this.loadCode();
+                      this.loadCode(this.state.lesson, this.state.lessonPart + 1);
                   }}> Next Lesson
                 </Button>
               </div>
@@ -512,7 +512,7 @@ class Terminal extends Component {
                   onClick={() => {
                     this.setState({confirmRestart : false })
                     this.loadLesson(this.state.lesson, this.state.lessonPart);
-                    this.loadCode();
+                    this.loadCode(this.state.lesson, this.state.lessonPart);
                   }}>
                   Continue
                 </Button>
