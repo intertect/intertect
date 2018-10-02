@@ -276,6 +276,9 @@ class Terminal extends Component {
         return undefined;
       }
 
+      console.log(this.state.binaryProgram)
+      console.log(this.state.programCounter)
+
       var byte_1 = this.state.binaryProgram[this.state.programCounter];
       var byte_2 = this.state.binaryProgram[this.state.programCounter + 1];
       var byte_3 = this.state.binaryProgram[this.state.programCounter + 2];
@@ -285,6 +288,7 @@ class Terminal extends Component {
       instruction |= byte_3 << 8;
       instruction |= byte_2 << 16;
       instruction |= byte_1 << 24;
+      console.log(instruction)
     }
 
     return instruction;

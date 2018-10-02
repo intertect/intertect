@@ -26,8 +26,7 @@ const lesson_1_part_6_assembly = require('../lesson_programs/lesson_1/part_6/pro
 const lesson_2_part_1_assembly = require('../lesson_programs/lesson_2/part_1/prog.s');
 
 function rawToBinaryArray(raw) {
-  var buffer = new ArrayBuffer(raw.length * 8);
-  var array = new Int8Array(buffer, 0, raw.length);
+  var array = [];
 
   for (var i = 0; i < raw.length; i++) {
     array[i] = parseInt(raw[i], 16);
