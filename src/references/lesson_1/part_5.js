@@ -101,6 +101,7 @@ export function solution(instruction, registers, memory) {
       offset = ToUint32(instruction[3]);
       pc = nameToRegisterMap["$pc"];
 
+      // FIXME: This should be pc+4+offset. Not sure why it's working
       result = ToUint32(registers.read(pc)) + offset;
       registers.write(pc, offset);
       break;
@@ -114,7 +115,7 @@ export function solution(instruction, registers, memory) {
       // Keep only the top two bits
       pc_val &= 0xC0000000;
 
-      result = pc_val | target;
+      result = pc_val + 4 | target;
 
       registers.write(pc, offset);
       break;
@@ -129,7 +130,7 @@ export function solution(instruction, registers, memory) {
       // Keep only the top two bits
       pc_val &= 0xC0000000;
 
-      result = pc_val | target;
+      result = pc_val + 4 | target;
 
       registers.write(pc, offset);
       registers.write(ra, pc);
