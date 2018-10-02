@@ -96,7 +96,14 @@ class Terminal extends Component {
   }
 
   saveProgram(lesson, lessonPartNum, starterProgram) {
-    localStorage.setItem('studentProgram', this.state.studentProgram);
+    var lessonPart = `lesson_${lesson}/part_${lessonPartNum}`;
+    var updatedStarterProgram = Object.assign({}, this.state.starterProgram);
+    updatedStarterProgram[lessonPart] = this.state.studentProgram;
+    this.setState({
+      starterProgram: updatedStarterProgram,
+    })
+
+    localStorage.setItem('starterProgram', JSON.stringify(updatedStarterProgram));
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -505,6 +512,8 @@ class Terminal extends Component {
                       showTest: false
                     });
 
+                    this.saveProgram(this.state.lesson,
+                      this.state.lessonPart, this.state.starterProgram)
                     this.loadLesson(this.state.lesson, this.state.lessonPart + 1, true);
                   }}> Next Lesson
                 </Button>
