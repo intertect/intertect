@@ -195,6 +195,9 @@ class Terminal extends Component {
       studentMemory : studentMemory,
       referenceMemory : referenceMemory,
 
+      // memory becomes relevant after lesson 1.5
+      showMemory: (lesson != 1 || lessonPartNum > 5),
+
       loadedLesson : true,
     })
   }

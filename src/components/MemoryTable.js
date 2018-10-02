@@ -18,9 +18,11 @@ class MemoryTable extends Component {
     var memory = Object.keys(this.props.memory.memory_);
     for (var i = 0; i < memory.length; i++) {
       var memoryAddr = memory[i];
+
+      var studentMemory = `0x${this.props.memory.read(memoryAddr).toString(16).toUpperCase()}`
       memoryTable.push(<tr style={{textAlign: 'center'}} className="source-code">
           <td>{memoryAddr}</td>
-          <td>{this.props.memory.read(memoryAddr)}</td>
+          <td>{studentMemory}</td>
         </tr>);
     }
 
