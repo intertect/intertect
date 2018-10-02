@@ -211,18 +211,19 @@ class Terminal extends Component {
       if (line >= assemblyProgram.length) {
         return -1;
       }
-      if (assemblyProgram[line] == "") {
-        continue;
-      } else {
+      if (assemblyProgram[line] != "") {
         targetInstruction--;
       }
     }
 
-    if (line >= assemblyProgram.length || assemblyProgram[line] == "") {
-      return -1;
-    } else {
-      return line;
+    while (assemblyProgram[line] == "") {
+      line++;
     }
+
+    if (line >= assemblyProgram.length) {
+      return -1;
+    }
+    return line;
   }
 
   // Return the next instruction to execute
@@ -233,6 +234,7 @@ class Terminal extends Component {
     var instruction;
     if (this.state.lesson == 1) {
       var line_num = this.pcToLineNumber(this.state.programCounter);
+      // console.log(line_num)
       if (line_num == -1) {
         return undefined;
       }
@@ -291,12 +293,6 @@ class Terminal extends Component {
       var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
       var solution = lessonReferenceSolutions[lessonPart];
       solution(instruction, this.state.referenceRegisters, this.state.referenceMemory);
-
-      this.setState({
-        // TODO: Also compare memory
-        lessonCorrect : this.state.studentRegisters.compareRegisters(this.state.referenceRegisters),
-        lessonComplete : (this.state.currentStep == (this.state.assemblyProgram.length - 2)),
-      });
     }
 
     this.setState({
@@ -316,6 +312,7 @@ class Terminal extends Component {
 
   render() {
     var assemblyList = [];
+    console.log(this.state.programCounter)
     var lineNum = this.pcToLineNumber(this.state.programCounter);
     for (var i = 0; i < this.state.assemblyProgram.length-1; i++) {
       assemblyList.push(
