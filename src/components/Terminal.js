@@ -296,8 +296,9 @@ class Terminal extends Component {
     }
 
     this.setState({
-      // TODO: Also compare memory
-      lessonCorrect : this.state.studentRegisters.compareRegisters(this.state.referenceRegisters),
+      lessonCorrect :
+        this.state.studentRegisters.compareRegisters(this.state.referenceRegisters) &&
+        this.state.studentMemory.compareMemory(this.state.referenceMemory),
       lessonComplete : lessonComplete,
       running : lessonComplete ? false : this.state.running,
     });
@@ -312,7 +313,6 @@ class Terminal extends Component {
 
   render() {
     var assemblyList = [];
-    console.log(this.state.programCounter)
     var lineNum = this.pcToLineNumber(this.state.programCounter);
     for (var i = 0; i < this.state.assemblyProgram.length-1; i++) {
       assemblyList.push(
@@ -704,7 +704,7 @@ class Terminal extends Component {
 
                     <Collapse isOpen={this.state.showMemory}>
                       <MemoryTable
-                        memory={this.state.memory}
+                        memory={this.state.studentMemory}
                       />
                     </Collapse>
                   </div>

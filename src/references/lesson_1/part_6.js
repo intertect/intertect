@@ -148,9 +148,9 @@ export function solution(instruction, registers, memory) {
     case 'nop':
       break;
     case 'sw':
-      rs = nameToRegisterMap[instruction[1]];
-      rt = nameToRegisterMap[instruction[2]];
-      offset = [3];
+      rt = nameToRegisterMap[instruction[1]];
+      rs = nameToRegisterMap[instruction[2]];
+      offset = instruction[3];
 
       start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
       value = ToUint32(registers.read(rt));
@@ -168,9 +168,9 @@ export function solution(instruction, registers, memory) {
 
       break;
     case 'sh':
-      rs = nameToRegisterMap[instruction[1]];
-      rt = nameToRegisterMap[instruction[2]];
-      offset = [3];
+      rt = nameToRegisterMap[instruction[1]];
+      rs = nameToRegisterMap[instruction[2]];
+      offset = instruction[3];
 
       start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
       value = ToUint32(registers.read(rt));
@@ -184,9 +184,9 @@ export function solution(instruction, registers, memory) {
 
       break;
     case 'sb':
-      rs = nameToRegisterMap[instruction[1]];
-      rt = nameToRegisterMap[instruction[2]];
-      offset = [3];
+      rt = nameToRegisterMap[instruction[1]];
+      rs = nameToRegisterMap[instruction[2]];
+      offset = instruction[3];
 
       start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
       value = ToUint32(registers.read(rt));
@@ -198,51 +198,54 @@ export function solution(instruction, registers, memory) {
 
       break;
     case 'lw':
-      rs = nameToRegisterMap[instruction[1]];
-      rt = nameToRegisterMap[instruction[2]];
-      offset = [3];
+      rt = nameToRegisterMap[instruction[1]];
+      rs = nameToRegisterMap[instruction[2]];
+      offset = instruction[3];
 
       start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
 
       // From most to least significant
-      byte_1 = memory.write(start_address);
-      byte_2 = memory.write(start_address + 1);
-      byte_3 = memory.write(start_address + 2);
-      byte_4 = memory.write(start_address + 3);
+      byte_1 = memory.read(start_address);
+      byte_2 = memory.read(start_address + 1);
+      byte_3 = memory.read(start_address + 2);
+      byte_4 = memory.read(start_address + 3);
 
       value = byte_4;
       value |= byte_3 << 8;
       value |= byte_2 << 16;
       value |= byte_1 << 24;
 
+      registers.write(rt, value);
       break;
     case 'lh':
-      rs = nameToRegisterMap[instruction[1]];
-      rt = nameToRegisterMap[instruction[2]];
-      offset = [3];
+      rt = nameToRegisterMap[instruction[1]];
+      rs = nameToRegisterMap[instruction[2]];
+      offset = instruction[3];
 
       start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
 
       // From most to least significant
-      byte_1 = memory.write(start_address);
-      byte_2 = memory.write(start_address + 1);
+      byte_1 = memory.read(start_address);
+      byte_2 = memory.read(start_address + 1);
 
       value = byte_2;
       value |= byte_1 << 8;
 
+      registers.write(rt, value);
       break;
     case 'lb':
-      rs = nameToRegisterMap[instruction[1]];
-      rt = nameToRegisterMap[instruction[2]];
-      offset = [3];
+      rt = nameToRegisterMap[instruction[1]];
+      rs = nameToRegisterMap[instruction[2]];
+      offset = instruction[3];
 
       start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
 
       // From most to least significant
-      byte_1 = memory.write(start_address);
+      byte_1 = memory.read(start_address);
 
       value = byte_1;
 
+      registers.write(rt, value);
       break;
     default:
       // invalid/unsupported instruction passed in

@@ -12,6 +12,21 @@ export class Memory {
   write(addr, value) {
     this.memory_[addr] = value;
   }
+
+  compareMemory(other) {
+    if (this.memory_.size !== other.memory_.size) {
+        return false;
+    }
+
+    var memoryLocations = Object.keys(this.memory_)
+    for (var i = 0; i < memoryLocations.length; i++) {
+      var memory = memoryLocations[i];
+      if (this.memory_[memory] != other.memory_[memory]) {
+        return false;
+      }
+    }
+    return true;
+  }
 }
 
 export var nameToRegisterMap = {
