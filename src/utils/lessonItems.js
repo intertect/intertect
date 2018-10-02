@@ -58,7 +58,13 @@ const lesson_1_part_6_reference = require('../references/lesson_1/part_6.js');
 
 const lesson_2_part_1_reference = require('../references/lesson_2/part_1.js');
 
+// number of parts for each lesson
+export const lessonParts = {
+  1 : 6,
+  2 : 2
+}
 
+// content (text) for each lesson
 export const lessonContent = {
   "lesson_1/part_1" : lesson_1_part_1_content,
   "lesson_1/part_2" : lesson_1_part_2_content,
@@ -70,6 +76,7 @@ export const lessonContent = {
   "lesson_2/part_1" : lesson_2_part_1_content
 };
 
+// initializations for registers
 export const lessonRegisterInits = {
   "lesson_1/part_1" : lesson_1_part_1_init,
   "lesson_1/part_2" : lesson_1_part_2_init,
@@ -81,6 +88,7 @@ export const lessonRegisterInits = {
   "lesson_2/part_1" : lesson_2_part_1_init
 };
 
+// assembly code to be displayed per lesson
 export const lessonAssembly = {
   "lesson_1/part_1" : lesson_1_part_1_assembly,
   "lesson_1/part_2" : lesson_1_part_2_assembly,
@@ -92,10 +100,12 @@ export const lessonAssembly = {
   "lesson_2/part_1" : lesson_2_part_1_assembly
 }
 
+// binary code to be execute (relevant for lessons 2 and on)
 export const lessonBinaryCode = {
   "lesson_2/part_1" : lesson_2_part_1_binary
 }
 
+// JS assembly code students work with
 export const lessonStarterCode = {
   "lesson_1/part_1" : lesson_1_part_1_starter,
   "lesson_1/part_2" : lesson_1_part_2_starter,
@@ -107,6 +117,7 @@ export const lessonStarterCode = {
   "lesson_2/part_1" : lesson_2_part_1_starter
 };
 
+// reference solutions against which students' code is run
 export const lessonReferenceSolutions = {
   "lesson_1/part_1" : lesson_1_part_1_reference.solution,
   "lesson_1/part_2" : lesson_1_part_2_reference.solution,

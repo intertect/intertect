@@ -28,7 +28,7 @@ import 'brace/theme/solarized_light';
 import 'brace/theme/twilight';
 
 import {Memory, Registers, nameToRegisterMap} from '../utils/util.js';
-import {lessonContent, lessonRegisterInits, lessonAssembly,
+import {lessonParts, lessonContent, lessonRegisterInits, lessonAssembly,
   lessonStarterCode, lessonReferenceSolutions, lessonBinaryCode} from '../utils/lessonItems.js';
 
 import MemoryTable from './MemoryTable.js'
@@ -126,6 +126,11 @@ class Terminal extends Component {
   }
 
   loadLesson(lesson, lessonPartNum, resetCode) {
+    if (lessonPartNum > lessonParts[lesson]) {
+      lessonPartNum = 1;
+      lesson += 1;
+    }
+
     var lessonPart = `lesson_${lesson}/part_${lessonPartNum}`;
     if (lessonPartNum > this.state.completedParts) {
       this.setState({ completedParts : lessonPartNum - 1 })
