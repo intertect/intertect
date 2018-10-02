@@ -89,6 +89,7 @@ class Terminal extends Component {
     this.loadLesson = this.loadLesson.bind(this);
     this.saveProgram = this.saveProgram.bind(this);
     this.copyRegisters = this.copyRegisters.bind(this);
+    this.toggleCompletedLevels = this.toggleCompletedLevels.bind(this);
   }
 
   onChange(newValue) {
@@ -123,6 +124,12 @@ class Terminal extends Component {
     })
 
     localStorage.setItem('starterProgram', JSON.stringify(updatedStarterProgram));
+  }
+
+  toggleCompletedLevels() {
+    this.setState({
+      revealCompletedLevels: false
+    });
   }
 
   loadLesson(lesson, lessonPartNum, resetCode) {
@@ -489,7 +496,7 @@ class Terminal extends Component {
           </Collapse>
         </Navbar>
 
-        <Modal isOpen={this.state.revealCompletedLevels} centered>
+        <Modal isOpen={this.state.revealCompletedLevels} toggle={() => this.toggleCompletedLevels()} centered>
           <ModalHeader>Completed Levels</ModalHeader>
           <ModalBody>
             <ListGroup> {completedLessons} </ListGroup>
