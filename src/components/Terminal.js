@@ -250,12 +250,15 @@ class Terminal extends Component {
 
   // Return the next instruction to execute
   // Returns undefined if we have reached the end of the file
-  getNextInstruction() {
+  getNextInstruction(programCounter = -1) {
+    if (programCounter == -1) {
+      programCounter = this.state.programCounter
+    }
     // instruction is passed as assembly for lesson 1 and binary for all
     // others
     var instruction;
     if (this.state.lesson == 1) {
-      var line_num = this.pcToLineNumber(this.state.programCounter);
+      var line_num = this.pcToLineNumber(programCounter);
       // console.log(line_num)
       if (line_num == -1) {
         return undefined;
@@ -272,23 +275,18 @@ class Terminal extends Component {
         instruction[3] = temp;
       }
     } else {
-      if (this.state.programCounter >= this.state.binaryProgram.length) {
+      if (programCounter >= this.state.binaryProgram.length) {
         return undefined;
       }
-
-      console.log(this.state.binaryProgram)
-      console.log(this.state.programCounter)
-
-      var byte_1 = this.state.binaryProgram[this.state.programCounter];
-      var byte_2 = this.state.binaryProgram[this.state.programCounter + 1];
-      var byte_3 = this.state.binaryProgram[this.state.programCounter + 2];
-      var byte_4 = this.state.binaryProgram[this.state.programCounter + 3];
+      var byte_1 = this.state.binaryProgram[programCounter];
+      var byte_2 = this.state.binaryProgram[programCounter + 1];
+      var byte_3 = this.state.binaryProgram[programCounter + 2];
+      var byte_4 = this.state.binaryProgram[programCounter + 3];
 
       instruction = byte_4;
       instruction |= byte_3 << 8;
       instruction |= byte_2 << 16;
       instruction |= byte_1 << 24;
-      console.log(instruction)
     }
 
     return instruction;
@@ -319,6 +317,10 @@ class Terminal extends Component {
       var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
       var solution = lessonReferenceSolutions[lessonPart];
       solution(instruction, this.state.referenceRegisters, this.state.referenceMemory);
+    }
+
+    if (typeof(this.getNextInstruction(this.state.programCounter + 4)) === 'undefined') {
+      lessonComplete = true
     }
 
     this.setState({
