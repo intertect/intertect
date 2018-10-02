@@ -53,6 +53,13 @@ export function solution(instruction, registers) {
         result = ToUint32(registers.read(rs) >> registers.read(rd));
         registers.write(rd, result);
         break;
+      case 'jr':
+        pc = nameToRegisterMap["$pc"];
+
+        result = ToUint32(registers.read(rs));
+
+        registers.write(pc, result);
+        break;
       default:
         break;
     }
@@ -60,15 +67,40 @@ export function solution(instruction, registers) {
 
   else if (opcode == 0x2 || opcode == 0x3) {
     // J format: oooooott ttttttt tttttttt tttttttt
-    var target = instruction | 0x3FFFFFF ;
+    var target = (instruction | 0x3FFFFFF) << 2;
 
     op_str = opcode == 0x2 ? "j" : "jal";
 
     // TODO
     switch(op_str) {
       case 'j':
+        pc = nameToRegisterMap["$pc"];
+        // Lop off the two top bits
+        target &= 0x3FFFFFFF;
+
+        pc_val = ToUint32(registers.read(pc));
+        // Keep only the top two bits
+        pc_val &= 0xC0000000;
+
+        result = pc_val | target;
+
+        registers.write(pc, offset);
         break;
       case 'jal':
+        pc = nameToRegisterMap["$pc"];
+        ra = nameToRegisterMap["$ra"];
+        // Lop off the two top bits
+        target &= 0x3FFFFFFF;
+
+        pc_val = ToUint32(registers.read(pc));
+        // Keep only the top two bits
+        pc_val &= 0xC0000000;
+
+        result = pc_val | target;
+
+        registers.write(pc, offset);
+        // FIXME: The return address should be pc of the *next* instruction
+        registers.write(ra, pc);
         break;
       default:
         break;
