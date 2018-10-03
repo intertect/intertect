@@ -17,19 +17,16 @@ When a computer writes bytes into memory, it has to decide what order it wants
 to write them in.  For example, if you have the word `0xDEADBEEF`, should the
 bytes be written as:
 
-+---------+------+------+------+------+
+
 | address | 0x0  | 0x1  | 0x2  | 0x3  |
-+---------+------+------+------+------+
+|---------|------|------|------|------|
 | value   | 0xDE | 0xAD | 0xBE | 0xEF |
-+---------+------+------+------+------+
 
 Or perhaps like:
 
-+---------+------+------+------+------+
 | address | 0x0  | 0x1  | 0x2  | 0x3  |
-+---------+------+------+------+------+
+|---------|------|------|------|------|
 | value   | 0xEF | 0xBE | 0xAD | 0xDE |
-+---------+------+------+------+------+
 
 The first one is called "Big-Endian" while the second one is called
 "Little-Endian".  "Big-Endian" means the bytes are written such that the most
