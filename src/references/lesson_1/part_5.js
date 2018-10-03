@@ -1,3 +1,10 @@
+var labelToLine = {
+  "label1" : 0,
+  "label3" : 4,
+  "label4" : 8,
+  "label5" : 24
+}
+
 function ToUint32(x) {
   return x >>> 0;
 }
@@ -95,45 +102,46 @@ export function solution(instruction, registers, memory) {
       result = ToUint32(registers.read(rs) ^ imm);
       registers.write(rt, result);
       break;
+
     case 'beq':
       rt = nameToRegisterMap[instruction[1]];
       rs = nameToRegisterMap[instruction[2]];
-      offset = ToUint32(instruction[3]);
-      pc = nameToRegisterMap["$pc"];
+      offset = ToUint32(instruction[3]) << 2;
 
-      // FIXME: This should be pc+4+offset. Not sure why it's working
-      result = ToUint32(registers.read(pc)) + offset;
-      registers.write(pc, offset);
+      if (registers.read(rs) == registers.read(rt)) {
+        pc = nameToRegisterMap["$pc"];
+        // result = ToUint32(registers.read(pc)) + offset;
+        result = labelToLine[instruction[3]]
+        registers.write(pc, result);
+      }
+
       break;
     case 'j':
-      target = ToUint32(instruction[1]) << 2;
       pc = nameToRegisterMap["$pc"];
-      // Lop off the two top bits
-      target &= 0x3FFFFFFF;
+      /* target = ToUint32(instruction[1]) << 2;
 
       pc_val = ToUint32(registers.read(pc));
       // Keep only the top two bits
       pc_val &= 0xC0000000;
 
-      result = pc_val + 4 | target;
+      result = pc_val | target; */
+      result = labelToLine[instruction[1]]
 
-      registers.write(pc, offset);
+      registers.write(pc, result);
       break;
     case 'jal':
-      target = ToUint32(instruction[1]) << 2;
       pc = nameToRegisterMap["$pc"];
       ra = nameToRegisterMap["$ra"];
-      // Lop off the two top bits
-      target &= 0x3FFFFFFF;
 
-      pc_val = ToUint32(registers.read(pc));
+      pc_val = ToUint32(registers.read(pc)) + 4;
+      registers.write(ra, pc_val);
+
       // Keep only the top two bits
+      /* target = ToUint32(instruction[1]) << 2;
       pc_val &= 0xC0000000;
-
-      result = pc_val + 4 | target;
-
-      registers.write(pc, offset);
-      registers.write(ra, pc);
+      result = pc_val | target; */
+      result = labelToLine[instruction[1]]
+      registers.write(pc, result);
       break;
     case 'jr':
       rs = nameToRegisterMap[instruction[1]];
@@ -183,5 +191,6 @@ var nameToRegisterMap = {
   "$gp" : 0x1c,
   "$sp" : 0x1d,
   "$fp" : 0x1e,
-  "$ra" : 0x1f
+  "$ra" : 0x1f,
+  "$pc" : 0x20
 };

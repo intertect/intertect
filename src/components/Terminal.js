@@ -225,6 +225,9 @@ class Terminal extends Component {
 
   pcToLineNumber(programCounter) {
     var assemblyProgram = this.state.assemblyProgram;
+    if (assemblyProgram.length == 0) {
+      return -1;
+    }
 
     var targetInstruction = programCounter / 4;
 
@@ -233,18 +236,20 @@ class Terminal extends Component {
       if (line >= assemblyProgram.length) {
         return -1;
       }
-      if (assemblyProgram[line] != "") {
+
+      // needs to not be an empty line or one associated with a label
+      if (assemblyProgram[line] != "" && assemblyProgram[line].indexOf(":") == -1) {
         targetInstruction--;
       }
     }
 
-    while (assemblyProgram[line] == "") {
+    while (assemblyProgram[line] == "" || assemblyProgram[line].indexOf(":") != -1) {
       line++;
+      if (line >= assemblyProgram.length) {
+        return -1;
+      }
     }
 
-    if (line >= assemblyProgram.length) {
-      return -1;
-    }
     return line;
   }
 
@@ -297,6 +302,12 @@ class Terminal extends Component {
     var instruction = this.getNextInstruction();
     var lessonComplete = typeof(instruction) === 'undefined';
 
+    var pcRegister = nameToRegisterMap["$pc"];
+
+    // only move the PC on "step" if it wasn't moved in the instruction already
+    var originalPcStudent = this.state.studentRegisters.read(pcRegister)
+    var originalPcReference = this.state.studentRegisters.read(pcRegister)
+
     if (!lessonComplete) {
       var script = document.createElement('script');
       try {
@@ -331,12 +342,19 @@ class Terminal extends Component {
       running : lessonComplete ? false : this.state.running,
     });
 
-    var pc = this.state.programCounter + 4;
+    var newPcStudent = this.state.studentRegisters.read(pcRegister)
+    if (originalPcStudent == newPcStudent) {
+      this.state.studentRegisters.write(pcRegister, newPcStudent + 4)
+    }
+
+    var newPcReference = this.state.referenceRegisters.read(pcRegister)
+    if (originalPcReference == newPcReference) {
+      this.state.referenceRegisters.write(pcRegister, newPcReference + 4)
+    }
 
     this.setState({
-      programCounter : pc,
+      programCounter : this.state.studentRegisters.read(pcRegister)
     });
-
   }
 
   render() {
