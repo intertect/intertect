@@ -46,6 +46,16 @@ class Terminal extends Component {
   constructor(props) {
     super(props);
 
+    // Validate localStorage
+    if (localStorage.getItem('completedLessons') > 4) {
+      localStorage.setItem('completedLessons', 4);
+    }
+
+    var completedLessons = localStorage.getItem('completedLessons');
+    if (localStorage.getItem('completedParts') > lessonParts[completedLessons]) {
+      localStorage.setItem('completedParts', lessonParts[completedLessons]);
+    }
+
     this.state = {
       isIntroPaneOpen: true,
       revealCompletedLevels: false,
@@ -60,8 +70,8 @@ class Terminal extends Component {
       lessonContent: "",
       loadedLesson: false,
 
-      completedLessons: localStorage.getItem('completedLessons') || 0,
-      completedParts: localStorage.getItem('completedParts') || 0,
+      completedLessons: parseInt(localStorage.getItem('completedLessons')) || 0,
+      completedParts: parseInt(localStorage.getItem('completedParts')) || 0,
 
       lessonComplete: false,
       lessonCorrect: true,
@@ -434,7 +444,6 @@ class Terminal extends Component {
     var lessonMenuButtons = [];
 
     var lessons = Array.range(1, 5)
-    var lessonParts = Array.range(1, this.state.completedParts + 2)
     lessons.map((lesson) => {
       lessonMenuButtons.push(
         <Button outline onClick={() => {
@@ -446,9 +455,14 @@ class Terminal extends Component {
           Lesson {lesson}
         </Button>)
 
+      var numPartsForLesson = lesson <= this.state.completedLessons ? lessonParts[this.state.completedLessons] : this.state.completedParts;
+      var parts = Array.range(1, numPartsForLesson + 1)
       if (lesson <= this.state.completedLessons + 1) {
-        completedLessons.push(<ListGroupItem active>Level {lesson}</ListGroupItem>);
-        lessonParts.map((part) => {
+        completedLessons.push(<ListGroupItem active>Lesson {lesson}</ListGroupItem>);
+        parts.map((part) => {
+          if (part > lessonParts[lesson]) {
+            return;
+          }
           completedLessons.push(
             <ListGroupItem>
               <div className="row align-middle">
@@ -460,8 +474,8 @@ class Terminal extends Component {
                         showTest: false,
                         revealCompletedLevels: false
                       });
-                    // TODO: Make a reset() function.  This might not be necessary
-                    this.loadLesson(this.state.lesson, part, true);
+
+                    this.loadLesson(lesson, part, true);
                     }} style={{width:"100%"}}>
                     Redo
                   </Button>

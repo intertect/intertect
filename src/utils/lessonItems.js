@@ -60,7 +60,9 @@ const lesson_2_part_1_reference = require('../references/lesson_2/part_1.js');
 // number of parts for each lesson
 export const lessonParts = {
   1 : 6,
-  2 : 2
+  2 : 2,
+  3 : 5,
+  4 : 1,
 }
 
 // content (text) for each lesson
