@@ -93,3 +93,10 @@ function execute(instruction, registers) {
     // TODO: Fill out this area
   }
 }
+
+function run() {
+  var binary = fetch();
+  var instruction = decode(binary);
+  var result = execute(instruction);
+  write(result);
+}

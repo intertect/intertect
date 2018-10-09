@@ -19,6 +19,13 @@ function execute(instruction, registers, memory) {
   }
 }
 
+var labelToLine = {
+  "label1" : 0,
+  "label3" : 4,
+  "label4" : 8,
+  "label5" : 24
+}
+
 var nameToRegisterMap = {
   "$zero" : 0x0,
   "$at" : 0x1,
