@@ -70,7 +70,7 @@ class Terminal extends Component {
       lessonContent: "",
       loadedLesson: false,
 
-      completedLessons: parseInt(localStorage.getItem('completedLessons')) || 0,
+      completedLessons: parseInt(localStorage.getItem('completedLessons')) || 2,
       completedParts: parseInt(localStorage.getItem('completedParts')) || 0,
 
       lessonComplete: false,
@@ -197,6 +197,13 @@ class Terminal extends Component {
       this.setState({
         binaryProgram : lessonBinaryCode[lessonPart],
       })
+
+      // we want to load the binary program into memory after lesson 3
+      if (lesson > 2) {
+        for (var i = 0; i < lessonBinaryCode[lessonPart].length; i++) {
+          studentMemory.write(i, lessonBinaryCode[lessonPart][i]);
+        }
+      }
     }
 
     this.setState({
