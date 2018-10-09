@@ -3,11 +3,14 @@ function ToUint32(x) {
 }
 
 export function solution(instruction, registers) {
-  var opcode = instruction >> 27;
+  instruction = ToUint32(instruction);
+  var opcode = instruction >> 26;
 
   // All R (register) instructions start with 0s
   var rs, rt, rd;
   var op_str;
+
+  var pc, pc_val, result;
 
   if (opcode == 0x0) {
     // TODO: Fill this area
@@ -67,7 +70,7 @@ export function solution(instruction, registers) {
 
   else if (opcode == 0x2 || opcode == 0x3) {
     // J format: oooooott ttttttt tttttttt tttttttt
-    var target = (instruction | 0x3FFFFFF) << 2;
+    var target = (instruction & 0x3FFFFFF) << 2;
 
     op_str = opcode == 0x2 ? "j" : "jal";
 
@@ -84,7 +87,7 @@ export function solution(instruction, registers) {
 
         result = pc_val | target;
 
-        registers.write(pc, offset);
+        registers.write(pc, result);
         break;
       case 'jal':
         pc = nameToRegisterMap["$pc"];
@@ -98,7 +101,7 @@ export function solution(instruction, registers) {
 
         result = pc_val | target;
 
-        registers.write(pc, offset);
+        registers.write(pc, result);
         // FIXME: The return address should be pc of the *next* instruction
         registers.write(ra, pc);
         break;
@@ -167,4 +170,40 @@ const opcodeMap = {
   0x29: "sh",
   0x2b: "sw",
   0x04: "beq",
+};
+
+const nameToRegisterMap = {
+  "$zero" : 0x0,
+  "$at" : 0x1,
+  "$v0" : 0x2,
+  "$v1" : 0x3,
+  "$a0" : 0x4,
+  "$a1" : 0x5,
+  "$a2" : 0x6,
+  "$a3" : 0x7,
+  "$t0" : 0x8,
+  "$t1" : 0x9,
+  "$t2" : 0xa,
+  "$t3" : 0xb,
+  "$t4" : 0xc,
+  "$t5" : 0xd,
+  "$t6" : 0xe,
+  "$t7" : 0xf,
+  "$s0" : 0x10,
+  "$s1" : 0x11,
+  "$s2" : 0x12,
+  "$s3" : 0x13,
+  "$s4" : 0x14,
+  "$s5" : 0x15,
+  "$s6" : 0x16,
+  "$s7" : 0x17,
+  "$t8" : 0x18,
+  "$t9" : 0x19,
+  "$k0" : 0x1a,
+  "$k1" : 0x1b,
+  "$gp" : 0x1c,
+  "$sp" : 0x1d,
+  "$fp" : 0x1e,
+  "$ra" : 0x1f,
+  "$pc" : 0x20
 };
