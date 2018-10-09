@@ -319,7 +319,15 @@ class Terminal extends Component {
     var originalPcReference = this.state.studentRegisters.read(pcRegister)
 
     if (!lessonComplete) {
-      var script = document.createElement('script');
+      // Get and subsequently remove the user's script
+      var script = document.getElementById('user-program');
+      if (script != null) {
+        script.parentNode.removeChild(script);
+      }
+
+      script = document.createElement('script');
+      script.setAttribute('id', 'user-program');
+
       try {
         script.appendChild(document.createTextNode(this.state.studentProgram));
         document.body.appendChild(script);
