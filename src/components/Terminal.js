@@ -368,14 +368,17 @@ class Terminal extends Component {
     });
 
     var newPcStudent = this.state.studentRegisters.read(pcRegister)
-    if (originalPcStudent == newPcStudent) {
+    if (!this.state.studentRegisters.wrotePc) {
       this.state.studentRegisters.write(pcRegister, newPcStudent + 4)
     }
 
     var newPcReference = this.state.referenceRegisters.read(pcRegister)
-    if (originalPcReference == newPcReference) {
+    if (!this.state.referenceRegisters.wrotePc) {
       this.state.referenceRegisters.write(pcRegister, newPcReference + 4)
     }
+
+    this.state.studentRegisters.wrotePc = false;
+    this.state.referenceRegisters.wrotePc = false;
 
     this.setState({
       programCounter : this.state.studentRegisters.read(pcRegister)

@@ -96,14 +96,11 @@ export function solution(instruction, registers) {
         target &= 0x3FFFFFFF;
 
         pc_val = ToUint32(registers.read(pc));
-        // Keep only the top two bits
-        pc_val &= 0xC0000000;
 
-        result = pc_val | target;
+        result = (pc_val & 0xC0000000) | target;
 
         registers.write(pc, result);
-        // FIXME: The return address should be pc of the *next* instruction
-        registers.write(ra, pc);
+        registers.write(ra, pc_val + 8);
         break;
       default:
         break;
@@ -135,6 +132,22 @@ export function solution(instruction, registers) {
         result = ToUint32(registers.read(rs) ^ imm);
         registers.write(rt, result);
         break;
+    case 'beq':
+      if (registers.read(rs) == registers.read(rt)) {
+        pc = nameToRegisterMap["$pc"];
+        var neg = (target | 0x4000) != 0;
+        target = imm << 2;
+        if (neg) {
+          target |= 0xFFFC0000;
+        }
+
+        // FIXME: Maybe the +4 isn't necessary and wer're doing something wrong
+        // in Terminal.js
+        result = ToUint32(registers.read(pc) + target + 4);
+
+        registers.write(pc, result);
+      }
+      break;
       default:
         break;
     }

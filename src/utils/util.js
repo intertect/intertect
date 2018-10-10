@@ -142,11 +142,12 @@ export class Registers {
     this.lastOperation = null;
     this.lastUsedRegister = null;
     this.usedRegisters = [];
+    this.wrotePc = false;
   }
 
 
   read(register) {
-    // this.lastOperation = "read from";
+    // this.lastOperation = "read";
     // this.lastUsedRegister = registerToNameMap[register];
     return this.registers_[register];
   }
@@ -160,8 +161,12 @@ export class Registers {
 
     this.usedRegisters.unshift(register);
 
-    this.lastOperation = "wrote to";
+    this.lastOperation = "wrote";
     this.lastUsedRegister = registerToNameMap[register];
+
+    if (this.lastUsedRegister == "$pc") {
+      this.wrotePc = true;
+    }
 
     this.registers_[register] = value;
   }
