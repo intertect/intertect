@@ -2,12 +2,12 @@ function ToUint32(x) {
   return x >>> 0;
 }
 
-export function solution(location, registers, memory) {
+export function solution(registers, memory) {
   function fetch(location) {
-    var byte_1 = memory[location];
-    var byte_2 = memory[location + 1];
-    var byte_3 = memory[location + 2];
-    var byte_4 = memory[location + 3];
+    var byte_1 = memory.read(location);
+    var byte_2 = memory.read(location + 1);
+    var byte_3 = memory.read(location + 2);
+    var byte_4 = memory.read(location + 3);
 
     var binary = byte_4;
     binary |= byte_3 << 8;
@@ -36,7 +36,7 @@ export function solution(location, registers, memory) {
       var funct = binary & 0x3f
 
       op_str = functMap[funct];
-      instruction = [op_str, rs, rt, rd, shamt, funct];
+      instruction = [op_str, rs, rt, rd, shamt];
     }
 
     else if (opcode == 0x2 || opcode == 0x3) {
@@ -61,96 +61,69 @@ export function solution(location, registers, memory) {
   }
 
   function execute(instruction) {
+    var op_str;
     var rd, rs, rt;
     var shamt;
     var result;
     var imm;
-    var target
+    var target;
     var offset;
     var pc, pc_val, ra;
     var byte_1, byte_2, byte_3, byte_4;
     var bytes;
     var value;
     var start_address;
-    switch(instruction[0]) {
+
+    if (instruction.length == 5) {
+      // R format
+      [op_str, rs, rt, rd, shamt] = instruction;
+    } else if (instruction.length == 2) {
+      // J format
+      [op_str, target] = instruction;
+    } else {
+      // I format
+      [op_str, rs, rt, imm] = instruction;
+    }
+
+    switch(op_str) {
       case 'addu':
-        rd = nameToRegisterMap[instruction[1]];
-        rs = nameToRegisterMap[instruction[2]];
-        rt = nameToRegisterMap[instruction[3]];
         result = ToUint32(registers.read(rs) + registers.read(rt));
         return [registers, rd, result];
       case 'subu':
-        rd = nameToRegisterMap[instruction[1]];
-        rs = nameToRegisterMap[instruction[2]];
-        rt = nameToRegisterMap[instruction[3]];
         result = ToUint32(registers.read(rs) - registers.read(rt));
         return [registers, rd, result];
       case 'and':
-        rd = nameToRegisterMap[instruction[1]];
-        rs = nameToRegisterMap[instruction[2]];
-        rt = nameToRegisterMap[instruction[3]];
         result = ToUint32(registers.read(rs) & registers.read(rd));
         return [registers, rd, result];
       case 'or':
-        rd = nameToRegisterMap[instruction[1]];
-        rs = nameToRegisterMap[instruction[2]];
-        rt = nameToRegisterMap[instruction[3]];
         result = ToUint32(registers.read(rs) | registers.read(rd));
         return [registers, rd, result];
       case 'xor':
-        rd = nameToRegisterMap[instruction[1]];
-        rs = nameToRegisterMap[instruction[2]];
-        rt = nameToRegisterMap[instruction[3]];
         result = ToUint32(registers.read(rs) ^ registers.read(rd));
         return [registers, rd, result];
       case 'sll':
-        rd = nameToRegisterMap[instruction[1]];
-        rt = nameToRegisterMap[instruction[2]];
-        shamt = ToUint32(instruction[3]);
         result = ToUint32(registers.read(rs)) << shamt;
         return [registers, rd, result];
       case 'srl':
-        rd = nameToRegisterMap[instruction[1]];
-        rt = nameToRegisterMap[instruction[2]];
-        shamt = ToUint32(instruction[3]);
         result = ToUint32(registers.read(rs)) >>> shamt;
         return [registers, rd, result];
       case 'sra':
-        rd = nameToRegisterMap[instruction[1]];
-        rt = nameToRegisterMap[instruction[2]];
-        shamt = ToUint32(instruction[3]);
         result = ToUint32(registers.read(rs)) >> shamt;
         return [registers, rd, result];
       case 'addiu':
-        rt = nameToRegisterMap[instruction[1]];
-        rs = nameToRegisterMap[instruction[2]];
-        imm = instruction[3];
         result = ToUint32(registers.read(rs) + imm);
         return [registers, rt, result];
       case 'andi':
-        rt = nameToRegisterMap[instruction[1]];
-        rs = nameToRegisterMap[instruction[2]];
-        imm = instruction[3];
         result = ToUint32(registers.read(rs) & imm);
         return [registers, rt, result];
       case 'ori':
-        rt = nameToRegisterMap[instruction[1]];
-        rs = nameToRegisterMap[instruction[2]];
-        imm = instruction[3];
         result = ToUint32(registers.read(rs) | imm);
         return [registers, rt, result];
       case 'xori':
-        rt = nameToRegisterMap[instruction[1]];
-        rs = nameToRegisterMap[instruction[2]];
-        imm = instruction[3];
         result = ToUint32(registers.read(rs) ^ imm);
         return [registers, rt, result];
       case 'beq':
-        rt = nameToRegisterMap[instruction[1]];
-        rs = nameToRegisterMap[instruction[2]];
-        offset = ToUint32(instruction[3]);
         pc = nameToRegisterMap["$pc"];
-
         result = ToUint32(registers.read(pc)) + offset;
         return [registers, pc, offset];
       case 'j':
@@ -182,19 +155,12 @@ export function solution(location, registers, memory) {
         registers.write(ra, pc);
         return [registers, pc, offset];
       case 'jr':
-        rs = nameToRegisterMap[instruction[1]];
         pc = nameToRegisterMap["$pc"];
-
         result = ToUint32(registers.read(rs));
-
         return [registers, pc, result];
       case 'nop':
         break;
       case 'sw':
-        rt = nameToRegisterMap[instruction[1]];
-        rs = nameToRegisterMap[instruction[2]];
-        offset = instruction[3];
-
         start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
         value = ToUint32(registers.read(rt));
 
@@ -207,10 +173,6 @@ export function solution(location, registers, memory) {
 
         return [memory, start_address, bytes];
       case 'sh':
-        rt = nameToRegisterMap[instruction[1]];
-        rs = nameToRegisterMap[instruction[2]];
-        offset = instruction[3];
-
         start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
         value = ToUint32(registers.read(rt));
 
@@ -221,10 +183,6 @@ export function solution(location, registers, memory) {
 
         return [memory, start_address, bytes];
       case 'sb':
-        rt = nameToRegisterMap[instruction[1]];
-        rs = nameToRegisterMap[instruction[2]];
-        offset = instruction[3];
-
         start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
         value = ToUint32(registers.read(rt));
 
@@ -234,10 +192,6 @@ export function solution(location, registers, memory) {
 
         return [memory, start_address, bytes];
       case 'lw':
-        rt = nameToRegisterMap[instruction[1]];
-        rs = nameToRegisterMap[instruction[2]];
-        offset = instruction[3];
-
         start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
 
         // From most to least significant
@@ -253,10 +207,6 @@ export function solution(location, registers, memory) {
 
         return [registers, rt, value];
       case 'lh':
-        rt = nameToRegisterMap[instruction[1]];
-        rs = nameToRegisterMap[instruction[2]];
-        offset = instruction[3];
-
         start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
 
         // From most to least significant
@@ -268,17 +218,11 @@ export function solution(location, registers, memory) {
 
         return [registers, rt, value];
       case 'lb':
-        rt = nameToRegisterMap[instruction[1]];
-        rs = nameToRegisterMap[instruction[2]];
-        offset = instruction[3];
-
         start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
 
         // From most to least significant
         byte_1 = memory.read(start_address);
-
         value = byte_1;
-
         return [registers, rt, value];
       default:
         // invalid/unsupported instruction passed in
@@ -297,10 +241,12 @@ export function solution(location, registers, memory) {
     }
   }
 
-  var binary = fetch(location);
+  var fetchLocation = registers.read(nameToRegisterMap["$pc"]);
+  var binary = fetch(fetchLocation);
   var instruction = decode(binary);
-  var [location, position, result] = execute(instruction);
-  write(location, position, result);
+  var [writeLocation, position, result] = execute(instruction);
+  console.log(binary)
+  write(writeLocation, position, result);
 }
 
 const functMap = {

@@ -70,7 +70,7 @@ class Terminal extends Component {
       lessonContent: "",
       loadedLesson: false,
 
-      completedLessons: parseInt(localStorage.getItem('completedLessons')) || 0,
+      completedLessons: parseInt(localStorage.getItem('completedLessons')) || 3,
       completedParts: parseInt(localStorage.getItem('completedParts')) || 0,
 
       lessonComplete: false,
@@ -94,6 +94,8 @@ class Terminal extends Component {
 
       theme: "solarized_dark"
     };
+
+    localStorage.clear()
 
     this.onChange = this.onChange.bind(this);
     this.loadLesson = this.loadLesson.bind(this);
@@ -202,6 +204,7 @@ class Terminal extends Component {
       if (lesson > 2) {
         for (var i = 0; i < lessonBinaryCode[lessonPart].length; i++) {
           studentMemory.write(i, lessonBinaryCode[lessonPart][i]);
+          referenceMemory.write(i, lessonBinaryCode[lessonPart][i]);
         }
       }
     }
@@ -343,16 +346,21 @@ class Terminal extends Component {
         document.body.appendChild(script);
       }
 
-      try {
-        // eslint-disable-next-line
-        execute(instruction, this.state.studentRegisters, this.state.studentMemory);
-      } catch(e) {
-        // student renamed function -- no execution
-      }
-
       var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
       var solution = lessonReferenceSolutions[lessonPart];
-      solution(instruction, this.state.referenceRegisters, this.state.referenceMemory);
+
+      // beyond lesson 2, students must fetch the instructions themselves
+      if (this.state.lesson > 2) {
+        try {
+          execute(this.state.studentRegisters, this.state.studentMemory);
+        } catch(e) { /* student renamed function -- no execution */ }
+        solution(this.state.referenceRegisters, this.state.referenceMemory);
+      } else {
+        try {
+          execute(instruction, this.state.studentRegisters, this.state.studentMemory);
+        } catch(e) { /* student renamed function -- no execution */  }
+        solution(instruction, this.state.referenceRegisters, this.state.referenceMemory);
+      }
     }
 
     if (typeof(this.getNextInstruction(this.state.programCounter + 4)) === 'undefined') {
