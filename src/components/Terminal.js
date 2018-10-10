@@ -56,6 +56,8 @@ class Terminal extends Component {
       localStorage.setItem('completedParts', lessonParts[completedLessons]);
     }
 
+    localStorage.clear()
+
     this.state = {
       isIntroPaneOpen: true,
       revealCompletedLevels: false,
@@ -94,8 +96,6 @@ class Terminal extends Component {
 
       theme: "solarized_dark"
     };
-
-    localStorage.clear()
 
     this.onChange = this.onChange.bind(this);
     this.loadLesson = this.loadLesson.bind(this);
@@ -352,12 +352,12 @@ class Terminal extends Component {
       // beyond lesson 2, students must fetch the instructions themselves
       if (this.state.lesson > 2) {
         try {
-          execute(this.state.studentRegisters, this.state.studentMemory);
+          processMIPS(this.state.studentRegisters, this.state.studentMemory);
         } catch(e) { /* student renamed function -- no execution */ }
         solution(this.state.referenceRegisters, this.state.referenceMemory);
       } else {
         try {
-          execute(instruction, this.state.studentRegisters, this.state.studentMemory);
+          processMIPS(instruction, this.state.studentRegisters, this.state.studentMemory);
         } catch(e) { /* student renamed function -- no execution */  }
         solution(instruction, this.state.referenceRegisters, this.state.referenceMemory);
       }
