@@ -1,4 +1,4 @@
-# Pipelining
+# Part 1: Fetch
 Architecture is pipelined! We're gonna be doing some fetch here
 
 [](../images/fetch.jpg)

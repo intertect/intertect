@@ -240,12 +240,20 @@ function write(location, position, result) {
   }
 }
 
-export function solution(registers, memory) {
+function processMIPS(registers, memory) {
   var fetchLocation = registers.read(nameToRegisterMap["$pc"]);
   var binary = fetch(fetchLocation, memory);
   var instruction = decode(binary);
   var [writeLocation, position, result] = execute(instruction, registers, memory);
   write(writeLocation, position, result);
+}
+
+export var solution = {
+  "fetch" : fetch,
+  "decode" : decode,
+  "execute" : execute,
+  "write" : write,
+  "processMIPS" : processMIPS
 }
 
 const functMap = {

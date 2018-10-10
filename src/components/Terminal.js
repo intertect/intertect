@@ -352,9 +352,14 @@ class Terminal extends Component {
       // beyond lesson 2, students must fetch the instructions themselves
       if (this.state.lesson > 2) {
         try {
-          processMIPS(this.state.studentRegisters, this.state.studentMemory);
+          // var binary = fetch(this.state.studentRegisters, this.state.studentMemory);
         } catch(e) { /* student renamed function -- no execution */ }
-        solution(this.state.referenceRegisters, this.state.referenceMemory);
+        var binary = fetch(this.state.studentRegisters, this.state.studentMemory);
+        var instruction = solution.decode(binary);
+        var [writeLocation, position, result] = solution.execute(instruction,
+          this.state.studentRegisters, this.state.studentMemory);
+        solution.write(writeLocation, position, result);
+        solution.processMIPS(this.state.referenceRegisters, this.state.referenceMemory);
       } else {
         try {
           processMIPS(instruction, this.state.studentRegisters, this.state.studentMemory);
