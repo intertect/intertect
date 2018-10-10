@@ -70,7 +70,7 @@ class Terminal extends Component {
       lessonContent: "",
       loadedLesson: false,
 
-      completedLessons: parseInt(localStorage.getItem('completedLessons')) || 2,
+      completedLessons: parseInt(localStorage.getItem('completedLessons')) || 0,
       completedParts: parseInt(localStorage.getItem('completedParts')) || 0,
 
       lessonComplete: false,
