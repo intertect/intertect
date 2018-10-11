@@ -29,7 +29,8 @@ import 'brace/theme/twilight';
 
 import {Memory, Registers, nameToRegisterMap} from '../utils/util.js';
 import {lessonParts, lessonContent, lessonRegisterInits, lessonAssembly,
-  lessonStarterCode, lessonReferenceSolutions, lessonBinaryCode} from '../utils/lessonItems.js';
+  lessonStarterCode, lessonReferenceSolutions, lessonBinaryCode,
+  lessonPipelineStudent} from '../utils/lessonItems.js';
 
 import MemoryTable from './MemoryTable.js'
 import RegistersTable from './RegistersTable.js'
@@ -351,15 +352,21 @@ class Terminal extends Component {
 
       // beyond lesson 2, students must fetch the instructions themselves
       if (this.state.lesson > 2) {
+        var fetch_fn, decode_fn, execute_fn, write_fn;
+        var studentPipelineImpl = lessonPipelineStudent[lessonPart];
+
         try {
-          // var binary = fetch(this.state.studentRegisters, this.state.studentMemory);
+          fetch_fn = studentPipelineImpl.indexOf("fetch") != -1 ? fetch : solution.fetch;
+          decode_fn = studentPipelineImpl.indexOf("decode") != -1 ? decode : solution.decode;
+          execute_fn = studentPipelineImpl.indexOf("execute") != -1 ? execute : solution.execute;
+          write_fn = studentPipelineImpl.indexOf("write") != -1 ? write : solution.write;
         } catch(e) { /* student renamed function -- no execution */ }
-        var binary = fetch(this.state.studentRegisters, this.state.studentMemory);
-        var instruction = solution.decode(binary);
-        console.log(instruction)
-        var [writeLocation, position, result] = solution.execute(instruction,
+
+        var binary = fetch_fn(this.state.studentRegisters, this.state.studentMemory);
+        var instruction = decode_fn(binary);
+        var [writeLocation, position, result] = execute_fn(instruction,
           this.state.studentRegisters, this.state.studentMemory);
-        solution.write(writeLocation, position, result);
+        write_fn(writeLocation, position, result);
         solution.processMIPS(this.state.referenceRegisters, this.state.referenceMemory);
       } else {
         try {
