@@ -3,15 +3,12 @@ function ToUint32(x) {
 }
 
 function fetch(registers, memory) {
-console.log("FUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUCK")
   var fetchLocation = registers.read(nameToRegisterMap["$pc"]);
-console.log("BITCH")
-  var binary = fetch(fetchLocation, memory);
 
-  var byte_1 = memory.read(location);
-  var byte_2 = memory.read(location + 1);
-  var byte_3 = memory.read(location + 2);
-  var byte_4 = memory.read(location + 3);
+  var byte_1 = memory.read(fetchLocation);
+  var byte_2 = memory.read(fetchLocation + 1);
+  var byte_3 = memory.read(fetchLocation + 2);
+  var byte_4 = memory.read(fetchLocation + 3);
 
   var binary = byte_4;
   binary |= byte_3 << 8;
@@ -22,9 +19,6 @@ console.log("BITCH")
 }
 
 function processMIPS(registers, memory) {
-var fetchLocation = registers.read(nameToRegisterMap["$pc"]);
-console.log("FUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUCK")
-console.log(fetchLocation)
   var binary = fetch(registers, memory);
 
   /* ------------------------------------------------------------------------ */

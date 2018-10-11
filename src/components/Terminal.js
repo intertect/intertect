@@ -356,6 +356,7 @@ class Terminal extends Component {
         } catch(e) { /* student renamed function -- no execution */ }
         var binary = fetch(this.state.studentRegisters, this.state.studentMemory);
         var instruction = solution.decode(binary);
+        console.log(instruction)
         var [writeLocation, position, result] = solution.execute(instruction,
           this.state.studentRegisters, this.state.studentMemory);
         solution.write(writeLocation, position, result);
