@@ -2,6 +2,16 @@ function ToUint32(x) {
   return x >>> 0;
 }
 
+function SignExtend16(x) {
+  x = ToUint32(x);
+  
+  if (x >>> 15 > 0) {
+    x |= 0xFFFF0000;
+  }
+  
+  return x;
+}
+
 export function solution(instruction, registers) {
   instruction = ToUint32(instruction);
   var opcode = instruction >> 26;
@@ -11,6 +21,7 @@ export function solution(instruction, registers) {
   var op_str;
 
   var pc, pc_val, result;
+  var ra;
 
   if (opcode == 0x0) {
     // TODO: Fill this area
@@ -111,13 +122,13 @@ export function solution(instruction, registers) {
     // I format: ooooooss sssttttt iiiiiiii iiiiiiii
     rs = (instruction >> 21) & 0x1F;
     rt = (instruction >> 16) & 0x1F;
-    var imm = (instruction >> 0) & 0xFFFF;
+    var imm = SignExtend16(instruction & 0xFFFF);
 
     op_str = opcodeMap[opcode];
 
     switch(op_str) {
       case 'addiu':
-        result = ToUint32(registers.read(rs) + imm);
+        result = registers.read(rs) + SignExtend16(imm);
         registers.write(rt, result);
         break;
       case 'andi':
@@ -135,14 +146,8 @@ export function solution(instruction, registers) {
     case 'beq':
       if (registers.read(rs) == registers.read(rt)) {
         pc = nameToRegisterMap["$pc"];
-        var neg = (target | 0x4000) != 0;
         target = imm << 2;
-        if (neg) {
-          target |= 0xFFFC0000;
-        }
 
-        // FIXME: Maybe the +4 isn't necessary and wer're doing something wrong
-        // in Terminal.js
         result = ToUint32(registers.read(pc) + target + 4);
 
         registers.write(pc, result);
