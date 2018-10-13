@@ -110,7 +110,7 @@ class Terminal extends Component {
 
   saveProgram(lesson, lessonPartNum, starterProgram) {
     var lessonPart = `lesson_${lesson}/part_${lessonPartNum}`;
-    var updatedStarterProgram = Object.assign({}, this.state.starterProgram);
+    var updatedStarterProgram = Object.assign({}, starterProgram);
     updatedStarterProgram[lessonPart] = this.state.studentProgram;
     this.setState({
       starterProgram: updatedStarterProgram,
@@ -119,7 +119,7 @@ class Terminal extends Component {
     localStorage.setItem('starterProgram', JSON.stringify(updatedStarterProgram));
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate() {
     if (this.state.running) {
       this.step();
     }
@@ -332,10 +332,6 @@ class Terminal extends Component {
 
     var pcRegister = nameToRegisterMap["$pc"];
 
-    // only move the PC on "step" if it wasn't moved in the instruction already
-    var originalPcStudent = this.state.studentRegisters.read(pcRegister)
-    var originalPcReference = this.state.studentRegisters.read(pcRegister)
-
     if (!lessonComplete) {
       // Get and subsequently remove the user's script
       var script = document.getElementById('user-program');
@@ -363,20 +359,25 @@ class Terminal extends Component {
         var studentPipelineImpl = lessonPipelineStudent[lessonPart];
 
         try {
+          // eslint-disable-next-line
           fetch_fn = studentPipelineImpl.indexOf("fetch") != -1 ? fetch : solution.fetch;
+          // eslint-disable-next-line
           decode_fn = studentPipelineImpl.indexOf("decode") != -1 ? decode : solution.decode;
+          // eslint-disable-next-line
           execute_fn = studentPipelineImpl.indexOf("execute") != -1 ? execute : solution.execute;
+          // eslint-disable-next-line
           write_fn = studentPipelineImpl.indexOf("write") != -1 ? write : solution.write;
         } catch(e) { /* student renamed function -- no execution */ }
 
         var binary = fetch_fn(this.state.studentRegisters, this.state.studentMemory);
-        var instruction = decode_fn(binary);
-        var [writeLocation, position, result] = execute_fn(instruction,
+        var decoded_instruction = decode_fn(binary);
+        var [writeLocation, position, result] = execute_fn(decoded_instruction,
           this.state.studentRegisters, this.state.studentMemory);
         write_fn(writeLocation, position, result);
         solution.processMIPS(this.state.referenceRegisters, this.state.referenceMemory);
       } else {
         try {
+          // eslint-disable-next-line
           processMIPS(instruction, this.state.studentRegisters, this.state.studentMemory);
         } catch(e) { /* student renamed function -- no execution */  }
         solution(instruction, this.state.referenceRegisters, this.state.referenceMemory);
@@ -405,7 +406,9 @@ class Terminal extends Component {
       this.state.referenceRegisters.write(pcRegister, newPcReference + 4)
     }
 
+    // eslint-disable-next-line
     this.state.studentRegisters.wrotePc = false;
+    // eslint-disable-next-line
     this.state.referenceRegisters.wrotePc = false;
 
     this.setState({
@@ -836,10 +839,10 @@ class Terminal extends Component {
           <ModalBody>
             <div className="row">
               <div className="col-sm-12">
-                Hey there! We're really excited for you to learn more about computer architecture with
-                Intertect! We don't want to take too much time that you could spend on the main platform,
-                but here's a quick bio of the two of us if you were interested! We're recent graduates of
-                Princeton (where we met) and even though we have pretty varied interests in CS, there's plenty
+                Hey there! We{"'"}re really excited for you to learn more about computer architecture with
+                Intertect! We don{"'"}t want to take too much time that you could spend on the main platform,
+                but here{"'"}s a quick bio of the two of us if you were interested! We{"'"}re recent graduates of
+                Princeton (where we met) and even though we have pretty varied interests in CS, there{"'"}s plenty
                 of projects that lie in that intersection that really excite us!
 
                 <Table borderless style={{tableLayout: "fixed"}}>
@@ -851,12 +854,13 @@ class Terminal extends Component {
 
                     <tr>
                       <td>
-                        Yash is currently a developer at Oculus VR (Facebook), who's extremely interested in computer vision,
-                        machine learning, and VR. For more info, visit: <a href="http://www.ypatel.io/" target="_blank">ypatel.io</a>
+                        Yash is currently a developer at Oculus VR (Facebook), who{"'"}s extremely interested in computer vision,
+                        machine learning, and VR. For more info, visit:
+                        <a href="http://www.ypatel.io/" target="_blank" rel="noopener noreferrer">ypatel.io</a>
                       </td>
 
                       <td>
-                        Peter is currently a developer at Google Cloud. He's really passionate about computer architecture,
+                        Peter is currently a developer at Google Cloud. He{"'"}s really passionate about computer architecture,
                         networks, and systems programming.
                       </td>
                     </tr>
@@ -886,11 +890,10 @@ class Terminal extends Component {
               <CardBody>
                 <FadeIn>
                   <div className="text-left">
-                    Welcome to Intertect, where you'll be learning about computer architecture here! As computer science marches
+                    Welcome to Intertect, where you{"'"}ll be learning about computer architecture here! As computer science marches
                     ahead into higher and higher levels of abstraction, understanding the computer has become more of an
-                    afterthought. We hope you'll have a much better understanding of the computer and what's going on
-                    under the hood after going through our platform! If you have questions/feedback, we would really
-                    appreciate if you used the feedback button below!
+                    afterthought. We hope you{"'"}ll have a much better understanding of the computer and what{"'"}s going on
+                    under the hood after going through our platform!
                   </div>
 
                   <hr />
