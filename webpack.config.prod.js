@@ -55,10 +55,34 @@ export default {
       // To track JavaScript errors via TrackJS, sign up for a free trial at TrackJS.com and enter your token below.
       trackJSToken: ''
     }),
-  
+
   ],
   module: {
     rules: [
+      {
+        test: /\.md$/,
+        use: [
+          {
+            loader: 'html-loader',
+          },
+          {
+            loader: 'markdown-loader',
+          },
+        ],
+        include: path.resolve(__dirname, '../')
+      },
+      {
+        test: /\.txt$/,
+        use: 'raw-loader'
+      },
+      {
+        test: /\.s$/,
+        use: 'raw-loader'
+      },
+      {
+        test: /\.bin$/,
+        use: 'binary-loader'
+      },
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,

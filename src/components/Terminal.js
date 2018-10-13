@@ -41,6 +41,9 @@ import 'font-awesome/css/font-awesome.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'mdbreact/dist/css/mdb.css';
 
+import yash from '../images/yash.png';
+import peter from '../images/peter.png';
+
 Array.range = (start, end) => Array.from({length: (end - start)}, (v, k) => k + start);
 
 class Terminal extends Component {
@@ -848,8 +851,8 @@ class Terminal extends Component {
                 <Table borderless style={{tableLayout: "fixed"}}>
                   <TableBody>
                     <tr>
-                      <td><img src="../images/yash.png" className="img-fluid" style={{ borderRadius: "50%" }}></img></td>
-                      <td><img src="../images/peter.png" className="img-fluid" style={{ borderRadius: "50%" }}></img></td>
+                      <td><img src={yash}  className="img-fluid" style={{ borderRadius: "50%" }} /></td>
+                      <td><img src={peter} className="img-fluid" style={{ borderRadius: "50%" }} /></td>
                     </tr>
 
                     <tr>
