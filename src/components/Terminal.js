@@ -210,6 +210,8 @@ class Terminal extends Component {
       }
     }
 
+    var letters = Object.values(lessonContent[lessonPart]);
+
     this.setState({
       lessonComplete: false,
       lessonCorrect: true,
@@ -219,7 +221,7 @@ class Terminal extends Component {
       lesson : lesson,
       lessonPart : lessonPartNum,
 
-      lessonContent : Object.values(lessonContent[lessonPart]).join(""),
+      lessonContent : letters[letters.length - 1],
       assemblyProgram : lessonAssembly[lessonPart].split("\n"),
 
       studentRegisters : studentRegisters,

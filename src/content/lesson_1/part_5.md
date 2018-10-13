@@ -1,7 +1,7 @@
 # Part 5: Jump Around!
 Now it's time to implement control flow.  With this, your emulator will be
 Turing Complete.  Congratulations! You will have a processor in the JavaScript
-virtual machine, in your browser, on you Operating System, running on a real
+virtual machine, in your browser, on your Operating System, running on a real
 physical processor.  If you're running in a VM, you've got even more levels in
 there.  Isn't that exciting?
 
