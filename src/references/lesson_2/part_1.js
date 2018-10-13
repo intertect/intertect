@@ -4,11 +4,11 @@ function ToUint32(x) {
 
 function SignExtend16(x) {
   x = ToUint32(x);
-  
+
   if (x >>> 15 > 0) {
     x |= 0xFFFF0000;
   }
-  
+
   return x;
 }
 
@@ -159,7 +159,7 @@ export function solution(instruction, registers) {
   }
 }
 
-const functMap = {
+var functMap = {
   0x20: "add",
   0x21: "addu",
   0x22: "sub",
@@ -174,7 +174,7 @@ const functMap = {
   0x08: "jr",
 };
 
-const opcodeMap = {
+var opcodeMap = {
   0x08: "addi",
   0x09: "addiu",
   0x0c: "andi",
@@ -190,7 +190,7 @@ const opcodeMap = {
   0x04: "beq",
 };
 
-const nameToRegisterMap = {
+var nameToRegisterMap = {
   "$zero" : 0x0,
   "$at" : 0x1,
   "$v0" : 0x2,

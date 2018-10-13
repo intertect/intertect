@@ -57,8 +57,6 @@ class Terminal extends Component {
       localStorage.setItem('completedParts', lessonParts[completedLessons]);
     }
 
-    localStorage.clear()
-
     this.state = {
       isIntroPaneOpen: true,
       revealCompletedLevels: false,

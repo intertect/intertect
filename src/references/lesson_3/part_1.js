@@ -2,7 +2,9 @@ function ToUint32(x) {
   return x >>> 0;
 }
 
-function fetch(location, memory) {
+function fetch(registers, memory) {
+  var location = registers.read(nameToRegisterMap["$pc"]);
+
   var byte_1 = memory.read(location);
   var byte_2 = memory.read(location + 1);
   var byte_3 = memory.read(location + 2);
@@ -241,8 +243,7 @@ function write(location, position, result) {
 }
 
 function processMIPS(registers, memory) {
-  var fetchLocation = registers.read(nameToRegisterMap["$pc"]);
-  var binary = fetch(fetchLocation, memory);
+  var binary = fetch(registers, memory);
   var instruction = decode(binary);
   var [writeLocation, position, result] = execute(instruction, registers, memory);
   write(writeLocation, position, result);
@@ -256,7 +257,7 @@ export var solution = {
   "processMIPS" : processMIPS
 }
 
-const functMap = {
+var functMap = {
   0x20: "add",
   0x21: "addu",
   0x22: "sub",
@@ -271,7 +272,7 @@ const functMap = {
   0x08: "jr",
 };
 
-const opcodeMap = {
+var opcodeMap = {
   0x08: "addi",
   0x09: "addiu",
   0x0c: "andi",
@@ -287,7 +288,7 @@ const opcodeMap = {
   0x04: "beq",
 };
 
-const nameToRegisterMap = {
+var nameToRegisterMap = {
   "$zero" : 0x0,
   "$at" : 0x1,
   "$v0" : 0x2,
