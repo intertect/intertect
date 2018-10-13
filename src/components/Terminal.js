@@ -63,7 +63,6 @@ class Terminal extends Component {
       isIntroPaneOpen: true,
       revealCompletedLevels: false,
       confirmRestart: false,
-      showMenu: false,
 
       programCounter: 0,
       running: false,
@@ -489,6 +488,7 @@ class Terminal extends Component {
       lessonMenuButtons.push(
         <Button outline onClick={() => {
             this.loadLesson(lesson, 1, true);
+            this.setState({isIntroPaneOpen : true})
           }}
           className={(lesson <= this.state.completedLessons + 1) ? "enabled" : "disabled"}
           style={{width:"75%"}}>
@@ -555,7 +555,6 @@ class Terminal extends Component {
             <Button outline onClick={() => this.setState({
                   loadedLesson : false,
                   lesson : null,
-                  showMenu: false
                 })}>
               Main Menu
             </Button>
