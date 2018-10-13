@@ -10,7 +10,7 @@ import { Button, Card, CardBody, CardTitle, CardHeader,
   Dropdown, DropdownToggle, DropdownMenu, DropdownItem,
   Popover, PopoverHeader, PopoverBody,
   Modal, ModalHeader, ModalBody, ModalFooter, ListGroup, ListGroupItem,
-  Navbar, NavItem, NavbarNav, NavbarBrand, Collapse } from 'mdbreact';
+  Navbar, NavItem, NavbarNav, NavbarBrand, Collapse, Table, TableBody } from 'mdbreact';
 
 import FadeIn from 'react-fade-in';
 import ReactMarkdown from 'react-markdown';
@@ -61,6 +61,7 @@ class Terminal extends Component {
       isIntroPaneOpen: true,
       revealCompletedLevels: false,
       confirmRestart: false,
+      showAbout: false,
 
       programCounter: 0,
       running: false,
@@ -100,6 +101,7 @@ class Terminal extends Component {
     this.saveProgram = this.saveProgram.bind(this);
     this.copyRegisters = this.copyRegisters.bind(this);
     this.toggleCompletedLevels = this.toggleCompletedLevels.bind(this);
+    this.toggleShowAbout = this.toggleShowAbout.bind(this);
   }
 
   onChange(newValue) {
@@ -139,6 +141,12 @@ class Terminal extends Component {
   toggleCompletedLevels() {
     this.setState({
       revealCompletedLevels: false
+    });
+  }
+
+  toggleShowAbout() {
+    this.setState({
+      showAbout: false
     });
   }
 
@@ -482,6 +490,12 @@ class Terminal extends Component {
     var lessonMenuButtons = [];
 
     var lessons = Array.range(1, 5)
+    var lessonTitles = [
+      "MIPS Assembly",
+      "MIPS Binary",
+      "Pipelining",
+      "Parallel Pipelining",
+    ]
     lessons.map((lesson) => {
       lessonMenuButtons.push(
         <Button outline onClick={() => {
@@ -491,7 +505,7 @@ class Terminal extends Component {
           className={(lesson <= this.state.completedLessons + 1) ? "enabled" : "disabled"}
           style={{width:"75%"}}>
 
-          Lesson {lesson}
+          Lesson {lesson}: {lessonTitles[lesson-1]}
         </Button>)
 
       var numPartsForLesson = lesson <= this.state.completedLessons ? lessonParts[this.state.completedLessons] : this.state.completedParts;
@@ -587,7 +601,6 @@ class Terminal extends Component {
             </div>
           </ModalFooter>
         </Modal>
-
 
         <Modal isOpen={this.state.lessonCorrect && this.state.lessonComplete}
           frame position="bottom">
@@ -818,6 +831,52 @@ class Terminal extends Component {
       :
 
       <div>
+        <Modal isOpen={this.state.showAbout} toggle={() => this.toggleShowAbout()} centered>
+          <ModalHeader>About Us</ModalHeader>
+          <ModalBody>
+            <div className="row">
+              <div className="col-sm-12">
+                Hey there! We're really excited for you to learn more about computer architecture with
+                Intertect! We don't want to take too much time that you could spend on the main platform,
+                but here's a quick bio of the two of us if you were interested! We're recent graduates of
+                Princeton (where we met) and even though we have pretty varied interests in CS, there's plenty
+                of projects that lie in that intersection that really excite us!
+
+                <Table borderless style={{tableLayout: "fixed"}}>
+                  <TableBody>
+                    <tr>
+                      <td><img src="../images/yash.png" className="img-fluid" style={{ borderRadius: "50%" }}></img></td>
+                      <td><img src="../images/peter.png" className="img-fluid" style={{ borderRadius: "50%" }}></img></td>
+                    </tr>
+
+                    <tr>
+                      <td>
+                        Yash is currently a developer at Oculus VR (Facebook), who's extremely interested in computer vision,
+                        machine learning, and VR. For more info, visit: <a href="http://www.ypatel.io/" target="_blank">ypatel.io</a>
+                      </td>
+
+                      <td>
+                        Peter is currently a developer at Google Cloud. He's really passionate about computer architecture,
+                        networks, and systems programming.
+                      </td>
+                    </tr>
+                  </TableBody>
+                </Table>
+              </div>
+              <br />
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <div className="row">
+              <div className="col-sm-12">
+                <Button outline onClick={() => this.toggleShowAbout()} style={{width:"100%"}}>
+                  Close
+                </Button>
+              </div>
+            </div>
+          </ModalFooter>
+        </Modal>
+
         <div className="row">
           <div className="col-sm-6" style={{position: "absolute", top:"25%", left:"25%"}}>
             <Card style={{ marginTop: '1rem'}} className="text-center">
@@ -825,7 +884,24 @@ class Terminal extends Component {
                 <CardTitle componentclassName="h1">Intertect</CardTitle>
               </CardHeader>
               <CardBody>
-                <FadeIn> {lessonMenuButtons} </FadeIn>
+                <FadeIn>
+                  <div className="text-left">
+                    Welcome to Intertect, where you'll be learning about computer architecture here! As computer science marches
+                    ahead into higher and higher levels of abstraction, understanding the computer has become more of an
+                    afterthought. We hope you'll have a much better understanding of the computer and what's going on
+                    under the hood after going through our platform! If you have questions/feedback, we would really
+                    appreciate if you used the feedback button below!
+                  </div>
+
+                  <hr />
+                  {lessonMenuButtons}
+                  <hr />
+
+                  <Button outline
+                    onClick={() => this.setState({ showAbout : true })} style={{width:"100%"}}>
+                    Meet the Creators
+                  </Button>
+                </FadeIn>
               </CardBody>
             </Card>
           </div>
