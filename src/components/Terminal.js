@@ -51,6 +51,7 @@ class Terminal extends Component {
     super(props);
 
     // Validate localStorage
+    localStorage.clear()
     if (localStorage.getItem('completedLessons') > 4) {
       localStorage.setItem('completedLessons', 4);
     }
@@ -87,6 +88,8 @@ class Terminal extends Component {
       assemblyProgram: [],
       binaryProgram: [],
       memory: new Memory(),
+      studentPipeline: [],
+      referencePipeline: [],
 
       showRegisters: true,
       showMemory: false,
@@ -357,7 +360,7 @@ class Terminal extends Component {
       var solution = lessonReferenceSolutions[lessonPart];
 
       // beyond lesson 2, students must fetch the instructions themselves
-      if (this.state.lesson > 2) {
+      if (this.state.lesson == 3) {
         var fetch_fn, decode_fn, execute_fn, write_fn;
         var studentPipelineImpl = lessonPipelineStudent[lessonPart];
 
@@ -378,7 +381,19 @@ class Terminal extends Component {
           this.state.studentRegisters, this.state.studentMemory);
         write_fn(this.state.studentRegisters, this.state.studentMemory, writeInfo);
         solution.processMIPS(this.state.referenceRegisters, this.state.referenceMemory);
-      } else {
+      }
+      else if (this.state.lesson == 4) {
+        var updatedStudentPipeline = processMIPS(this.state.studentRegisters,
+          this.state.studentMemory, this.state.studentPipeline);
+        var updatedReferencePipeline = solution(this.state.referenceRegisters,
+          this.state.referenceMemory, this.state.referencePipeline);
+
+        this.setState({
+          studentPipeline: updatedStudentPipeline,
+          referencePipeline: updatedReferencePipeline
+        });
+      }
+      else {
         try {
           // eslint-disable-next-line
           processMIPS(instruction, this.state.studentRegisters, this.state.studentMemory);
