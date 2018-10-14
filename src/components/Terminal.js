@@ -383,6 +383,7 @@ class Terminal extends Component {
         solution.processMIPS(this.state.referenceRegisters, this.state.referenceMemory);
       }
       else if (this.state.lesson == 4) {
+        // eslint-disable-next-line
         var updatedStudentPipeline = processMIPS(this.state.studentRegisters,
           this.state.studentMemory, this.state.studentPipeline);
         var updatedReferencePipeline = solution(this.state.referenceRegisters,

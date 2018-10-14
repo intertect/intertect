@@ -295,22 +295,6 @@ function write(registers, memory, writeInfo) {
 }
 
 function processMIPS(registers, memory, pipeline) {
-  var binary, instruction, writeInfo;
-  past_binary = pipeline[0];
-  past_instruction = pipeline[1];
-  past_writeInfo = pipeline[2];
-
-  var new_binary = fetch(registers, memory);
-  if (past_binary != undefined) {
-    var new_instruction = decode(past_binary);
-  }
-  if (past_instruction != undefined) {
-    var new_writeInfo = execute(past_instruction, registers, memory);
-  }
-  if (past_writeInfo != undefined) {
-    write(registers, memory, past_writeInfo);
-  }
-  return [new_binary, new_instruction, new_writeInfo]
 }
 
 var functMap = {
