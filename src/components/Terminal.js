@@ -374,9 +374,9 @@ class Terminal extends Component {
 
         var binary = fetch_fn(this.state.studentRegisters, this.state.studentMemory);
         var decoded_instruction = decode_fn(binary);
-        var [writeLocation, position, result] = execute_fn(decoded_instruction,
+        var writeInfo = execute_fn(decoded_instruction,
           this.state.studentRegisters, this.state.studentMemory);
-        write_fn(writeLocation, position, result);
+        write_fn(this.state.studentRegisters, this.state.studentMemory, writeInfo);
         solution.processMIPS(this.state.referenceRegisters, this.state.referenceMemory);
       } else {
         try {

@@ -2,6 +2,16 @@ function ToUint32(x) {
   return x >>> 0;
 }
 
+function SignExtend16(x) {
+  x = ToUint32(x);
+
+  if (x >>> 15 > 0) {
+    x |= 0xFFFF0000;
+  }
+
+  return x;
+}
+
 export function solution(instruction, registers) {
   instruction = ToUint32(instruction);
   var opcode = instruction >> 26;
@@ -11,6 +21,7 @@ export function solution(instruction, registers) {
   var op_str;
 
   var pc, pc_val, result;
+  var ra;
 
   if (opcode == 0x0) {
     // TODO: Fill this area
@@ -96,14 +107,11 @@ export function solution(instruction, registers) {
         target &= 0x3FFFFFFF;
 
         pc_val = ToUint32(registers.read(pc));
-        // Keep only the top two bits
-        pc_val &= 0xC0000000;
 
-        result = pc_val | target;
+        result = (pc_val & 0xC0000000) | target;
 
         registers.write(pc, result);
-        // FIXME: The return address should be pc of the *next* instruction
-        registers.write(ra, pc);
+        registers.write(ra, pc_val + 8);
         break;
       default:
         break;
@@ -114,13 +122,18 @@ export function solution(instruction, registers) {
     // I format: ooooooss sssttttt iiiiiiii iiiiiiii
     rs = (instruction >> 21) & 0x1F;
     rt = (instruction >> 16) & 0x1F;
-    var imm = (instruction >> 0) & 0xFFFF;
+    var imm = SignExtend16(instruction & 0xFFFF);
+
+    // used in store/load instructions
+    var start_address = ToUint32(registers.read(rs)) + ToUint32(imm);
+    var byte_1, byte_2, byte_3, byte_4;
+    var value;
 
     op_str = opcodeMap[opcode];
 
     switch(op_str) {
       case 'addiu':
-        result = ToUint32(registers.read(rs) + imm);
+        result = registers.read(rs) + SignExtend16(imm);
         registers.write(rt, result);
         break;
       case 'andi':
@@ -133,6 +146,73 @@ export function solution(instruction, registers) {
         break;
       case 'xori':
         result = ToUint32(registers.read(rs) ^ imm);
+        registers.write(rt, result);
+        break;
+      case 'beq':
+        if (registers.read(rs) == registers.read(rt)) {
+          pc = nameToRegisterMap["$pc"];
+          target = imm << 2;
+
+          result = ToUint32(registers.read(pc) + target + 4);
+
+          registers.write(pc, result);
+        }
+        break;
+      case 'sw':
+        value = ToUint32(registers.read(rt));
+
+        byte_1 = (value >> 24) & 0xFF;
+        byte_2 = (value >> 16) & 0xFF;
+        byte_3 = (value >> 8) & 0xFF;
+        byte_4 = value & 0xFF;
+
+        memory.write(start_address, byte_1);
+        memory.write(start_address + 1, byte_2);
+        memory.write(start_address + 2, byte_3);
+        memory.write(start_address + 3, byte_4);
+
+        break;
+      case 'sh':
+        value = ToUint32(registers.read(rt));
+
+        byte_1 = (value >> 8) & 0xFF;
+        byte_2 = value & 0xFF;
+
+        memory.write(start_address, byte_1);
+        memory.write(start_address + 1, byte_2);
+
+        break;
+      case 'sb':
+        value = ToUint32(registers.read(rt));
+        byte_1 = value & 0xFF;
+        memory.write(start_address, byte_1);
+
+        break;
+      case 'lw':
+        byte_1 = memory.read(start_address);
+        byte_2 = memory.read(start_address + 1);
+        byte_3 = memory.read(start_address + 2);
+        byte_4 = memory.read(start_address + 3);
+
+        result = byte_4;
+        result |= byte_3 << 8;
+        result |= byte_2 << 16;
+        result |= byte_1 << 24;
+
+        registers.write(rt, result);
+        break;
+      case 'lh':
+        byte_1 = memory.read(start_address);
+        byte_2 = memory.read(start_address + 1);
+
+        result = byte_2;
+        result |= byte_1 << 8;
+
+        registers.write(rt, result);
+        break;
+      case 'lb':
+        byte_1 = memory.read(start_address);
+        result = byte_1;
         registers.write(rt, result);
         break;
       default:

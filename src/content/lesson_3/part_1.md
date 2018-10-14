@@ -39,5 +39,16 @@ worry about adjusting that after hitting step!
 - Instructions are to be read from high bit to low
 - Current instruction is pointed to by `pc`
 
-[](../images/fetch.jpg)
 <img src="https://media.giphy.com/media/5G98t8QjqBLK8/giphy.gif"/>
+
+## Why Pipeline
+As we briefly alluded to above, separating the execution of an instruction into pipeline stages is primarily useful in allowing different isntructions to be executed "simultaneously." After all, the way we currently have the processor set up, a single instruction must execute in its entirety before the following one is even started. Specifically, that instruction must be fetched from memory, decoded to its type, executed, and written *all* before the next one is even considered. However, assuming consecutive instructions don't depend on one another (we'll get back to this later), they can go through the different stages of the pipeline without fear of resulting in an error in the execution of the other if the pipeline stages are developed as to be independent of one another. In this diagram:
+
+[](https://upload.wikimedia.org/wikipedia/commons/c/cb/Pipeline%2C_4_stage.svg)
+
+We see that one of the instructions can be going through a "decode" stage while the next instruction that is to be executed can be fetched and the previous executed. This means pipelining allows instructions to greatly improve throughput of the system. The typical metric for measuring processor throughput is referred to as CPI, or cycles per instruction. A clock cycle effectively captures one step through the pipeline, i.e. the time it would take to move from fetch to decode or decode to execute. 
+
+Prior to pipelining, instructions would typically take 3-4 cycles to complete. After pipelining, this is *still* the case! Remember, pipelining is **not** increasing the speed of the execution of a single instruction. That is, if we had two processors, one pipelined and one not, that were being tested against a single instruction, they would perform identically. However, in those same 3-4 cycles, a pipelined processor will ideally execute 3-4 instructions, since at *each* clock cycle, there will be an instruction that is being written back, i.e. an instruction being completed, whereas this is only the case on the fourth cycle for a non-pipelined CPU. So, while the speed remains the same, the CPI drops to nearly 1, since we now have roughly an instruction being completed at each clock tick.
+
+## Hazards
+While the ideal pipelined CPI is 1, there are some circumstances where this will not be the case. Specifically, when consecutive instructions depend on one another in some way, i.e. executing a jump instruction may result in the following instruction being skipped entirely. This is the focus of Lesson 4, so we'll be putting this issue on the back burner temporarily, with the understanding that it is resolved via communication between the pipeline stages, much in the way data is handed off between them.

@@ -124,6 +124,11 @@ export function solution(instruction, registers) {
     rt = (instruction >> 16) & 0x1F;
     var imm = SignExtend16(instruction & 0xFFFF);
 
+    // used in store/load instructions
+    var start_address = ToUint32(registers.read(rs)) + ToUint32(imm);
+    var byte_1, byte_2, byte_3, byte_4;
+    var value;
+
     op_str = opcodeMap[opcode];
 
     switch(op_str) {
@@ -143,16 +148,73 @@ export function solution(instruction, registers) {
         result = ToUint32(registers.read(rs) ^ imm);
         registers.write(rt, result);
         break;
-    case 'beq':
-      if (registers.read(rs) == registers.read(rt)) {
-        pc = nameToRegisterMap["$pc"];
-        target = imm << 2;
+      case 'beq':
+        if (registers.read(rs) == registers.read(rt)) {
+          pc = nameToRegisterMap["$pc"];
+          target = imm << 2;
 
-        result = ToUint32(registers.read(pc) + target + 4);
+          result = ToUint32(registers.read(pc) + target + 4);
 
-        registers.write(pc, result);
-      }
-      break;
+          registers.write(pc, result);
+        }
+        break;
+      case 'sw':
+        value = ToUint32(registers.read(rt));
+
+        byte_1 = (value >> 24) & 0xFF;
+        byte_2 = (value >> 16) & 0xFF;
+        byte_3 = (value >> 8) & 0xFF;
+        byte_4 = value & 0xFF;
+
+        memory.write(start_address, byte_1);
+        memory.write(start_address + 1, byte_2);
+        memory.write(start_address + 2, byte_3);
+        memory.write(start_address + 3, byte_4);
+
+        break;
+      case 'sh':
+        value = ToUint32(registers.read(rt));
+
+        byte_1 = (value >> 8) & 0xFF;
+        byte_2 = value & 0xFF;
+
+        memory.write(start_address, byte_1);
+        memory.write(start_address + 1, byte_2);
+
+        break;
+      case 'sb':
+        value = ToUint32(registers.read(rt));
+        byte_1 = value & 0xFF;
+        memory.write(start_address, byte_1);
+
+        break;
+      case 'lw':
+        byte_1 = memory.read(start_address);
+        byte_2 = memory.read(start_address + 1);
+        byte_3 = memory.read(start_address + 2);
+        byte_4 = memory.read(start_address + 3);
+
+        result = byte_4;
+        result |= byte_3 << 8;
+        result |= byte_2 << 16;
+        result |= byte_1 << 24;
+
+        registers.write(rt, result);
+        break;
+      case 'lh':
+        byte_1 = memory.read(start_address);
+        byte_2 = memory.read(start_address + 1);
+
+        result = byte_2;
+        result |= byte_1 << 8;
+
+        registers.write(rt, result);
+        break;
+      case 'lb':
+        byte_1 = memory.read(start_address);
+        result = byte_1;
+        registers.write(rt, result);
+        break;
       default:
         break;
     }

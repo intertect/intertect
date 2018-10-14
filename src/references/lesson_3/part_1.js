@@ -37,7 +37,13 @@ function decode(binary) {
     var funct = binary & 0x3f
 
     op_str = functMap[funct];
-    instruction = [op_str, rs, rt, rd, shamt];
+    instruction = {
+      "op_str" : op_str,
+      "rs" : rs,
+      "rt" : rt,
+      "rd" : rd,
+      "shamt" : shamt
+    }
   }
 
   else if (opcode == 0x2 || opcode == 0x3) {
@@ -45,7 +51,10 @@ function decode(binary) {
     var target = (binary & 0x3FFFFFF) << 2;
 
     op_str = opcode == 0x2 ? "j" : "jal";
-    instruction = [op_str, target];
+    instruction = {
+      "op_str" : op_str,
+      "target" : target
+    }
   }
 
   else {
@@ -55,198 +64,240 @@ function decode(binary) {
     var imm = (binary >> 0) & 0xFFFF;
 
     op_str = opcodeMap[opcode];
-    instruction = [op_str, rs, rt, imm];
+    instruction = {
+      "op_str" : op_str,
+      "rs" : rs,
+      "rt" : rt,
+      "imm" : imm
+    }
   }
 
   return instruction;
 }
 
 function execute(instruction, registers, memory) {
-  var op_str;
-  var rd, rs, rt;
-  var shamt;
-  var result;
-  var imm;
-  var target;
-  var offset;
-  var pc, pc_val, ra;
-  var byte_1, byte_2, byte_3, byte_4;
-  var bytes;
-  var value;
-  var start_address;
+  // All R (register) instructions start with 0s
+  var rs, rt, rd;
+  var op_str = instruction["op_str"];
 
-  if (instruction.length == 5) {
-    // R format
-    [op_str, rs, rt, rd, shamt] = instruction;
-  } else if (instruction.length == 2) {
-    // J format
-    [op_str, target] = instruction;
-  } else {
-    // I format
-    [op_str, rs, rt, imm] = instruction;
+  var pc, pc_val, result;
+  var ra;
+
+  var r_ops = ['addu', 'subu', 'and', 'or', 'xor', 'sll', 'srl', 'sra', 'jr'];
+  var j_ops = ['j', 'jal'];
+  var i_ops = ['addiu', 'andi', 'ori', 'xori', 'beq'];
+
+  var location, position, result;
+  var writeInfo;
+
+  if (r_ops.indexOf(op_str) != -1) {
+    rs = instruction["rs"]
+    rt = instruction["rt"]
+    rd = instruction["rd"]
+    var shamt = instruction["shamt"]
+
+    location = "registers";
+    position = rd; // holds for everything but jr
+    switch(op_str) {
+      case 'addu':
+        result = ToUint32(registers.read(rs) + registers.read(rt));
+        break;
+      case 'subu':
+        result = ToUint32(registers.read(rs) - registers.read(rt));
+        break;
+      case 'and':
+        result = ToUint32(registers.read(rs) & registers.read(rd));
+        break;
+      case 'or':
+        result = ToUint32(registers.read(rs) | registers.read(rd));
+        break;
+      case 'xor':
+        result = ToUint32(registers.read(rs) ^ registers.read(rd));
+        break;
+      case 'sll':
+        result = ToUint32(registers.read(rs) << registers.read(rd));
+        break;
+      case 'srl':
+        result = ToUint32(registers.read(rs) >>> registers.read(rd));
+        break;
+      case 'sra':
+        result = ToUint32(registers.read(rs) >> registers.read(rd));
+        break;
+      case 'jr':
+        pc = nameToRegisterMap["$pc"];
+        position = pc;
+        result = ToUint32(registers.read(rs));
+        break;
+      default:
+        break;
+    }
   }
 
-  switch(op_str) {
-    case 'addu':
-      result = ToUint32(registers.read(rs) + registers.read(rt));
-      return [registers, rd, result];
-    case 'subu':
-      result = ToUint32(registers.read(rs) - registers.read(rt));
-      return [registers, rd, result];
-    case 'and':
-      result = ToUint32(registers.read(rs) & registers.read(rd));
-      return [registers, rd, result];
-    case 'or':
-      result = ToUint32(registers.read(rs) | registers.read(rd));
-      return [registers, rd, result];
-    case 'xor':
-      result = ToUint32(registers.read(rs) ^ registers.read(rd));
-      return [registers, rd, result];
-    case 'sll':
-      result = ToUint32(registers.read(rs)) << shamt;
-      return [registers, rd, result];
-    case 'srl':
-      result = ToUint32(registers.read(rs)) >>> shamt;
-      return [registers, rd, result];
-    case 'sra':
-      result = ToUint32(registers.read(rs)) >> shamt;
-      return [registers, rd, result];
-    case 'addiu':
-      result = ToUint32(registers.read(rs) + imm);
-      return [registers, rt, result];
-    case 'andi':
-      result = ToUint32(registers.read(rs) & imm);
-      return [registers, rt, result];
-    case 'ori':
-      result = ToUint32(registers.read(rs) | imm);
-      return [registers, rt, result];
-    case 'xori':
-      result = ToUint32(registers.read(rs) ^ imm);
-      return [registers, rt, result];
-    case 'beq':
-      pc = nameToRegisterMap["$pc"];
-      result = ToUint32(registers.read(pc)) + offset;
-      return [registers, pc, offset];
-    case 'j':
-      target = ToUint32(instruction[1]) << 2;
-      pc = nameToRegisterMap["$pc"];
-      // Lop off the two top bits
-      target &= 0x3FFFFFFF;
+  else if (j_ops.indexOf(op_str) != -1) {
+    // J format: oooooott ttttttt tttttttt tttttttt
+    var target = instruction["target"]
 
-      pc_val = ToUint32(registers.read(pc));
-      // Keep only the top two bits
-      pc_val &= 0xC0000000;
+    location = "registers";
+    position = pc;
+    switch(op_str) {
+      case 'j':
+        pc = nameToRegisterMap["$pc"];
+        // Lop off the two top bits
+        target &= 0x3FFFFFFF;
 
-      result = pc_val | target;
+        pc_val = ToUint32(registers.read(pc));
+        // Keep only the top two bits
+        pc_val &= 0xC0000000;
 
-      return [registers, pc, offset];
-    case 'jal':
-      target = ToUint32(instruction[1]) << 2;
-      pc = nameToRegisterMap["$pc"];
-      ra = nameToRegisterMap["$ra"];
-      // Lop off the two top bits
-      target &= 0x3FFFFFFF;
+        result = pc_val | target;
 
-      pc_val = ToUint32(registers.read(pc));
-      // Keep only the top two bits
-      pc_val &= 0xC0000000;
+        break;
+      case 'jal':
+        pc = nameToRegisterMap["$pc"];
+        ra = nameToRegisterMap["$ra"];
+        // Lop off the two top bits
+        target &= 0x3FFFFFFF;
 
-      result = pc_val | target;
+        pc_val = ToUint32(registers.read(pc));
 
-      registers.write(ra, pc);
-      return [registers, pc, offset];
-    case 'jr':
-      pc = nameToRegisterMap["$pc"];
-      result = ToUint32(registers.read(rs));
-      return [registers, pc, result];
-    case 'nop':
-      break;
-    case 'sw':
-      start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
-      value = ToUint32(registers.read(rt));
+        result = (pc_val & 0xC0000000) | target;
 
-      // From most to least significant
-      byte_1 = (value >> 24) & 0xFF;
-      byte_2 = (value >> 16) & 0xFF;
-      byte_3 = (value >> 8) & 0xFF;
-      byte_4 = value & 0xFF;
-      bytes = [byte_1, byte_2, byte_3, byte_4]
+        registers.write(ra, pc_val + 8);
+        break;
+      default:
+        break;
+    }
+  }
 
-      return [memory, start_address, bytes];
-    case 'sh':
-      start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
-      value = ToUint32(registers.read(rt));
+  else {
+    // I format: ooooooss sssttttt iiiiiiii iiiiiiii
+    rs = instruction["rs"]
+    rt = instruction["rt"]
+    var imm = instruction["imm"]
 
-      // From most to least significant
-      byte_1 = (value >> 8) & 0xFF;
-      byte_2 = value & 0xFF;
-      bytes = [byte_1, byte_2];
+    // used in store/load instructions
+    var start_address = ToUint32(registers.read(rs)) + ToUint32(imm);
+    var byte_1, byte_2, byte_3, byte_4;
+    var value;
 
-      return [memory, start_address, bytes];
-    case 'sb':
-      start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
-      value = ToUint32(registers.read(rt));
+    switch(op_str) {
+      case 'addiu':
+        location = "registers";
+        position = rt;
+        result = registers.read(rs) + SignExtend16(imm);
+        break;
+      case 'andi':
+        location = "registers";
+        position = rt;
+        result = ToUint32(registers.read(rs) & imm);
+        break;
+      case 'ori':
+        location = "registers";
+        position = rt;
+        result = ToUint32(registers.read(rs) | imm);
+        break;
+      case 'xori':
+        location = "registers";
+        position = rt;
+        result = ToUint32(registers.read(rs) ^ imm);
+        break;
+      case 'beq':
+        if (registers.read(rs) == registers.read(rt)) {
+          pc = nameToRegisterMap["$pc"];
+          target = imm << 2;
 
-      // From most to least significant
-      byte_1 = value & 0xFF;
-      bytes = [byte_1];
+          location = "registers";
+          position = pc;
+          result = ToUint32(registers.read(pc) + target + 4);
+        }
+        break;
+      case 'sw':
+        value = ToUint32(registers.read(rt));
 
-      return [memory, start_address, bytes];
-    case 'lw':
-      start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
+        byte_1 = (value >> 24) & 0xFF;
+        byte_2 = (value >> 16) & 0xFF;
+        byte_3 = (value >> 8) & 0xFF;
+        byte_4 = value & 0xFF;
 
-      // From most to least significant
-      byte_1 = memory.read(start_address);
-      byte_2 = memory.read(start_address + 1);
-      byte_3 = memory.read(start_address + 2);
-      byte_4 = memory.read(start_address + 3);
+        location = "memory";
+        position = start_address;
+        result = [byte_1, byte_2, byte_3, byte_4]
+        break;
+      case 'sh':
+        value = ToUint32(registers.read(rt));
 
-      value = byte_4;
-      value |= byte_3 << 8;
-      value |= byte_2 << 16;
-      value |= byte_1 << 24;
+        byte_1 = (value >> 8) & 0xFF;
+        byte_2 = value & 0xFF;
 
-      return [registers, rt, value];
-    case 'lh':
-      start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
+        location = "memory";
+        position = start_address;
+        result = [byte_1, byte_2]
+        break;
+      case 'sb':
+        value = ToUint32(registers.read(rt));
+        byte_1 = value & 0xFF;
 
-      // From most to least significant
-      byte_1 = memory.read(start_address);
-      byte_2 = memory.read(start_address + 1);
+        location = "memory";
+        position = start_address;
+        result = [byte_1]
+        break;
+      case 'lw':
+        byte_1 = memory.read(start_address);
+        byte_2 = memory.read(start_address + 1);
+        byte_3 = memory.read(start_address + 2);
+        byte_4 = memory.read(start_address + 3);
 
-      value = byte_2;
-      value |= byte_1 << 8;
+        result = byte_4;
+        result |= byte_3 << 8;
+        result |= byte_2 << 16;
+        result |= byte_1 << 24;
 
-      return [registers, rt, value];
-    case 'lb':
-      start_address = ToUint32(registers.read(rs)) + ToUint32(offset);
+        location = "registers";
+        position = rt;
+        break;
+      case 'lh':
+        byte_1 = memory.read(start_address);
+        byte_2 = memory.read(start_address + 1);
 
-      // From most to least significant
-      byte_1 = memory.read(start_address);
-      value = byte_1;
-      return [registers, rt, value];
-    default:
-      // invalid/unsupported instruction passed in
-      return;
+        result = byte_2;
+        result |= byte_1 << 8;
+
+        location = "registers";
+        position = rt;
+        break;
+      case 'lb':
+        byte_1 = memory.read(start_address);
+        result = byte_1;
+        location = "registers";
+        position = rt;
+        break;
+      default:
+        break;
+    }
+  }
+
+  return {
+    "result": result,
+    "location": location,
+    "position": position
   }
 }
 
-function write(location, position, result) {
-  // TODO: Make this less hideous -- this distinguishes memory vs. register write
-  if (result instanceof Array) {
-    for (var i = 0; i < result.length; i++) {
-      location.write(position + i, result[i]);
+function write(registers, memory, writeInfo) {
+  if (writeInfo["location"] == "memory") {
+    for (var i = 0; i < writeInfo["result"].length; i++) {
+      memory.write(writeInfo["position"] + i, writeInfo["result"][i]);
     }
   } else {
-    location.write(position, result);
+    registers.write(writeInfo["position"], writeInfo["result"])
   }
 }
 
 function processMIPS(registers, memory) {
   var binary = fetch(registers, memory);
   var instruction = decode(binary);
-  var [writeLocation, position, result] = execute(instruction, registers, memory);
-  write(writeLocation, position, result);
+  var writeInfo = execute(instruction, registers, memory);
+  write(registers, memory, writeInfo);
 }
 
 export var solution = {
