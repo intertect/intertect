@@ -13,10 +13,10 @@ key elements that allows processors to work on different tasks simultaneously, w
 is the focus in Lesson 4. Here, we'll be effectively separating the processor you've
 currently developed into well separated logical units, specifically:
 
-- Fetch: Grabs the instruction being pointed at by the `pc`
-- Decode: Determines the instruction along with its arguments from the binary
-- Execute: Performs the operation determined via the decode
-- Write: Saves the result from execution to the desired location
+- **Fetch**: Grabs the instruction being pointed at by the `pc`
+- **Decode**: Determines the instruction along with its arguments from the binary
+- **Execute**: Performs the operation determined via the decode
+- **Write**: Saves the result from execution to the desired location
 
 So, while there is no difference in capability that will result in our work in this lesson,
 we'll be effectively "refactoring" your implementation to allow for clarity and (more 
@@ -38,8 +38,6 @@ worry about adjusting that after hitting step!
 - Instructions are 32-bit
 - Instructions are to be read from high bit to low
 - Current instruction is pointed to by `pc`
-
-<img src="https://media.giphy.com/media/5G98t8QjqBLK8/giphy.gif"/>
 
 ## Why Pipeline
 As we briefly alluded to above, separating the execution of an instruction into pipeline stages is primarily useful in allowing different isntructions to be executed "simultaneously." After all, the way we currently have the processor set up, a single instruction must execute in its entirety before the following one is even started. Specifically, that instruction must be fetched from memory, decoded to its type, executed, and written *all* before the next one is even considered. However, assuming consecutive instructions don't depend on one another (we'll get back to this later), they can go through the different stages of the pipeline without fear of resulting in an error in the execution of the other if the pipeline stages are developed as to be independent of one another. In this diagram:

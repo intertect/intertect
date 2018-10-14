@@ -62,23 +62,29 @@ function decode(binary) {
 }
 
 function execute(instruction, registers, memory) {
-  var op_str;
-  var rd, rs, rt;
-  var shamt;
-  var result;
-  var imm;
-  var target;
-  var offset;
-  var pc, pc_val, ra;
-  var byte_1, byte_2, byte_3, byte_4;
-  var bytes;
-  var value;
-  var start_address;
+  var rs, rt, rd;
+  var op_str = instruction["op_str"];
 
-  // TODO: Extract data from instruction array
+  var pc, pc_val, result;
+  var ra;
 
-  // TODO: Fill this with your past work
-  switch(op_str) {
+  var r_ops = ['addu', 'subu', 'and', 'or', 'xor', 'sll', 'srl', 'sra', 'jr'];
+  var j_ops = ['j', 'jal'];
+  var i_ops = ['addiu', 'andi', 'ori', 'xori', 'beq'];
+
+  var location, position, result;
+  var writeInfo;
+
+  if (r_ops.indexOf(op_str) != -1) {
+    // TODO: Fill this function
+  }
+
+  else if (j_ops.indexOf(op_str) != -1) {
+    // TODO: Fill this function
+  }
+
+  else {
+    // TODO: Fill this function
   }
 }
 
@@ -87,13 +93,13 @@ function execute(instruction, registers, memory) {
 function processMIPS(registers, memory) {
   var binary = fetch(registers, memory);
   var instruction = decode(binary);
-  var [writeLocation, position, result] = execute(instruction, registers, memory);
+  var writeInfo = execute(instruction, registers, memory);
 
   /* ------------------------------------------------------------------------ */
   // We've already implemented the functions below this line for you! You'll be
   // doing these in the following lessons
   /* ------------------------------------------------------------------------ */
-  write(writeLocation, position, result);
+  write(registers, memory, writeInfo);
 }
 
 var functMap = {

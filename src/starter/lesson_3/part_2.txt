@@ -53,8 +53,8 @@ function processMIPS(registers, memory) {
   // We've already implemented the functions below this line for you! You'll be
   // doing these in the following lessons
   /* ------------------------------------------------------------------------ */
-  var [writeLocation, position, result] = execute(instruction, registers, memory);
-  write(writeLocation, position, result);
+  var writeInfo = execute(instruction, registers, memory);
+  write(registers, memory, writeInfo);
 }
 
 var functMap = {
