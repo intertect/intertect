@@ -1,0 +1,88 @@
+function ToUint32(x) {
+  return x >>> 0;
+}
+
+function fetch(registers, memory) {
+  // TODO: Fill this function
+}
+
+// this is just a mock of the behind the scenes: altering this function will NOT
+// change the outcome of running your code
+function processMIPS(registers, memory) {
+  var binary = fetch(registers, memory);
+
+  /* ------------------------------------------------------------------------ */
+  // We've already implemented the functions below this line for you! You'll be
+  // doing these in the following lessons
+  /* ------------------------------------------------------------------------ */
+  var instruction = decode(binary);
+  var writeInfo = execute(instruction, registers, memory);
+  write(registers, memory, writeInfo);
+}
+
+var functMap = {
+  0x20: "add",
+  0x21: "addu",
+  0x22: "sub",
+  0x23: "subu",
+  0x24: "and",
+  0x25: "or",
+  0x27: "nor",
+  0x26: "xor",
+  0x00: "sll",
+  0x02: "srl",
+  0x03: "sra",
+  0x08: "jr",
+};
+
+var opcodeMap = {
+  0x08: "addi",
+  0x09: "addiu",
+  0x0c: "andi",
+  0x0d: "ori",
+  0x0e: "xori",
+  0x24: "lbu",
+  0x25: "lhu",
+  0x23: "lw",
+  0x0f: "lui",
+  0x28: "sb",
+  0x29: "sh",
+  0x2b: "sw",
+  0x04: "beq",
+};
+
+var nameToRegisterMap = {
+  "$zero" : 0x0,
+  "$at" : 0x1,
+  "$v0" : 0x2,
+  "$v1" : 0x3,
+  "$a0" : 0x4,
+  "$a1" : 0x5,
+  "$a2" : 0x6,
+  "$a3" : 0x7,
+  "$t0" : 0x8,
+  "$t1" : 0x9,
+  "$t2" : 0xa,
+  "$t3" : 0xb,
+  "$t4" : 0xc,
+  "$t5" : 0xd,
+  "$t6" : 0xe,
+  "$t7" : 0xf,
+  "$s0" : 0x10,
+  "$s1" : 0x11,
+  "$s2" : 0x12,
+  "$s3" : 0x13,
+  "$s4" : 0x14,
+  "$s5" : 0x15,
+  "$s6" : 0x16,
+  "$s7" : 0x17,
+  "$t8" : 0x18,
+  "$t9" : 0x19,
+  "$k0" : 0x1a,
+  "$k1" : 0x1b,
+  "$gp" : 0x1c,
+  "$sp" : 0x1d,
+  "$fp" : 0x1e,
+  "$ra" : 0x1f,
+  "$pc" : 0x20
+};
