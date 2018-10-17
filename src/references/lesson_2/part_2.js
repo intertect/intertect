@@ -12,6 +12,9 @@ function SignExtend16(x) {
   return x;
 }
 
+var branch_delay = false;
+var branch_target;
+
 export function solution(instruction, registers) {
   instruction = ToUint32(instruction);
   var opcode = instruction >> 26;
@@ -20,8 +23,15 @@ export function solution(instruction, registers) {
   var rs, rt, rd;
   var op_str;
 
-  var pc, pc_val, result;
+  var pc_val, result;
   var ra;
+
+  // Actually perform the branch delay
+  if (branch_delay) {
+    var pc = nameToRegisterMap["$pc"];
+    branch_delay = false;
+    registers.write(pc, branch_target);
+  }
 
   if (opcode == 0x0) {
     // TODO: Fill this area
@@ -68,11 +78,10 @@ export function solution(instruction, registers) {
         registers.write(rd, result);
         break;
       case 'jr':
-        pc = nameToRegisterMap["$pc"];
-
         result = ToUint32(registers.read(rs));
 
-        registers.write(pc, result);
+        branch_delay = true;
+        branch_target = result;
         break;
       default:
         break;
@@ -88,7 +97,6 @@ export function solution(instruction, registers) {
     // TODO
     switch(op_str) {
       case 'j':
-        pc = nameToRegisterMap["$pc"];
         // Lop off the two top bits
         target &= 0x3FFFFFFF;
 
@@ -98,10 +106,10 @@ export function solution(instruction, registers) {
 
         result = pc_val | target;
 
-        registers.write(pc, result);
+        branch_delay = true;
+        branch_target = result;
         break;
       case 'jal':
-        pc = nameToRegisterMap["$pc"];
         ra = nameToRegisterMap["$ra"];
         // Lop off the two top bits
         target &= 0x3FFFFFFF;
@@ -110,7 +118,8 @@ export function solution(instruction, registers) {
 
         result = (pc_val & 0xC0000000) | target;
 
-        registers.write(pc, result);
+        branch_delay = true;
+        branch_target = result;
         registers.write(ra, pc_val + 8);
         break;
       default:
@@ -150,12 +159,12 @@ export function solution(instruction, registers) {
         break;
       case 'beq':
         if (registers.read(rs) == registers.read(rt)) {
-          pc = nameToRegisterMap["$pc"];
           target = imm << 2;
 
           result = ToUint32(registers.read(pc) + target + 4);
 
-          registers.write(pc, result);
+          branch_delay = true;
+          branch_target = result;
         }
         break;
       case 'sw':

@@ -108,6 +108,8 @@ class Terminal extends Component {
     this.copyRegisters = this.copyRegisters.bind(this);
     this.toggleCompletedLevels = this.toggleCompletedLevels.bind(this);
     this.toggleShowAbout = this.toggleShowAbout.bind(this);
+    this.userProgramExists = this.userProgramExists.bind(this);
+    this.appendUserProgram = this.appendUserProgram.bind(this);
   }
 
   onChange(newValue) {
@@ -156,11 +158,40 @@ class Terminal extends Component {
     });
   }
 
+  userProgramExists() {
+    return document.getElementById('user-program') != null;
+  }
+
+  appendUserProgram() {
+    // Get and subsequently remove the user's script
+    var script = document.getElementById('user-program');
+    if (script != null) {
+      script.parentNode.removeChild(script);
+    }
+
+    script = document.createElement('script');
+    script.setAttribute('id', 'user-program');
+
+    try {
+      script.appendChild(document.createTextNode(this.state.studentProgram));
+      document.body.appendChild(script);
+    } catch (e) {
+      script.text = this.state.studentProgram;
+      document.body.appendChild(script);
+    }
+  }
+
+
   loadLesson(lesson, lessonPartNum, resetCode) {
     if (lessonPartNum > lessonParts[lesson]) {
       lessonPartNum = 1;
       lesson += 1;
     }
+
+    // Reset the user program every time the lesson is loaded.  This
+    // has the effect of reloading the user code only when they click
+    // "reset"
+    this.appendUserProgram();
 
     var lessonPart = `lesson_${lesson}/part_${lessonPartNum}`;
     if (lessonPartNum > this.state.completedParts) {
@@ -333,29 +364,16 @@ class Terminal extends Component {
 
   // Step one instruction forward and execute
   step() {
+    if (!this.userProgramExists()) {
+      this.appendUserProgram();
+    }
+
     var instruction = this.getNextInstruction();
     var lessonComplete = typeof(instruction) === 'undefined';
 
     var pcRegister = nameToRegisterMap["$pc"];
 
     if (!lessonComplete) {
-      // Get and subsequently remove the user's script
-      var script = document.getElementById('user-program');
-      if (script != null) {
-        script.parentNode.removeChild(script);
-      }
-
-      script = document.createElement('script');
-      script.setAttribute('id', 'user-program');
-
-      try {
-        script.appendChild(document.createTextNode(this.state.studentProgram));
-        document.body.appendChild(script);
-      } catch (e) {
-        script.text = this.state.studentProgram;
-        document.body.appendChild(script);
-      }
-
       var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
       var solution = lessonReferenceSolutions[lessonPart];
 

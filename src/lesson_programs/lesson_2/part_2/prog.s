@@ -49,19 +49,23 @@ xori $v0, $t4, 1
 
 label1: 
 j label4
+addi $t0, $t0, 1
 
 label3:
 jal label5
+nop
 
 label4:
+beq $zero, $t0, label6
+nop
 beq $zero, $t0, label4
-nop
-beq $zero, $zero, label3
-nop
+addi $t0, $t0, -1
 
 label5:
 jr $ra
+nop
 
+label6:
 sw $t0, 100($zero)
 sh $t0, 104($zero)
 sb $t0, 108($zero)
