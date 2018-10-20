@@ -102,7 +102,9 @@ class Terminal extends Component {
       unviewedMemoryExplanation: true,
       showTest: false,
 
-      theme: "solarized_dark"
+      theme: "solarized_dark",
+
+      programRunning: false,
     };
 
     this.onChange = this.onChange.bind(this);
@@ -195,6 +197,7 @@ class Terminal extends Component {
     // has the effect of reloading the user code only when they click
     // "reset"
     this.appendUserProgram();
+    this.setState({ programRunning: false });
 
     var lessonPart = `lesson_${lesson}/part_${lessonPartNum}`;
     if (lessonPartNum > this.state.completedParts) {
@@ -367,8 +370,9 @@ class Terminal extends Component {
 
   // Step one instruction forward and execute
   step() {
-    if (!this.userProgramExists()) {
+    if (!this.userProgramExists() || !this.state.programRunning) {
       this.appendUserProgram();
+      this.setState({programRunning: true});
     }
 
     var instruction = this.getNextInstruction();
