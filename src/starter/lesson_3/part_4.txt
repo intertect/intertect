@@ -2,23 +2,24 @@ function ToUint32(x) {
   return x >>> 0;
 }
 
-function IF(registers, memory) {
-  var fetchLocation = registers.read(nameToRegisterMap["$pc"]);
+function IF(latches, registers, memory) {
+  var location = registers.read(nameToRegisterMap["$pc"]);
 
-  var byte_1 = memory.read(fetchLocation);
-  var byte_2 = memory.read(fetchLocation + 1);
-  var byte_3 = memory.read(fetchLocation + 2);
-  var byte_4 = memory.read(fetchLocation + 3);
+  var byte_1 = memory.read(location);
+  var byte_2 = memory.read(location + 1);
+  var byte_3 = memory.read(location + 2);
+  var byte_4 = memory.read(location + 3);
 
   var binary = byte_4;
   binary |= byte_3 << 8;
   binary |= byte_2 << 16;
   binary |= byte_1 << 24;
 
-  return binary;
+  latches.if_id = binary;
 }
 
-function ID(binary) {
+function ID(latches, registers, memory) {
+  var binary = latches.if_id;
   var opcode = binary >> 26;
 
   // All R (register) binarys start with 0s
@@ -29,7 +30,6 @@ function ID(binary) {
   var instruction;
 
   if (opcode == 0x0) {
-    // TODO: Fill this area
     rs = binary >> 21 & 0x1f
     rt = binary >> 16 & 0x1f
     rd = binary >> 11 & 0x1f
@@ -37,7 +37,13 @@ function ID(binary) {
     var funct = binary & 0x3f
 
     op_str = functMap[funct];
-    instruction = [op_str, rs, rt, rd, shamt];
+    instruction = {
+      "op_str" : op_str,
+      "rs" : rs,
+      "rt" : rt,
+      "rd" : rd,
+      "shamt" : shamt
+    }
   }
 
   else if (opcode == 0x2 || opcode == 0x3) {
@@ -45,7 +51,10 @@ function ID(binary) {
     var target = (binary & 0x3FFFFFF) << 2;
 
     op_str = opcode == 0x2 ? "j" : "jal";
-    instruction = [op_str, target];
+    instruction = {
+      "op_str" : op_str,
+      "target" : target
+    }
   }
 
   else {
@@ -55,13 +64,20 @@ function ID(binary) {
     var imm = (binary >> 0) & 0xFFFF;
 
     op_str = opcodeMap[opcode];
-    instruction = [op_str, rs, rt, imm];
+    instruction = {
+      "op_str" : op_str,
+      "rs" : rs,
+      "rt" : rt,
+      "imm" : imm
+    }
   }
 
-  return instruction;
+  latches.id_ex = instruction;
 }
 
-function EX(instruction, registers, memory) {
+function EX(latches, registers, memory) {
+  var instruction = latches.id_ex;
+
   // All R (register) instructions start with 0s
   var rs, rt, rd;
   var op_str = instruction["op_str"];
@@ -69,11 +85,11 @@ function EX(instruction, registers, memory) {
   var pc, pc_val, result;
   var ra;
 
-  var r_ops = ['addu', 'subu', 'and', 'or', 'xor', 'sll', 'srl', 'sra', 'jr'];
+  var r_ops = ['addu', 'subu', 'and', 'or', 'xor', 'sll', 'srl', 'sra'];
   var j_ops = ['j', 'jal'];
-  var i_ops = ['addiu', 'andi', 'ori', 'xori', 'beq'];
+  var i_ops = ['addiu', 'andi', 'ori', 'xori', 'sw', 'sh', 'sb', 'lw', 'lh', 'lb'];
 
-  var location, position, result;
+  var location, position, result, memory_address;
   var writeInfo;
 
   if (r_ops.indexOf(op_str) != -1) {
@@ -83,7 +99,7 @@ function EX(instruction, registers, memory) {
     var shamt = instruction["shamt"]
 
     location = "registers";
-    position = rd; // holds for everything but jr
+    position = rd;
     switch(op_str) {
       case 'addu':
         result = ToUint32(registers.read(rs) + registers.read(rt));
@@ -108,11 +124,6 @@ function EX(instruction, registers, memory) {
         break;
       case 'sra':
         result = ToUint32(registers.read(rs) >> registers.read(rd));
-        break;
-      case 'jr':
-        pc = nameToRegisterMap["$pc"];
-        position = pc;
-        result = ToUint32(registers.read(rs));
         break;
       default:
         break;
@@ -155,14 +166,14 @@ function EX(instruction, registers, memory) {
     }
   }
 
-  else {
+  else if (i_ops.indexOf(op_str) != -1) {
     // I format: ooooooss sssttttt iiiiiiii iiiiiiii
     rs = instruction["rs"]
     rt = instruction["rt"]
     var imm = instruction["imm"]
 
     // used in store/load instructions
-    var start_address = ToUint32(registers.read(rs)) + ToUint32(imm);
+    memory_address = ToUint32(registers.read(rs)) + ToUint32(imm);
     var byte_1, byte_2, byte_3, byte_4;
     var value;
 
@@ -187,105 +198,37 @@ function EX(instruction, registers, memory) {
         position = rt;
         result = ToUint32(registers.read(rs) ^ imm);
         break;
-      case 'beq':
-        if (registers.read(rs) == registers.read(rt)) {
-          pc = nameToRegisterMap["$pc"];
-          target = imm << 2;
-
-          location = "registers";
-          position = pc;
-          result = ToUint32(registers.read(pc) + target + 4);
-        }
-        break;
-      case 'sw':
-        value = ToUint32(registers.read(rt));
-
-        byte_1 = (value >> 24) & 0xFF;
-        byte_2 = (value >> 16) & 0xFF;
-        byte_3 = (value >> 8) & 0xFF;
-        byte_4 = value & 0xFF;
-
-        location = "memory";
-        position = start_address;
-        result = [byte_1, byte_2, byte_3, byte_4]
-        break;
-      case 'sh':
-        value = ToUint32(registers.read(rt));
-
-        byte_1 = (value >> 8) & 0xFF;
-        byte_2 = value & 0xFF;
-
-        location = "memory";
-        position = start_address;
-        result = [byte_1, byte_2]
-        break;
-      case 'sb':
-        value = ToUint32(registers.read(rt));
-        byte_1 = value & 0xFF;
-
-        location = "memory";
-        position = start_address;
-        result = [byte_1]
-        break;
-      case 'lw':
-        byte_1 = memory.read(start_address);
-        byte_2 = memory.read(start_address + 1);
-        byte_3 = memory.read(start_address + 2);
-        byte_4 = memory.read(start_address + 3);
-
-        result = byte_4;
-        result |= byte_3 << 8;
-        result |= byte_2 << 16;
-        result |= byte_1 << 24;
-
-        location = "registers";
-        position = rt;
-        break;
-      case 'lh':
-        byte_1 = memory.read(start_address);
-        byte_2 = memory.read(start_address + 1);
-
-        result = byte_2;
-        result |= byte_1 << 8;
-
-        location = "registers";
-        position = rt;
-        break;
-      case 'lb':
-        byte_1 = memory.read(start_address);
-        result = byte_1;
-        location = "registers";
-        position = rt;
-        break;
       default:
         break;
     }
   }
 
-  return {
+  latches.ex_mem = {
+    "instruction": instruction, // for instructions to execute in MEM stage
+    "memory_address": memory_address, // only relevant for load/stores
     "result": result,
     "location": location,
     "position": position
   }
 }
 
-function MEM(memory, writeInfo) {
-  // TODO: Write back value to memory if appropriate
+function MEM(latches, registers, memory) {
+  // TODO: Fill this function
 }
 
 // this is just a mock of the behind the scenes: altering this function will NOT
 // change the outcome of running your code
-function processMIPS(registers, memory) {
-  var binary = IF(registers, memory);
-  var instruction = ID(binary);
-  var writeInfo = EX(instruction, registers, memory);
-  MEM(memory, writeInfo);
+function processMIPS(latches, registers, memory) {
+  IF(latches, registers, memory);
+  ID(latches, registers, memory);
+  EX(latches, registers, memory);
+  MEM(latches, registers, memory);
 
   /* ------------------------------------------------------------------------ */
   // We've already implemented the functions below this line for you! You'll be
   // doing these in the following lessons
   /* ------------------------------------------------------------------------ */
-  WB(registers, writeInfo);
+  WB(latches, registers, memory);
 }
 
 var functMap = {

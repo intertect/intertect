@@ -2,23 +2,24 @@ function ToUint32(x) {
   return x >>> 0;
 }
 
-function IF(registers, memory) {
-  var fetchLocation = registers.read(nameToRegisterMap["$pc"]);
+function IF(latches, registers, memory) {
+  var location = registers.read(nameToRegisterMap["$pc"]);
 
-  var byte_1 = memory.read(fetchLocation);
-  var byte_2 = memory.read(fetchLocation + 1);
-  var byte_3 = memory.read(fetchLocation + 2);
-  var byte_4 = memory.read(fetchLocation + 3);
+  var byte_1 = memory.read(location);
+  var byte_2 = memory.read(location + 1);
+  var byte_3 = memory.read(location + 2);
+  var byte_4 = memory.read(location + 3);
 
   var binary = byte_4;
   binary |= byte_3 << 8;
   binary |= byte_2 << 16;
   binary |= byte_1 << 24;
 
-  return binary;
+  latches.if_id = binary;
 }
 
-function ID(binary) {
+function ID(latches, registers, memory) {
+  var binary = latches.if_id;
   var opcode = binary >> 26;
 
   // All R (register) binarys start with 0s
@@ -32,30 +33,30 @@ function ID(binary) {
     // TODO: Fill this area
   }
 
-  else if (// TODO: Fill this area) {
+  else if (opcode == 0x2 || opcode == 0x3) {
     // J format: oooooott ttttttt tttttttt tttttttt
+    // TODO: Fill this area
   }
 
   else {
     // I format: ooooooss sssttttt iiiiiiii iiiiiiii
+    // TODO: Fill this area
   }
-
-  return instruction;
 }
 
 // this is just a mock of the behind the scenes: altering this function will NOT
 // change the outcome of running your code
-function processMIPS(registers, memory) {
-  var binary = IF(registers, memory);
-  var instruction = ID(binary);
+function processMIPS(latches, registers, memory) {
+  IF(latches, registers, memory);
+  ID(latches, registers, memory);
 
   /* ------------------------------------------------------------------------ */
   // We've already implemented the functions below this line for you! You'll be
   // doing these in the following lessons
   /* ------------------------------------------------------------------------ */
-  var writeInfo = EX(instruction, registers, memory);
-  MEM(memory, writeInfo);
-  WB(registers, writeInfo);
+  EX(latches, registers, memory);
+  MEM(latches, registers, memory);
+  WB(latches, registers, memory);
 }
 
 var functMap = {

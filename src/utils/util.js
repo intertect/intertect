@@ -1,9 +1,9 @@
 export class Latches {
   constructor() {
-    this.if_id = [];
-    this.id_ex = [];
-    this.ex_mem = [];
-    this.mem_wb = [];
+    this.if_id  = undefined;
+    this.id_ex  = undefined;
+    this.ex_mem = undefined;
+    this.mem_wb = undefined;
   }
 }
 
