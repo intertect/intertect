@@ -2,7 +2,7 @@ function ToUint32(x) {
   return x >>> 0;
 }
 
-function fetch(registers, memory) {
+function IF(registers, memory) {
   var fetchLocation = registers.read(nameToRegisterMap["$pc"]);
 
   var byte_1 = memory.read(fetchLocation);
@@ -18,7 +18,7 @@ function fetch(registers, memory) {
   return binary;
 }
 
-function decode(binary) {
+function ID(binary) {
   var opcode = binary >> 26;
 
   // All R (register) binarys start with 0s
@@ -61,7 +61,7 @@ function decode(binary) {
   return instruction;
 }
 
-function execute(instruction, registers, memory) {
+function EX(instruction, registers, memory) {
   // All R (register) instructions start with 0s
   var rs, rt, rd;
   var op_str = instruction["op_str"];
@@ -269,17 +269,23 @@ function execute(instruction, registers, memory) {
   }
 }
 
-function write(location, position, result) {
-  // TODO: Write back value according to the position and destination
+function MEM(memory, writeInfo) {
+  // TODO: Write back value to memory if appropriate
 }
 
 // this is just a mock of the behind the scenes: altering this function will NOT
 // change the outcome of running your code
 function processMIPS(registers, memory) {
-  var binary = fetch(registers, memory);
-  var instruction = decode(binary);
-  var writeInfo = execute(instruction, registers, memory);
-  write(registers, memory, writeInfo);
+  var binary = IF(registers, memory);
+  var instruction = ID(binary);
+  var writeInfo = EX(instruction, registers, memory);
+  MEM(memory, writeInfo);
+
+  /* ------------------------------------------------------------------------ */
+  // We've already implemented the functions below this line for you! You'll be
+  // doing these in the following lessons
+  /* ------------------------------------------------------------------------ */
+  WB(registers, writeInfo);
 }
 
 var functMap = {

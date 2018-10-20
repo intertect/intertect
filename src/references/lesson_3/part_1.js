@@ -2,7 +2,7 @@ function ToUint32(x) {
   return x >>> 0;
 }
 
-function fetch(registers, memory) {
+function IF(registers, memory) {
   var location = registers.read(nameToRegisterMap["$pc"]);
 
   var byte_1 = memory.read(location);
@@ -18,7 +18,7 @@ function fetch(registers, memory) {
   return binary;
 }
 
-function decode(binary) {
+function ID(binary) {
   var opcode = binary >> 26;
 
   // All R (register) binarys start with 0s
@@ -75,7 +75,7 @@ function decode(binary) {
   return instruction;
 }
 
-function execute(instruction, registers, memory) {
+function EX(instruction, registers, memory) {
   // All R (register) instructions start with 0s
   var rs, rt, rd;
   var op_str = instruction["op_str"];
@@ -283,28 +283,34 @@ function execute(instruction, registers, memory) {
   }
 }
 
-function write(registers, memory, writeInfo) {
+function MEM(memory, writeInfo) {
   if (writeInfo["location"] == "memory") {
     for (var i = 0; i < writeInfo["result"].length; i++) {
       memory.write(writeInfo["position"] + i, writeInfo["result"][i]);
     }
-  } else {
+  }
+}
+
+function WB(registers, writeInfo) {
+  if (writeInfo["location"] == "registers") {
     registers.write(writeInfo["position"], writeInfo["result"])
   }
 }
 
 function processMIPS(registers, memory) {
-  var binary = fetch(registers, memory);
-  var instruction = decode(binary);
-  var writeInfo = execute(instruction, registers, memory);
-  write(registers, memory, writeInfo);
+  var binary = IF(registers, memory);
+  var instruction = ID(binary);
+  var writeInfo = EX(instruction, registers, memory);
+  MEM(memory, writeInfo);
+  WB(registers, writeInfo);
 }
 
 export var solution = {
-  "fetch" : fetch,
-  "decode" : decode,
-  "execute" : execute,
-  "write" : write,
+  "IF" : IF,
+  "ID" : ID,
+  "EX" : EX,
+  "MEM" : MEM,
+  "WB": WB,
   "processMIPS" : processMIPS
 }
 

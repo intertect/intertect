@@ -379,25 +379,27 @@ class Terminal extends Component {
 
       // beyond lesson 2, students must fetch the instructions themselves
       if (this.state.lesson == 3) {
-        var fetch_fn, decode_fn, execute_fn, write_fn;
+        var IF_fn, ID_fn, EX_fn, MEM_fn, WB_fn;
         var studentPipelineImpl = lessonPipelineStudent[lessonPart];
-
         try {
           // eslint-disable-next-line
-          fetch_fn = studentPipelineImpl.indexOf("fetch") != -1 ? fetch : solution.fetch;
+          IF_fn = studentPipelineImpl.indexOf("IF") != -1 ? IF : solution.IF;
           // eslint-disable-next-line
-          decode_fn = studentPipelineImpl.indexOf("decode") != -1 ? decode : solution.decode;
+          ID_fn = studentPipelineImpl.indexOf("ID") != -1 ? ID : solution.ID;
           // eslint-disable-next-line
-          execute_fn = studentPipelineImpl.indexOf("execute") != -1 ? execute : solution.execute;
+          EX_fn = studentPipelineImpl.indexOf("EX") != -1 ? EX : solution.EX;
           // eslint-disable-next-line
-          write_fn = studentPipelineImpl.indexOf("write") != -1 ? write : solution.write;
+          MEM_fn = studentPipelineImpl.indexOf("MEM") != -1 ? MEM : solution.MEM;
+          // eslint-disable-next-line
+          WB_fn = studentPipelineImpl.indexOf("WB") != -1 ? WB : solution.WB;
         } catch(e) { /* student renamed function -- no execution */ }
 
-        var binary = fetch_fn(this.state.studentRegisters, this.state.studentMemory);
-        var decoded_instruction = decode_fn(binary);
-        var writeInfo = execute_fn(decoded_instruction,
+        var binary = IF_fn(this.state.studentRegisters, this.state.studentMemory);
+        var decoded_instruction = ID_fn(binary);
+        var writeInfo = EX_fn(decoded_instruction,
           this.state.studentRegisters, this.state.studentMemory);
-        write_fn(this.state.studentRegisters, this.state.studentMemory, writeInfo);
+        MEM_fn(this.state.studentMemory, writeInfo);
+        WB_fn(this.state.studentRegisters, writeInfo);
         solution.processMIPS(this.state.referenceRegisters, this.state.referenceMemory);
       }
       else if (this.state.lesson == 4) {

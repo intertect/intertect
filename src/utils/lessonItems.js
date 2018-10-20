@@ -12,6 +12,7 @@ import * as lesson_3_part_1_content from '../content/lesson_3/part_1.md';
 import * as lesson_3_part_2_content from '../content/lesson_3/part_2.md';
 import * as lesson_3_part_3_content from '../content/lesson_3/part_3.md';
 import * as lesson_3_part_4_content from '../content/lesson_3/part_4.md';
+import * as lesson_3_part_5_content from '../content/lesson_3/part_5.md';
 
 import * as lesson_4_part_1_content from '../content/lesson_4/part_1.md';
 
@@ -33,6 +34,7 @@ const lesson_3_part_1_init = require('../lesson_programs/lesson_3/part_1/init.tx
 const lesson_3_part_2_init = require('../lesson_programs/lesson_3/part_2/init.txt');
 const lesson_3_part_3_init = require('../lesson_programs/lesson_3/part_3/init.txt');
 const lesson_3_part_4_init = require('../lesson_programs/lesson_3/part_4/init.txt');
+const lesson_3_part_5_init = require('../lesson_programs/lesson_3/part_5/init.txt');
 
 const lesson_4_part_1_init = require('../lesson_programs/lesson_4/part_1/init.txt');
 
@@ -54,6 +56,7 @@ const lesson_3_part_1_assembly = require('../lesson_programs/lesson_3/part_1/pro
 const lesson_3_part_2_assembly = require('../lesson_programs/lesson_3/part_2/prog.s');
 const lesson_3_part_3_assembly = require('../lesson_programs/lesson_3/part_3/prog.s');
 const lesson_3_part_4_assembly = require('../lesson_programs/lesson_3/part_4/prog.s');
+const lesson_3_part_5_assembly = require('../lesson_programs/lesson_3/part_5/prog.s');
 
 const lesson_4_part_1_assembly = require('../lesson_programs/lesson_4/part_1/prog.s');
 
@@ -90,6 +93,9 @@ const lesson_3_part_3_binary = rawToBinaryArray(lesson_3_part_3_binary_raw);
 const lesson_3_part_4_binary_raw = require('../lesson_programs/lesson_3/part_4/prog.bin').split(' ');
 const lesson_3_part_4_binary = rawToBinaryArray(lesson_3_part_4_binary_raw);
 
+const lesson_3_part_5_binary_raw = require('../lesson_programs/lesson_3/part_5/prog.bin').split(' ');
+const lesson_3_part_5_binary = rawToBinaryArray(lesson_3_part_5_binary_raw);
+
 const lesson_4_part_1_binary_raw = require('../lesson_programs/lesson_4/part_1/prog.bin').split(' ');
 const lesson_4_part_1_binary = rawToBinaryArray(lesson_4_part_1_binary_raw);
 
@@ -111,6 +117,7 @@ const lesson_3_part_1_starter = require('../starter/lesson_3/part_1.txt');
 const lesson_3_part_2_starter = require('../starter/lesson_3/part_2.txt');
 const lesson_3_part_3_starter = require('../starter/lesson_3/part_3.txt');
 const lesson_3_part_4_starter = require('../starter/lesson_3/part_4.txt');
+const lesson_3_part_5_starter = require('../starter/lesson_3/part_5.txt');
 
 const lesson_4_part_1_starter = require('../starter/lesson_4/part_1.txt');
 
@@ -156,6 +163,7 @@ export const lessonContent = {
   "lesson_3/part_2" : lesson_3_part_2_content,
   "lesson_3/part_3" : lesson_3_part_3_content,
   "lesson_3/part_4" : lesson_3_part_4_content,
+  "lesson_3/part_5" : lesson_3_part_5_content,
 
   "lesson_4/part_1" : lesson_4_part_1_content,
 };
@@ -176,6 +184,7 @@ export const lessonRegisterInits = {
   "lesson_3/part_2" : lesson_3_part_2_init,
   "lesson_3/part_3" : lesson_3_part_3_init,
   "lesson_3/part_4" : lesson_3_part_4_init,
+  "lesson_3/part_5" : lesson_3_part_5_init,
 
   "lesson_4/part_1" : lesson_4_part_1_init,
 };
@@ -196,6 +205,7 @@ export const lessonAssembly = {
   "lesson_3/part_2" : lesson_3_part_2_assembly,
   "lesson_3/part_3" : lesson_3_part_3_assembly,
   "lesson_3/part_4" : lesson_3_part_4_assembly,
+  "lesson_3/part_5" : lesson_3_part_5_assembly,
 
   "lesson_4/part_1" : lesson_4_part_1_assembly,
 }
@@ -209,6 +219,7 @@ export const lessonBinaryCode = {
   "lesson_3/part_2" : lesson_3_part_2_binary,
   "lesson_3/part_3" : lesson_3_part_3_binary,
   "lesson_3/part_4" : lesson_3_part_4_binary,
+  "lesson_3/part_5" : lesson_3_part_5_binary,
 
   "lesson_4/part_1" : lesson_4_part_1_binary,
 }
@@ -229,6 +240,7 @@ export const lessonStarterCode = {
   "lesson_3/part_2" : lesson_3_part_2_starter,
   "lesson_3/part_3" : lesson_3_part_3_starter,
   "lesson_3/part_4" : lesson_3_part_4_starter,
+  "lesson_3/part_5" : lesson_3_part_5_starter,
 
   "lesson_4/part_1" : lesson_4_part_1_starter,
 };
@@ -250,6 +262,7 @@ export const lessonReferenceSolutions = {
   "lesson_3/part_2" : lesson_3_part_1_reference.solution,
   "lesson_3/part_3" : lesson_3_part_1_reference.solution,
   "lesson_3/part_4" : lesson_3_part_1_reference.solution,
+  "lesson_3/part_5" : lesson_3_part_1_reference.solution,
 
   "lesson_4/part_1" : lesson_4_part_1_reference.solution,
 };
@@ -257,8 +270,9 @@ export const lessonReferenceSolutions = {
 // specifies (for pipelining implementation), which parts come from solution
 // and which from the student for each part
 export const lessonPipelineStudent = {
-  "lesson_3/part_1": ["fetch"],
-  "lesson_3/part_2": ["fetch","decode"],
-  "lesson_3/part_3": ["fetch","decode","execute"],
-  "lesson_3/part_4": ["fetch","decode","execute","write"],
+  "lesson_3/part_1": ["IF"],
+  "lesson_3/part_2": ["IF","ID"],
+  "lesson_3/part_3": ["IF","ID","EX"],
+  "lesson_3/part_4": ["IF","ID","EX","MEM",],
+  "lesson_3/part_5": ["IF","ID","EX","MEM","WB"],
 }
