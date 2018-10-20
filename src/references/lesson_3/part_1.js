@@ -2,7 +2,7 @@ function ToUint32(x) {
   return x >>> 0;
 }
 
-function IF(registers, memory) {
+function IF(latches, registers, memory) {
   var location = registers.read(nameToRegisterMap["$pc"]);
 
   var byte_1 = memory.read(location);
@@ -18,7 +18,7 @@ function IF(registers, memory) {
   return binary;
 }
 
-function ID(binary) {
+function ID(latches, registers, memory) {
   var opcode = binary >> 26;
 
   // All R (register) binarys start with 0s
@@ -75,7 +75,7 @@ function ID(binary) {
   return instruction;
 }
 
-function EX(instruction, registers, memory) {
+function EX(latches, registers, memory) {
   // All R (register) instructions start with 0s
   var rs, rt, rd;
   var op_str = instruction["op_str"];
@@ -283,7 +283,7 @@ function EX(instruction, registers, memory) {
   }
 }
 
-function MEM(memory, writeInfo) {
+function MEM(latches, registers, memory) {
   if (writeInfo["location"] == "memory") {
     for (var i = 0; i < writeInfo["result"].length; i++) {
       memory.write(writeInfo["position"] + i, writeInfo["result"][i]);
@@ -291,7 +291,7 @@ function MEM(memory, writeInfo) {
   }
 }
 
-function WB(registers, writeInfo) {
+function WB(latches, registers, memory) {
   if (writeInfo["location"] == "registers") {
     registers.write(writeInfo["position"], writeInfo["result"])
   }

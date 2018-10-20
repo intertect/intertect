@@ -27,7 +27,7 @@ import 'brace/theme/solarized_dark';
 import 'brace/theme/solarized_light';
 import 'brace/theme/twilight';
 
-import {Memory, Registers, nameToRegisterMap} from '../utils/util.js';
+import {Memory, Registers, Latches, nameToRegisterMap} from '../utils/util.js';
 import {lessonParts, lessonContent, lessonRegisterInits, lessonAssembly,
   lessonStarterCode, lessonReferenceSolutions, lessonBinaryCode,
   lessonPipelineStudent} from '../utils/lessonItems.js';
@@ -90,6 +90,9 @@ class Terminal extends Component {
       memory: new Memory(),
       studentPipeline: [],
       referencePipeline: [],
+
+      student_latches: new Latches(),
+      reference_latches: new Latches(),
 
       showRegisters: true,
       showMemory: false,
@@ -394,13 +397,12 @@ class Terminal extends Component {
           WB_fn = studentPipelineImpl.indexOf("WB") != -1 ? WB : solution.WB;
         } catch(e) { /* student renamed function -- no execution */ }
 
-        var binary = IF_fn(this.state.studentRegisters, this.state.studentMemory);
-        var decoded_instruction = ID_fn(binary);
-        var writeInfo = EX_fn(decoded_instruction,
-          this.state.studentRegisters, this.state.studentMemory);
-        MEM_fn(this.state.studentMemory, writeInfo);
-        WB_fn(this.state.studentRegisters, writeInfo);
-        solution.processMIPS(this.state.referenceRegisters, this.state.referenceMemory);
+        var binary = IF_fn(this.state.student_latches, this.state.studentRegisters, this.state.studentMemory);
+        var decoded_instruction = ID_fn(this.state.student_latches, this.state.studentRegisters, this.state.studentMemory);
+        var writeInfo = EX_fn(this.state.student_latches, this.state.studentRegisters, this.state.studentMemory);
+        MEM_fn(this.state.student_latches, this.state.studentRegisters, this.state.studentMemory);
+        WB_fn(this.state.student_latches, this.state.studentRegisters, this.state.studentMemory);
+        solution.processMIPS(this.state.reference_latches, this.state.referenceRegisters, this.state.referenceMemory);
       }
       else if (this.state.lesson == 4) {
         // eslint-disable-next-line

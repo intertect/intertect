@@ -1,3 +1,12 @@
+export class Latches {
+  constructor() {
+    this.if_id = [];
+    this.id_ex = [];
+    this.ex_mem = [];
+    this.mem_wb = [];
+  }
+}
+
 export class Memory {
   // Memory as a map for simplicity. This is not optimized in the slightest.
   // However, this should be fine if memory remains small
