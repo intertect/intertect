@@ -29,7 +29,7 @@ function fetch(registers, memory) {
 }
 
 function decode(binary) {
-  var opcode = binary >> 26;
+  var opcode = binary >>> 26;
 
   // All R (register) binarys start with 0s
   var rs, rt, rd;
@@ -40,10 +40,10 @@ function decode(binary) {
 
   if (opcode == 0x0) {
     // TODO: Fill this area
-    rs = binary >> 21 & 0x1f
-    rt = binary >> 16 & 0x1f
-    rd = binary >> 11 & 0x1f
-    var shamt = binary >> 6 & 0x1f
+    rs = binary >>> 21 & 0x1f
+    rt = binary >>> 16 & 0x1f
+    rd = binary >>> 11 & 0x1f
+    var shamt = binary >>> 6 & 0x1f
     var funct = binary & 0x3f
 
     op_str = functMap[funct];
@@ -69,9 +69,9 @@ function decode(binary) {
 
   else {
     // I format: ooooooss sssttttt iiiiiiii iiiiiiii
-    rs = (binary >> 21) & 0x1F;
-    rt = (binary >> 16) & 0x1F;
-    var imm = (binary >> 0) & 0xFFFF;
+    rs = (binary >>> 21) & 0x1F;
+    rt = (binary >>> 16) & 0x1F;
+    var imm = (binary >>> 0) & 0xFFFF;
 
     op_str = opcodeMap[opcode];
     instruction = {
@@ -224,9 +224,9 @@ function execute(instruction, registers, memory) {
       case 'sw':
         value = ToUint32(registers.read(rt));
 
-        byte_1 = (value >> 24) & 0xFF;
-        byte_2 = (value >> 16) & 0xFF;
-        byte_3 = (value >> 8) & 0xFF;
+        byte_1 = (value >>> 24) & 0xFF;
+        byte_2 = (value >>> 16) & 0xFF;
+        byte_3 = (value >>> 8) & 0xFF;
         byte_4 = value & 0xFF;
 
         location = "memory";
@@ -236,7 +236,7 @@ function execute(instruction, registers, memory) {
       case 'sh':
         value = ToUint32(registers.read(rt));
 
-        byte_1 = (value >> 8) & 0xFF;
+        byte_1 = (value >>> 8) & 0xFF;
         byte_2 = value & 0xFF;
 
         location = "memory";
@@ -343,8 +343,8 @@ var opcodeMap = {
   0x0c: "andi",
   0x0d: "ori",
   0x0e: "xori",
-  0x24: "lbu",
-  0x25: "lhu",
+  0x20: "lb",
+  0x21: "lh",
   0x23: "lw",
   0x0f: "lui",
   0x28: "sb",

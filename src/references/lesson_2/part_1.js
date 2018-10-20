@@ -12,9 +12,9 @@ function SignExtend16(x) {
   return x;
 }
 
-export function solution(instruction, registers) {
+export function solution(instruction, registers, memory) {
   instruction = ToUint32(instruction);
-  var opcode = instruction >> 26;
+  var opcode = instruction >>> 26 & 0x3f;
 
   // All R (register) instructions start with 0s
   var rs, rt, rd;
@@ -24,11 +24,10 @@ export function solution(instruction, registers) {
   var ra;
 
   if (opcode == 0x0) {
-    // TODO: Fill this area
-    rs = instruction >> 21 & 0x1f
-    rt = instruction >> 16 & 0x1f
-    rd = instruction >> 11 & 0x1f
-    var shamt = instruction >> 6 & 0x1f
+    rs = instruction >>> 21 & 0x1f
+    rt = instruction >>> 16 & 0x1f
+    rd = instruction >>> 11 & 0x1f
+    var shamt = instruction >>> 6 & 0x1f
     var funct = instruction & 0x3f
 
     op_str = functMap[funct];
@@ -120,8 +119,8 @@ export function solution(instruction, registers) {
 
   else {
     // I format: ooooooss sssttttt iiiiiiii iiiiiiii
-    rs = (instruction >> 21) & 0x1F;
-    rt = (instruction >> 16) & 0x1F;
+    rs = (instruction >>> 21) & 0x1F;
+    rt = (instruction >>> 16) & 0x1F;
     var imm = SignExtend16(instruction & 0xFFFF);
 
     // used in store/load instructions
@@ -160,9 +159,9 @@ export function solution(instruction, registers) {
       case 'sw':
         value = ToUint32(registers.read(rt));
 
-        byte_1 = (value >> 24) & 0xFF;
-        byte_2 = (value >> 16) & 0xFF;
-        byte_3 = (value >> 8) & 0xFF;
+        byte_1 = (value >>> 24) & 0xFF;
+        byte_2 = (value >>> 16) & 0xFF;
+        byte_3 = (value >>> 8) & 0xFF;
         byte_4 = value & 0xFF;
 
         memory.write(start_address, byte_1);
@@ -174,7 +173,7 @@ export function solution(instruction, registers) {
       case 'sh':
         value = ToUint32(registers.read(rt));
 
-        byte_1 = (value >> 8) & 0xFF;
+        byte_1 = (value >>> 8) & 0xFF;
         byte_2 = value & 0xFF;
 
         memory.write(start_address, byte_1);
@@ -241,8 +240,8 @@ var opcodeMap = {
   0x0c: "andi",
   0x0d: "ori",
   0x0e: "xori",
-  0x24: "lbu",
-  0x25: "lhu",
+  0x20: "lb",
+  0x21: "lh",
   0x23: "lw",
   0x0f: "lui",
   0x28: "sb",

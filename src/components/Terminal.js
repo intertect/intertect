@@ -46,6 +46,10 @@ import peter from '../images/peter.png';
 
 Array.range = (start, end) => Array.from({length: (end - start)}, (v, k) => k + start);
 
+function ToUint32(x) {
+  return x >>> 0;
+}
+
 class Terminal extends Component {
   constructor(props) {
     super(props);
@@ -592,7 +596,7 @@ class Terminal extends Component {
     this.state.lesson > 1 ?
       currentInstruction = <Button outline style={{width:"100%"}}>
         Current Instruction: {
-          typeof(this.getNextInstruction()) === 'undefined' ? "Done!" : this.getNextInstruction().toString(2)
+          typeof(this.getNextInstruction()) === 'undefined' ? "Done!" : ToUint32(this.getNextInstruction()).toString(2)
         }
       </Button>
       : currentInstruction = <div></div>
