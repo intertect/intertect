@@ -29,8 +29,9 @@ in mind about implementation:
 free to scrap our boilerplate and write something of your own instead!
 - Your implementation **should** separate between I, R, and J instructions: this will keep
 your code organized and easier to debug
-- Instructions are passed in as **strings**: be careful! Use substring and parseInt (as on 
-line 37 of our reference starter code) to separate arguments from the instruction.
+- Instructions are passed in as **numbers**. Be careful! When doing bitwise operations, you
+should almost **always** (except in the implementation of `sra`) use the logical shift operation
+```>>>```. ``>>`` is the **arithmetic** shift operator, which has some subtle differences!
 - functMap and opcodeMap serve as clean ways to interface between the binary instruction
 and the code you wrote for the previous lesson. Again, feel free to not use them if you think
 you can do it more cleanly yourself!

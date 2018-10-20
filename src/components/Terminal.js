@@ -405,9 +405,9 @@ class Terminal extends Component {
           WB_fn = studentPipelineImpl.indexOf("WB") != -1 ? WB : solution.WB;
         } catch(e) { /* student renamed function -- no execution */ }
 
-        var binary = IF_fn(this.state.student_latches, this.state.studentRegisters, this.state.studentMemory);
-        var decoded_instruction = ID_fn(this.state.student_latches, this.state.studentRegisters, this.state.studentMemory);
-        var writeInfo = EX_fn(this.state.student_latches, this.state.studentRegisters, this.state.studentMemory);
+        IF_fn(this.state.student_latches, this.state.studentRegisters, this.state.studentMemory);
+        ID_fn(this.state.student_latches, this.state.studentRegisters, this.state.studentMemory);
+        EX_fn(this.state.student_latches, this.state.studentRegisters, this.state.studentMemory);
         MEM_fn(this.state.student_latches, this.state.studentRegisters, this.state.studentMemory);
         WB_fn(this.state.student_latches, this.state.studentRegisters, this.state.studentMemory);
         solution.processMIPS(this.state.reference_latches, this.state.referenceRegisters, this.state.referenceMemory);

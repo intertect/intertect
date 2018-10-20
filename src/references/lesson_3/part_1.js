@@ -31,7 +31,6 @@ function IF(latches, registers, memory) {
 function ID(latches, registers, memory) {
   var binary = latches.if_id;
   var opcode = binary >>> 26;
-  console.log(opcode)
 
   // All R (register) binarys start with 0s
   var rs, rt, rd;

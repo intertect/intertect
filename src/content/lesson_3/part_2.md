@@ -39,3 +39,6 @@ Specifically, your return must match **exactly** these names for these cases:
     - `rs`: *Address* location for `$rs`
     - `rt`: *Address* location for `$rt`
     - `imm`: Value for immediate to be used
+- Once again, you're likely saving values in the IF/ID latch as **numbers**. 
+Again, be careful! and use the **logical shift operation**
+```>>>``` instead of the ``>>`` **arithmetic** shift operator
