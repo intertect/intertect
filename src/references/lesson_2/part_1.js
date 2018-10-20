@@ -154,7 +154,6 @@ export function solution(instruction, registers) {
           target = imm << 2;
 
           result = ToUint32(registers.read(pc) + target + 4);
-
           registers.write(pc, result);
         }
         break;

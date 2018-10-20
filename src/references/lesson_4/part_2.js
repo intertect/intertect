@@ -2,6 +2,16 @@ function ToUint32(x) {
   return x >>> 0;
 }
 
+function SignExtend16(x) {
+  x = ToUint32(x);
+
+  if (x >>> 15 > 0) {
+    x |= 0xFFFF0000;
+  }
+
+  return x;
+}
+
 function fetch(registers, memory) {
   var location = registers.read(nameToRegisterMap["$pc"]);
 
