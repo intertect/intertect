@@ -1,4 +1,4 @@
-# Part 1: Fetch
+# Part 1: Fetch (IF)
 Welcome to the third lesson on computer architecture! This lesson is going to be
 concentrating on pipelining. You've already understood a lot about how processors
 work at this point! You now know how instructions are relayed to the processor and
@@ -23,7 +23,8 @@ we'll be effectively "refactoring" your implementation to allow for clarity and 
 importantly) significant speedup.
 
 # Your Task
-The first part of the pipeline is fetching the instruction. As we've seen in the past,
+The first part of the pipeline is fetching the instruction. It's typically denoted just as
+IF, which stands for "instruction fetch." As we've seen in the past,
 the `pc` dictate what in the program is being execute. Unlike past lessons, however,
 the program is now actually being stored in memory. So, in this lesson, you'll have to
 figure out a way to pull the values from memory and return the binary instruction. We

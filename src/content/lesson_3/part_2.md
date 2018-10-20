@@ -1,6 +1,7 @@
-# Part 2: Decode
+# Part 2: Decode (ID)
 Now that we have an understanding of how processor pipelining works, we'll move
-on to implementing the second stage! Luckily, with each of these stages, the function
+on to implementing the second stage: ID! Similar to IF, ID stands for instruction
+decode. Luckily, with each of these stages, the function
 is pretty transparent from its name. So, the decode stage takes the binary 
 instruction and extracts out the information that is wrapped up in it, i.e. what
 instruction it is and its corresponding arguments. In other words, it determines

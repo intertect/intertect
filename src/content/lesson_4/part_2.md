@@ -1,190 +1,207 @@
-# Part 2: Heading Off On Your Own
+# Part 2: MIPS Hazards
 
-In this lesson, you'll be implementing the [`subu`](#subu) instruction.  Over the course
-of these lessons you'll be adding to your code over so by the end you'll have a
-complete emulator.
+Data (and control) hazards and forwarding are two very important topics
+in the design of processors. A data hazard occurs when there is a
+dependency between two registers. A control hazard occurs when the
+processor might not know the result of a branch before the next
+instruction must be fetched. For example, in the following program,
+there is a data dependency between the first two lines since one writes
+to `$t0` and the next reads from it.
 
-## Your Task
-Your task this time is to implement the [`subu`](#subu) instruction.  As a reminder, you
-can click on any instruction on the sidebar to be taken to a glossary containing
-all the information you could possibly want to know about it.
+``` asm
+addi $t0, $zero, 10
+addi $t1, $t0, 10
+```
 
-## Where Is The Rest Of The Long-Winded Introduction?
-There isn't any! You don't have any excuses now. [`subu`](#subu) is just like
-[`addu`](#addu) but with subtraction instead of addition.
+The perfect program for the CPU we've been building is one that has no
+data dependencies since we could then keep the pipeline full at all
+times. As we add data dependencies, however, our execution speed slows
+way down since we have to wait for results to become available. Looking
+back at the previous example, we would have to wait until the first
+instruction completes the Writeback stage before the second instruction
+can enter the Execute stage; That's two cycles of stalling that have to
+happen\!
 
----
-# The MIPS Instruction Set
+That's where forwarding comes into play. Forwarding is an optimization
+performed by the processor that cuts down the number of stalled cycles.
+In the previous case, the processor would take the result of the first
+instruction's execute stage and forward it right back into the execute
+stage for the next instruction. In this way, the processor has
+completely eliminated the two cycles of stalls.
 
-## Arithmetic
+The way I like to think about forwarding is as follows: When is the
+earliest pipeline stage after which the CPU knows the result of an
+operation? From this, it is possible to derive all the possible
+forwarding rules.
 
+For example, since jumps and branches happen in the decode stage, an add
+(which gets its result from the execute stage), followed by a branch
+depending on the result of that add, must stall for one cycle since the
+data cannot be available to the branch until after Execute has finished.
+I'll enumerate the rules completely in a later section.
 
-<a id="addu"></a>
-### Add Unsigned (`addu $rd, $rs, $rt`)
+# Data Hazards
 
-Take the unsigned integer values from `$rs` and `$rt`, perform an unsigned add
-on them, and save the result into `$rd`
+There are three types of Data hazards:
 
-<a id="addi"></a>
-### Add Immediate (`addi $rt, $rs, val`)
+  - Read After Write (RAW)
+  - Write After Read (WAR)
+  - Write After Write (WAW)
 
-Take the signed integer values from `$rs` and `val` (which is stored in the
-instruction), perform a signed add on them, and write the value to `$rt`
+Let's go through them in order:
 
-<a id="addiu"></a>
-### Add Immediate Unsigned (`addiu $rt, $rs, val`)
+## Read After Write (RAW)
 
-Take the unsigned integer values from `$rs` and `val` (which is stored in the
-instruction), perform an unsigned add on them, and write the value to `$rt`.
+This is the case we used in the overview.
 
-<a id="subu"></a>
-### Subtract Unsigned (`subu $rd, $rs, $rt`) 
+``` asm
+addi $t0, $zero, 10
+addi $t1, $t0, 10
+```
 
-Take the unsigned integer values from `$rs` and `$rt`, perform an unsigned
-subtraction (`$rs - $rt`) on them, and save the result into `$rd`
+In this case, the second instruction's **read** depends on the first
+instruction's **write**. The processor must take care to make sure the
+result of the write is seen by the second instruction
 
-You might be wondering where the immediate subtraction operations are. There are
-two reasons you don't see them here. It's because if in assembly you write `subi
-$rt, $rs, val`, you can just take the two's-compliment of val and add it! This
-saves space on the chip so it was common in older architectures. You can also do
-the same with `subu $rd, $rs, $rt` using the `$at` register for calculating the
-two's-compliment at runtime.
+## Write After Read
 
-## Logic
+This is the case where the second instruction writes to one of the
+operands that the first instruction is reading. It may be apparent that
+we don't have to worry about this. WAR data hazards are only an issue on
+processors that execute instructions in parallel where it's entirely
+possible that the second instruction will finish executing before the
+first reads its data.
 
-<a id="and"></a>
-### And (`and $rd, $rs, $rt`) 
+``` asm
+addi $t0, $t1, 10
+addi $t1, $zero, 10
+```
 
-Perform a bitwise logical AND between `$rs` and `$rt`, saving the result into
-`$rd`
+## Write After Write
 
-<a id="andi"></a>
-### And Immediate (`andi $rt, $rs, val`) 
+This is very similar to the previous case and we won't need to deal with
+it. It is slightly more complicated since the ordering of writes must be
+maintained instead of just making sure that the first instruction has
+the right inputs.
 
-Perform a bitwise logical AND between `$rs` and `val` (which has been padded out
-to the left with 0), saving the result into `$rt`
+``` asm
+addi $t1, $zero, 10
+addi $t1, $zero, 20
+```
 
-<a id="or"></a>
-### Or (`or $rd, $rs, $rt`) 
+# Control hazards
 
-Perform a bitwise logical OR between `$rs` and `$rt`, saving the value into
-`$rd`
+As touched on at the end of the overview, a control hazard occurs when
+the result of a branch comparison or the jump target is not known when
+it comes time to fetch the next instruction.
 
-<a id="ori"></a>
-### Or Immediate (`ori $rt, $rs, val`) 
+``` asm
+addi $t0, $zero, 1
+beq $t0, $t1, target
+```
 
-Perform a bitwise logical OR between `$rs` and `val` (which has been padded out
-to the left with 0), saving the result into `$rt`
+The processor has to stall for one cycle since there is a RAW dependency
+between the `addi` and the `beq` instructions that won't be resolved by
+the time the `beq` instruction is in the Decode stage. The stall can be
+eliminated if the programmer or compiler can reorder instructions so
+that there is an unrelated instruction between the `addi` and `beq`.
 
-<a id="nor"></a>
-### Nor (`nor $rd, $rs, $rt`) 
+However, there is another problem: The processor doesn't resolve the
+branch or jump until the Decode stage, so there will always be a stall
+in the fetch stage when we encounter a jump or branch. This, finally, is
+the explanation for the branch delay slot. By having flow control
+resolve in the decode stage and an unconditional instruction execution
+immediately following, this stall can be completely eliminated.
 
-Perform a bitwise logical NOR between `$rs` and `$rt` which is the same as
-taking the bitwise logical OR and then negating it (`~($rs | $rt)`), saving the
-result into `$rd`
+# Forwarding
 
-<a id="xor"></a>
-### Xor (`xor $rd, $rs, $rt`) 
+A quick note before we get started with the forwarding rules: You must
+always check all read registers for data dependencies. The rules below
+only deal with one register at a time, but you must check both to make
+sure data is available.
 
-Perform a bitwise logical XOR between `$rs` and `$rt`, saving the result into
-`$rd`
+In order to derive the rules for forwarding, we are first going to
+define two kinds of instructions by when their result become available:
 
-<a id="xori"></a>
-### Xor Immediate (`xori`) 
+1.  EA instructions are those whose results are produced in the Execute
+    (third) stage
+      - Everything except loads, stores, and control flow
+2.  MA instructions are those whose results are produced in the Memory
+    (fourth) stage
+      - Loads and stores
 
-Perform a bitwise logical XOR between `$rs` and `val` (which has been padded to
-the left with 0), saving the result into `$rt`
+Next, we define another two kinds of instructions based on when they
+require the values of their arguments:
 
-<a id="sll"></a>
-### Shift Left Logical (`sll $rt, $rs, val`) 
+1.  DR instructions require their arguments in the Decode (second) stage
+      - Control flow instructions
+2.  ER instructions require their arguments in the Execute (third) stage
+      - Everything else
+      - Loads and stores are here because they calculate the target in
+        the execute stage and merely read in the Memory stage.
 
-Perform a logical shift left of `$rt` by `val` places, saving the result into
-`$rt`. This is integer multiplication by 2
+Now that we have these definitions, we can see that there are a very
+limited number of cases that we have to consider.
 
-<a id="srl"></a>
-### Shift Right Logical (`srl $rt, $rs, val`) 
+## DR instructions
 
-Perform a logical right shift of `$rs` by `val` places, filling the vacated
-places on the left with 0, saving the result into `$rt`
+We need to look at the Execute, Memory, and Writeback stages since until
+Writeback has finished the result won't be back in the register file.
 
-<a id="sra"></a>
-### Shift Right Arithmetic (`sra $rt, $rs, val`) 
+### Execute slot
 
-Perform an arithmetic right shift of `$rs` by `val` places, filling the vacated
-places with 0 if the leading bit was 0, and 1 if the leading place was one. This
-is integer division by 2
+There are three possible cases for the instruction in the execute slot:
 
-## Control Flow
+1.  No data dependencies\! Nothing to do here.
+2.  EA instruction so we must delay for one cycle
+3.  MA instruction so we must delay for two cycles
 
-Many of these instructions multiply their arguments by 4. This is because each
-instruction is exactly 4 bytes long, and so the last two bits of an address will
-always be zero. By having the argument being the offset or address / 4, you can
-get 4 times as much reach with any of these instructions
+### Memory slot
 
-<a id="beq"></a>
-### Branch On Equal (`beq $rt, $rs, val`) 
+1.  No data dependencies.
+2.  EA instruction. In this case the value has already been computed and
+    it can be forwarded to us
+3.  MA instruction. We have to delay one cycle for the result to become
+    available.
+      - In reality we'd have to wait longer since there are memory
+        latencies, but we don't care about for the purposes of this
+        lesson.
 
-if `$rs == $rt`, jump to the location specified by `val` shifted left by two
-places (multiplied by 4)
+### Writeback slot
 
-<a id="blt"></a>
-### Branch Less Than (`blt $rt, $rs, val`) 
+1.  No data dependencies. Nothing to do
+2.  If there is a data dependency, then the result has already been
+    computed and it should be forwarded to us
 
-if `$rs < $rt` (yes, this does seem quite backwards), jump to the location
-specified by `val` shifted left by two places (multiplied by 4)
+## ER instructions
 
-<a id="j"></a>
-### Jump (`j val`) 
+In this case, we only have to look at the Memory and Writeback stages
 
-Jump to the address specified in val shifted left 2 places (multiply by 4)
+### Memory slot
 
-<a id="jal"></a>
-### Jump And Link (`jal val`) 
+1.  No data dependency.
+2.  EA instruction. We simply are forwarded the value
+3.  MA instruction. We must stall for one cycle for the result to become
+    available
 
-Jump to the address specified in val shifted left 2 places (multiplied by 4),
-and save the address of the next instruction into `$ra`
+### Writeback slot
 
-<a id="jr"></a>
-### Jump Register (`jr $rs`) 
+1.  No data dependencies. Nothing to do
+2.  Same last last time: The value is available
 
-Jump to the address stored in `$rs` shifted left two places (multiplied by 4)
+## Condensed Rules
 
+Here is a different format for the rules if that helps
 
-## Memory / Registers
-
-<a id="lbu"></a>
-### Load Byte Unsigned (`lbu`) 
-
-<a id="lhu"></a>
-### Load Halfword Unsigned (`lhu`) 
-
-<a id="lw"></a>
-### Load Word (`lw`) 
-
-<a id="lui"></a>
-### Load Upper Immediate (`lui`) 
-
-<a id="li"></a>
-### Load Immediate (`li`) 
-
-Note: This could be interesting not to demonstrate, but rather to show how
-pseudo-instructions work since it's impossible to have a 32 bit immediate value
-
-<a id="sb"></a>
-### Store Byte (`sb`) 
-
-<a id="sh"></a>
-### Store Halfword (`sh`) 
-
-<a id="sw"></a>
-### Store Word (`sw`) 
-
-## Special
-
-<a id="noop"></a>
-### No Operation (`noop`) 
-Do nothing. This might not seem like a useful instruction to have in an
-instruction set archiecture, but it can really come in handy when you need to
-fill a space with something and you want to make sure that nothing could
-possibly happen if you end up there. It certainly doesn't come up much, but it's
-very handy to have around when it does.
+| F  | D  | E  | M  | W  | Operation        |
+| -- | -- | -- | -- | -- | ---------------- |
+| ?? | DR | EA | ?? | ?? | Delay one cycle  |
+| ?? | DR | MA | ?? | ?? | Delay two cycles |
+| ?? | DR | ?? | EA | ?? | Forward M -\> D  |
+| ?? | DR | ?? | MA | ?? | Delay one cycle  |
+| ?? | DR | ?? | ?? | EA | Forward W -\> D  |
+| ?? | DR | ?? | ?? | MA | Forward W -\> D  |
+| ?? | ?? | ER | EA | ?? | Forward M -\> E  |
+| ?? | ?? | ER | MA | ?? | Delay one cycle  |
+| ?? | ?? | ER | ?? | EA | Forward W -\> E  |
+| ?? | ?? | ER | ?? | MA | Forward W -\> E  |

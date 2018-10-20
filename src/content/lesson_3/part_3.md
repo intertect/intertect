@@ -1,4 +1,4 @@
-# Part 3: Execute
+# Part 3: Execute (EX)
 Now that we have fetched and decoded the instruction, we move onto the main beefy
 chunk of the processor's work. This is the stage of the pipeline where the ALU gets
 involved and starts to actually perform the computations that power a computer
