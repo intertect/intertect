@@ -95,8 +95,8 @@ class Terminal extends Component {
       studentPipeline: [],
       referencePipeline: [],
 
-      student_latches: new Latches(),
-      reference_latches: new Latches(),
+      studentLatches: new Latches(),
+      referenceLatches: new Latches(),
 
       showRegisters: true,
       showMemory: false,
@@ -279,6 +279,9 @@ class Terminal extends Component {
       studentRegisters : studentRegisters,
       referenceRegisters : referenceRegisters,
 
+      studentLatches: new Latches(),
+      referenceLatches: new Latches(),
+
       studentMemory : studentMemory,
       referenceMemory : referenceMemory,
 
@@ -380,18 +383,17 @@ class Terminal extends Component {
     }
 
     var instruction = this.getNextInstruction();
-    var lessonComplete = typeof(instruction) === 'undefined';
-
     var pcRegister = nameToRegisterMap["$pc"];
 
-    if (!lessonComplete) {
-      var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
-      var solution = lessonReferenceSolutions[lessonPart];
+    var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
+    var solution = lessonReferenceSolutions[lessonPart];
 
+    if (this.state.lesson < 4 && typeof(instruction) !== 'undefined') {
       // beyond lesson 2, students must fetch the instructions themselves
       if (this.state.lesson == 3) {
         var IF_fn, ID_fn, EX_fn, MEM_fn, WB_fn;
         var studentPipelineImpl = lessonPipelineStudent[lessonPart];
+
         try {
           // eslint-disable-next-line
           IF_fn = studentPipelineImpl.indexOf("IF") != -1 ? IF : solution.IF;
@@ -405,25 +407,14 @@ class Terminal extends Component {
           WB_fn = studentPipelineImpl.indexOf("WB") != -1 ? WB : solution.WB;
         } catch(e) { /* student renamed function -- no execution */ }
 
-        IF_fn(this.state.student_latches, this.state.studentRegisters, this.state.studentMemory);
-        ID_fn(this.state.student_latches, this.state.studentRegisters, this.state.studentMemory);
-        EX_fn(this.state.student_latches, this.state.studentRegisters, this.state.studentMemory);
-        MEM_fn(this.state.student_latches, this.state.studentRegisters, this.state.studentMemory);
-        WB_fn(this.state.student_latches, this.state.studentRegisters, this.state.studentMemory);
-        solution.processMIPS(this.state.reference_latches, this.state.referenceRegisters, this.state.referenceMemory);
+        IF_fn(this.state.studentLatches, this.state.studentRegisters, this.state.studentMemory);
+        ID_fn(this.state.studentLatches, this.state.studentRegisters, this.state.studentMemory);
+        EX_fn(this.state.studentLatches, this.state.studentRegisters, this.state.studentMemory);
+        MEM_fn(this.state.studentLatches, this.state.studentRegisters, this.state.studentMemory);
+        WB_fn(this.state.studentLatches, this.state.studentRegisters, this.state.studentMemory);
+        solution.processMIPS(this.state.referenceLatches, this.state.referenceRegisters, this.state.referenceMemory);
       }
-      else if (this.state.lesson == 4) {
-        // eslint-disable-next-line
-        var updatedStudentPipeline = processMIPS(this.state.studentRegisters,
-          this.state.studentMemory, this.state.studentPipeline);
-        var updatedReferencePipeline = solution(this.state.referenceRegisters,
-          this.state.referenceMemory, this.state.referencePipeline);
 
-        this.setState({
-          studentPipeline: updatedStudentPipeline,
-          referencePipeline: updatedReferencePipeline
-        });
-      }
       else {
         try {
           // eslint-disable-next-line
@@ -431,11 +422,15 @@ class Terminal extends Component {
         } catch(e) { /* student renamed function -- no execution */  }
         solution(instruction, this.state.referenceRegisters, this.state.referenceMemory);
       }
+    } else if (this.state.lesson == 4) {
+      // eslint-disable-next-line
+      processMIPS(this.state.studentLatches, this.state.studentRegisters, this.state.studentMemory);
+      solution(this.state.referenceLatches, this.state.studentRegisters, this.state.studentMemory);
     }
 
-    if (typeof(this.getNextInstruction(this.state.programCounter + 4)) === 'undefined') {
-      lessonComplete = true
-    }
+    console.log(this.state.studentLatches.empty())
+    var lessonComplete = (typeof(this.getNextInstruction(this.state.programCounter + 4)) === 'undefined'
+      && (this.state.lesson < 4 || this.state.studentLatches.empty()));
 
     this.setState({
       lessonCorrect :

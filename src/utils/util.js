@@ -5,6 +5,16 @@ export class Latches {
     this.ex_mem = undefined;
     this.mem_wb = undefined;
   }
+
+  empty() {
+    if (this.if_id  === undefined &&
+        this.id_ex  === undefined &&
+        this.ex_mem === undefined &&
+        this.mem_wb === undefined) {
+      return true;
+    }
+    return false;
+  }
 }
 
 export class Memory {

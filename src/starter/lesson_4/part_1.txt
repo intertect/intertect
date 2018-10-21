@@ -2,6 +2,16 @@ function ToUint32(x) {
   return x >>> 0;
 }
 
+function SignExtend16(x) {
+  x = ToUint32(x);
+
+  if (x >>> 15 > 0) {
+    x |= 0xFFFF0000;
+  }
+
+  return x;
+}
+
 function IF(latches, registers, memory) {
   var location = registers.read(nameToRegisterMap["$pc"]);
 
@@ -15,12 +25,16 @@ function IF(latches, registers, memory) {
   binary |= byte_2 << 16;
   binary |= byte_1 << 24;
 
-  latches.if_id = binary;
+  if (binary != 0x0) {
+    latches.if_id = binary;
+  } else {
+    latches.if_id = undefined;
+  }
 }
 
 function ID(latches, registers, memory) {
   var binary = latches.if_id;
-  var opcode = binary >> 26;
+  var opcode = binary >>> 26;
 
   // All R (register) binarys start with 0s
   var rs, rt, rd;
@@ -30,10 +44,10 @@ function ID(latches, registers, memory) {
   var instruction;
 
   if (opcode == 0x0) {
-    rs = binary >> 21 & 0x1f
-    rt = binary >> 16 & 0x1f
-    rd = binary >> 11 & 0x1f
-    var shamt = binary >> 6 & 0x1f
+    rs = binary >>> 21 & 0x1f
+    rt = binary >>> 16 & 0x1f
+    rd = binary >>> 11 & 0x1f
+    var shamt = binary >>> 6 & 0x1f
     var funct = binary & 0x3f
 
     op_str = functMap[funct];
@@ -59,9 +73,9 @@ function ID(latches, registers, memory) {
 
   else {
     // I format: ooooooss sssttttt iiiiiiii iiiiiiii
-    rs = (binary >> 21) & 0x1F;
-    rt = (binary >> 16) & 0x1F;
-    var imm = (binary >> 0) & 0xFFFF;
+    rs = (binary >>> 21) & 0x1F;
+    rt = (binary >>> 16) & 0x1F;
+    var imm = SignExtend16(binary & 0xFFFF);
 
     op_str = opcodeMap[opcode];
     instruction = {
@@ -135,7 +149,7 @@ function EX(latches, registers, memory) {
     var target = instruction["target"]
 
     location = "registers";
-    position = pc;
+    position = nameToRegisterMap["$pc"];
     switch(op_str) {
       case 'j':
         pc = nameToRegisterMap["$pc"];
@@ -259,6 +273,7 @@ function MEM(latches, registers, memory) {
 
     switch(op_str) {
       case 'beq':
+        var target = instruction["target"]
         if (registers.read(rs) == registers.read(rt)) {
           pc = nameToRegisterMap["$pc"];
           target = imm << 2;
@@ -271,9 +286,9 @@ function MEM(latches, registers, memory) {
       case 'sw':
         value = ToUint32(registers.read(rt));
 
-        byte_1 = (value >> 24) & 0xFF;
-        byte_2 = (value >> 16) & 0xFF;
-        byte_3 = (value >> 8) & 0xFF;
+        byte_1 = (value >>> 24) & 0xFF;
+        byte_2 = (value >>> 16) & 0xFF;
+        byte_3 = (value >>> 8) & 0xFF;
         byte_4 = value & 0xFF;
 
         location = "memory";
@@ -283,7 +298,7 @@ function MEM(latches, registers, memory) {
       case 'sh':
         value = ToUint32(registers.read(rt));
 
-        byte_1 = (value >> 8) & 0xFF;
+        byte_1 = (value >>> 8) & 0xFF;
         byte_2 = value & 0xFF;
 
         location = "memory";
@@ -321,6 +336,7 @@ function MEM(latches, registers, memory) {
 
         location = "registers";
         position = rt;
+        console.log(result)
         break;
       case 'lb':
         byte_1 = memory.read(memory_address);
@@ -352,8 +368,6 @@ function WB(latches, registers, memory) {
   }
 }
 
-// this is just a mock of the behind the scenes: altering this function will NOT
-// change the outcome of running your code
 function processMIPS(latches, registers, memory) {
   // TODO: Fill this function
 }
@@ -379,8 +393,8 @@ var opcodeMap = {
   0x0c: "andi",
   0x0d: "ori",
   0x0e: "xori",
-  0x24: "lbu",
-  0x25: "lhu",
+  0x20: "lb",
+  0x21: "lh",
   0x23: "lw",
   0x0f: "lui",
   0x28: "sb",
