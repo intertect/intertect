@@ -24,8 +24,13 @@ function IF(latches, registers, memory) {
   binary |= byte_3 << 8;
   binary |= byte_2 << 16;
   binary |= byte_1 << 24;
+  binary = ToUint32(binary);
 
-  latches.if_id = binary;
+  if (binary == 0xFAFAFAFA) {
+    latches.term_if = true;
+  } else {
+    latches.if_id = binary;
+  }
 }
 
 function ID(latches, registers, memory) {
@@ -365,20 +370,7 @@ function WB(latches, registers, memory) {
 }
 
 function processMIPS(latches, registers, memory) {
-  IF(latches, registers, memory);
-  ID(latches, registers, memory);
-  EX(latches, registers, memory);
-  MEM(latches, registers, memory);
-  WB(latches, registers, memory);
-}
-
-export var solution = {
-  "IF" : IF,
-  "ID" : ID,
-  "EX" : EX,
-  "MEM" : MEM,
-  "WB": WB,
-  "processMIPS" : processMIPS
+  // TODO: Fill this function
 }
 
 var functMap = {

@@ -13,14 +13,68 @@ key elements that allows processors to work on different tasks simultaneously, w
 is the focus in Lesson 4. Here, we'll be effectively separating the processor you've
 currently developed into well separated logical units, specifically:
 
-- **Fetch**: Grabs the instruction being pointed at by the `pc`
-- **Decode**: Determines the instruction along with its arguments from the binary
-- **Execute**: Performs the operation determined via the decode
-- **Write**: Saves the result from execution to the desired location
+- **Fetch (IF)**: Grabs the instruction being pointed at by the `pc`
+- **Decode (ID)**: Determines the instruction along with its arguments from the binary
+- **Execute (EX)**: Performs operations from the decode if *not* having to do with memory
+- **Memory (MEM)**: Executes operations dealing with memory, i.e. branches, loads/stores. Saves
+  any result from execution (either in the previous stage or this) to memory *if appropriate*. 
+  Hands off all other results to the final stage to save in registers if that is the desired
+  final location.
+- **Write Back (WB)**: Saves the result from execution to the desired location
 
 So, while there is no difference in capability that will result in our work in this lesson,
 we'll be effectively "refactoring" your implementation to allow for clarity and (more 
 importantly) significant speedup.
+
+# Latches
+**Important**: Do NOT skip this section, otherwise implementing this lesson and all future ones
+will be impossible! 
+
+Naturally, as we divide the pipeline into separate blocks, we need a way to communicate between
+the blocks. The way a processor achieves this is through what are called "latches." Latches
+effectively act as boxes for dumping information between parts of the pipeline: at the beginning
+of a clock cycle, each pipeline stage will look at the latch connecting it to the previous one
+to pull input from there and execute on it. For example, one clock cycle, IF will fetch an
+instruction and save it in the IF/ID latch. During the subsequent cycle, ID will pull from this 
+latch and perform the decode before saving its result in the ID/EX latch. While this is 
+implemented in hardware in reality, we're emulating it as objects here. 
+
+- We **expect** all instructions to be decoded with the appropriate names, object latch saves must match **exactly** these names/types for these cases:
+  
+- `latches.if_id` (IF/ID latch): Must be the `unsigned 32-bit` binary instruction! Remember once
+  again to call `ToUint32(x)` on whatever binary result you get before storing it in the latch
+- `latches.id_ex` (ID/EX latch): Construct an object that has the following fields/values:
+  - R instruction: 
+    - `op_str`: Functional name for the instruction (i.e. `addu`)
+    - `rs`: *Address* location for `$rs`
+    - `rt`: *Address* location for `$rt`
+    - `rd`: *Address* location for `$rd`
+    - `shamt`: Value for `$shamt`
+  - J instruction: 
+    - `op_str`: Functional name for the instruction (i.e. `jal`)
+    - `target`: Binary address value for destination
+  - I instruction: 
+    - `op_str`: Functional name for the instruction (i.e. `addiu`)
+    - `rs`: *Address* location for `$rs`
+    - `rt`: *Address* location for `$rt`
+    - `imm`: Value for immediate to be used
+- `latches.ex_mem` (EX/MEM latch): This is perhaps the most complicated latch, since execute
+  only performs a subset of the instructions and must wrap up all others for MEM to continue
+  - `instruction`: Instruction that was decoded during ID stage. This is simply passed along
+  in the cases where the decoded instruction is to be executed during MEM
+  - `memory_address`: For load/store instructions, the final address is determined in the EX
+  stage and stored before it is executed in the MEM stage. This is where the info is stored
+  - `result`: If an instruction was executed, this is where the result is stored
+  - `location`: Likewise, if execution was performed, this specifies whether the result is
+  to be saved in memory or registers. As a result, the value of this field should always either
+  be `"memory"` or `"registers"`
+  - `position`: Position in the final saving location where the result is to be saved, i.e. for
+  `memory` this indicates an offset and for `registers` this indicates the particular register 
+- `latches.mem_wb` (MEM/WB latch): 
+  - `result`: Value to be written/stored
+  - `location`: Should either be `"memory"` or `"registers"` to indicate which stage of the
+  pipeline saving should occur
+  - `position`: Which register to be written to (if `location` is `"registers"`)
 
 # Your Task
 The first part of the pipeline is fetching the instruction. It's typically denoted just as
