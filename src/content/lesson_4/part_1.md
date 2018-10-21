@@ -11,20 +11,21 @@ In the previous lesson, we had a mock `processMIPS` function that you could see
 to get a sense of what was going on behind the scenes using your implementations of 
 `fetch` and the remainder of the pipeline. Now, it's your turn to implement this
 function! It's going to be different from the previous lesson, since this time we
-are executing instructions in **parallel.** Therefore, you must save the state of
-the pipeline at each point and continue execution of previously run commands on the
+are executing instructions in **parallel.** Therefore, you must continue execution 
+of previously run commands whose results were saved in the latches at the
 following step of the pipeline. Here are some notes to help you through this:
 
-- The `pipeline` variable is an array that should only have **three** variables stored.
-This effectively acts as a global tracker of the results you've previously obtained
-from running an execution step. While there are four stages, there is no return value
-for the "write" step, meaning there's nothing to be stored from there.
-- You should check the `pipeline` to see if anything has been previously executed and
-stored in those locations, i.e. if the previous step fetched and instruction and 
-wrote that into the pipeline, you should pull that information out, decode it now, and
-write it back into the appropriate slot in the pipeline.
-- You will **not** have to modify your `fetch`, `decode`, `execute`, or `write` functions:
-simply call them with the appropriate arguments and save the results in the pipeline!
+- The `latches` variable is an object that should maximally have its **four**
+latch slots used. This will *only* **not** be the case at the beginning and end of the
+program execution, i.e. where you are first loading things into an empty pipeline or
+flushing out the remaining steps before program termination.
+- You should execute a stage of the pipeline if a given `latch` slot acts as input to it
+and is not `undefined.` In line with that, whenever you execute a stage of the pipeline,
+make sure to `flush` it, i.e. set the corresponding latch from which you got the input
+to `undefined`! If you don't, the program will never terminate.
+- You will **not** have to modify your `IF`, `ID`, `EX`, `MEM` or `WB` functions:
+simply call them with the appropriate arguments! You may look at what we called the `dummy`
+pipeline in the parts of Lesson 3 as a guidance for what the function will look like.
 - The `pipeline` starts empty! This means, when you press `Step` on the UI, you will 
 **NOT** see anything updating (other than the `pc`) until at least four steps in! After
 that point, however, you should see updates on each click of `Step`, although the update
