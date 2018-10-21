@@ -425,10 +425,9 @@ class Terminal extends Component {
     } else if (this.state.lesson == 4) {
       // eslint-disable-next-line
       processMIPS(this.state.studentLatches, this.state.studentRegisters, this.state.studentMemory);
-      solution(this.state.referenceLatches, this.state.studentRegisters, this.state.studentMemory);
+      solution(this.state.referenceLatches, this.state.referenceRegisters, this.state.referenceMemory);
     }
 
-    console.log(this.state.studentLatches.empty())
     var lessonComplete = (typeof(this.getNextInstruction(this.state.programCounter + 4)) === 'undefined'
       && (this.state.lesson < 4 || this.state.studentLatches.empty()));
 
