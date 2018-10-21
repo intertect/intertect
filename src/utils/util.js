@@ -1,5 +1,6 @@
 export class Latches {
   constructor() {
+    this.term_if = false;
     this.if_id  = undefined;
     this.id_ex  = undefined;
     this.ex_mem = undefined;

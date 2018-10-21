@@ -36,7 +36,8 @@ worry about adjusting that after hitting step!
 
 **Notes** Remember the following common pitfalls:
 
-- Instructions are 32-bit
+- Instructions are **unsigned** 32-bit. Make sure to use the `ToUint32(x)` function to convert
+any raw integer bit manipulation you do!
 - Instructions are to be read from high bit to low
 - Current instruction is pointed to by `pc`
 

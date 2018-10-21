@@ -25,7 +25,7 @@ function IF(latches, registers, memory) {
   binary |= byte_2 << 16;
   binary |= byte_1 << 24;
 
-  latches.if_id = binary;
+  latches.if_id = ToUint32(binary);
 }
 
 function ID(latches, registers, memory) {

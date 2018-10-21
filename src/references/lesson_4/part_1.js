@@ -24,11 +24,12 @@ function IF(latches, registers, memory) {
   binary |= byte_3 << 8;
   binary |= byte_2 << 16;
   binary |= byte_1 << 24;
+  binary = ToUint32(binary);
 
-  if (binary != 0x0) {
-    latches.if_id = binary;
+  if (binary == 0xFAFAFAFA) {
+    latches.term_if = true;
   } else {
-    latches.if_id = undefined;
+    latches.if_id = binary;
   }
 }
 
@@ -389,7 +390,9 @@ export function solution(latches, registers, memory) {
     latches.if_id = undefined;
   }
 
-  IF(latches, registers, memory);
+  if (!latches.term_if) {
+    IF(latches, registers, memory);
+  }
 }
 
 var functMap = {
