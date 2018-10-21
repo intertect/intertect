@@ -2,6 +2,16 @@ function ToUint32(x) {
   return x >>> 0;
 }
 
+function SignExtend16(x) {
+  x = ToUint32(x);
+
+  if (x >>> 15 > 0) {
+    x |= 0xFFFF0000;
+  }
+
+  return x;
+}
+
 function IF(latches, registers, memory) {
   var location = registers.read(nameToRegisterMap["$pc"]);
 
@@ -15,12 +25,12 @@ function IF(latches, registers, memory) {
   binary |= byte_2 << 16;
   binary |= byte_1 << 24;
 
-  latches.if_id = binary;
+  latches.if_id = ToUint32(binary);
 }
 
 function ID(latches, registers, memory) {
   var binary = latches.if_id;
-  var opcode = binary >> 26;
+  var opcode = binary >>> 26;
 
   // All R (register) binarys start with 0s
   var rs, rt, rd;

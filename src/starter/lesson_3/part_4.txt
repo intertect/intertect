@@ -2,6 +2,16 @@ function ToUint32(x) {
   return x >>> 0;
 }
 
+function SignExtend16(x) {
+  x = ToUint32(x);
+
+  if (x >>> 15 > 0) {
+    x |= 0xFFFF0000;
+  }
+
+  return x;
+}
+
 function IF(latches, registers, memory) {
   var location = registers.read(nameToRegisterMap["$pc"]);
 
@@ -15,12 +25,12 @@ function IF(latches, registers, memory) {
   binary |= byte_2 << 16;
   binary |= byte_1 << 24;
 
-  latches.if_id = binary;
+  latches.if_id = ToUint32(binary);
 }
 
 function ID(latches, registers, memory) {
   var binary = latches.if_id;
-  var opcode = binary >> 26;
+  var opcode = binary >>> 26;
 
   // All R (register) binarys start with 0s
   var rs, rt, rd;
@@ -30,10 +40,10 @@ function ID(latches, registers, memory) {
   var instruction;
 
   if (opcode == 0x0) {
-    rs = binary >> 21 & 0x1f
-    rt = binary >> 16 & 0x1f
-    rd = binary >> 11 & 0x1f
-    var shamt = binary >> 6 & 0x1f
+    rs = binary >>> 21 & 0x1f
+    rt = binary >>> 16 & 0x1f
+    rd = binary >>> 11 & 0x1f
+    var shamt = binary >>> 6 & 0x1f
     var funct = binary & 0x3f
 
     op_str = functMap[funct];
@@ -59,9 +69,9 @@ function ID(latches, registers, memory) {
 
   else {
     // I format: ooooooss sssttttt iiiiiiii iiiiiiii
-    rs = (binary >> 21) & 0x1F;
-    rt = (binary >> 16) & 0x1F;
-    var imm = (binary >> 0) & 0xFFFF;
+    rs = (binary >>> 21) & 0x1F;
+    rt = (binary >>> 16) & 0x1F;
+    var imm = (binary >>> 0) & 0xFFFF;
 
     op_str = opcodeMap[opcode];
     instruction = {
