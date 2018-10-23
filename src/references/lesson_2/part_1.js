@@ -220,9 +220,7 @@ export function solution(instruction, registers, memory) {
 }
 
 var functMap = {
-  0x20: "add",
   0x21: "addu",
-  0x22: "sub",
   0x23: "subu",
   0x24: "and",
   0x25: "or",
@@ -235,7 +233,6 @@ var functMap = {
 };
 
 var opcodeMap = {
-  0x08: "addi",
   0x09: "addiu",
   0x0c: "andi",
   0x0d: "ori",

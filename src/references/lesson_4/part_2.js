@@ -12,7 +12,7 @@ function SignExtend16(x) {
   return x;
 }
 
-function fetch(registers, memory) {
+function IF(latches, registers, memory) {
   var location = registers.read(nameToRegisterMap["$pc"]);
 
   var byte_1 = memory.read(location);
@@ -24,11 +24,17 @@ function fetch(registers, memory) {
   binary |= byte_3 << 8;
   binary |= byte_2 << 16;
   binary |= byte_1 << 24;
+  binary = ToUint32(binary);
 
-  return binary;
+  if (binary == 0xFAFAFAFA) {
+    latches.term_if = true;
+  } else {
+    latches.if_id = binary;
+  }
 }
 
-function decode(binary) {
+function ID(latches, registers, memory) {
+  var binary = latches.if_id;
   var opcode = binary >>> 26;
 
   // All R (register) binarys start with 0s
@@ -39,7 +45,6 @@ function decode(binary) {
   var instruction;
 
   if (opcode == 0x0) {
-    // TODO: Fill this area
     rs = binary >>> 21 & 0x1f
     rt = binary >>> 16 & 0x1f
     rd = binary >>> 11 & 0x1f
@@ -71,7 +76,7 @@ function decode(binary) {
     // I format: ooooooss sssttttt iiiiiiii iiiiiiii
     rs = (binary >>> 21) & 0x1F;
     rt = (binary >>> 16) & 0x1F;
-    var imm = (binary >>> 0) & 0xFFFF;
+    var imm = SignExtend16(binary & 0xFFFF);
 
     op_str = opcodeMap[opcode];
     instruction = {
@@ -82,10 +87,12 @@ function decode(binary) {
     }
   }
 
-  return instruction;
+  latches.id_ex = instruction;
 }
 
-function execute(instruction, registers, memory) {
+function EX(latches, registers, memory) {
+  var instruction = latches.id_ex;
+
   // All R (register) instructions start with 0s
   var rs, rt, rd;
   var op_str = instruction["op_str"];
@@ -93,11 +100,11 @@ function execute(instruction, registers, memory) {
   var pc, pc_val, result;
   var ra;
 
-  var r_ops = ['addu', 'subu', 'and', 'or', 'xor', 'sll', 'srl', 'sra', 'jr'];
+  var r_ops = ['addu', 'subu', 'and', 'or', 'xor', 'sll', 'srl', 'sra'];
   var j_ops = ['j', 'jal'];
-  var i_ops = ['addiu', 'andi', 'ori', 'xori', 'beq'];
+  var i_ops = ['addiu', 'andi', 'ori', 'xori', 'sw', 'sh', 'sb', 'lw', 'lh', 'lb'];
 
-  var location, position, result;
+  var location, position, result, memory_address;
   var writeInfo;
 
   if (r_ops.indexOf(op_str) != -1) {
@@ -107,7 +114,7 @@ function execute(instruction, registers, memory) {
     var shamt = instruction["shamt"]
 
     location = "registers";
-    position = rd; // holds for everything but jr
+    position = rd;
     switch(op_str) {
       case 'addu':
         result = ToUint32(registers.read(rs) + registers.read(rt));
@@ -133,11 +140,6 @@ function execute(instruction, registers, memory) {
       case 'sra':
         result = ToUint32(registers.read(rs) >> registers.read(rd));
         break;
-      case 'jr':
-        pc = nameToRegisterMap["$pc"];
-        position = pc;
-        result = ToUint32(registers.read(rs));
-        break;
       default:
         break;
     }
@@ -148,7 +150,7 @@ function execute(instruction, registers, memory) {
     var target = instruction["target"]
 
     location = "registers";
-    position = pc;
+    position = nameToRegisterMap["$pc"];
     switch(op_str) {
       case 'j':
         pc = nameToRegisterMap["$pc"];
@@ -179,14 +181,14 @@ function execute(instruction, registers, memory) {
     }
   }
 
-  else {
+  else if (i_ops.indexOf(op_str) != -1) {
     // I format: ooooooss sssttttt iiiiiiii iiiiiiii
     rs = instruction["rs"]
     rt = instruction["rt"]
     var imm = instruction["imm"]
 
     // used in store/load instructions
-    var start_address = ToUint32(registers.read(rs)) + ToUint32(imm);
+    memory_address = ToUint32(registers.read(rs)) + ToUint32(imm);
     var byte_1, byte_2, byte_3, byte_4;
     var value;
 
@@ -211,7 +213,68 @@ function execute(instruction, registers, memory) {
         position = rt;
         result = ToUint32(registers.read(rs) ^ imm);
         break;
+      default:
+        break;
+    }
+  }
+
+  latches.ex_mem = {
+    "instruction": instruction, // for instructions to execute in MEM stage
+    "memory_address": memory_address, // only relevant for load/stores
+    "result": result,
+    "location": location,
+    "position": position
+  }
+}
+
+function MEM(latches, registers, memory) {
+  var instruction = latches.ex_mem["instruction"];
+  var memory_address = latches.ex_mem["memory_address"];
+
+  var result = latches.ex_mem["result"];
+  var location = latches.ex_mem["location"];
+  var position = latches.ex_mem["position"];
+
+  var r_ops = ['jr'];
+  var i_ops = ['beq', 'sw', 'sh', 'sb', 'lw', 'lh', 'lb'];
+
+  // All R (register) instructions start with 0s
+  var rs, rt, rd;
+  var op_str = instruction["op_str"];
+
+  var pc, result;
+
+  if (r_ops.indexOf(op_str) != -1) {
+    rs = instruction["rs"]
+    rt = instruction["rt"]
+    rd = instruction["rd"]
+    var shamt = instruction["shamt"]
+
+    location = "registers";
+    switch(op_str) {
+      case 'jr':
+        pc = nameToRegisterMap["$pc"];
+        position = pc;
+        result = ToUint32(registers.read(rs));
+        break;
+      default:
+        break;
+    }
+  }
+
+  else if (i_ops.indexOf(op_str) != -1) {
+    // I format: ooooooss sssttttt iiiiiiii iiiiiiii
+    rs = instruction["rs"]
+    rt = instruction["rt"]
+    var imm = instruction["imm"]
+
+    // used in store/load instructions
+    var byte_1, byte_2, byte_3, byte_4;
+    var value;
+
+    switch(op_str) {
       case 'beq':
+        var target = instruction["target"]
         if (registers.read(rs) == registers.read(rt)) {
           pc = nameToRegisterMap["$pc"];
           target = imm << 2;
@@ -230,7 +293,7 @@ function execute(instruction, registers, memory) {
         byte_4 = value & 0xFF;
 
         location = "memory";
-        position = start_address;
+        position = memory_address;
         result = [byte_1, byte_2, byte_3, byte_4]
         break;
       case 'sh':
@@ -240,7 +303,7 @@ function execute(instruction, registers, memory) {
         byte_2 = value & 0xFF;
 
         location = "memory";
-        position = start_address;
+        position = memory_address;
         result = [byte_1, byte_2]
         break;
       case 'sb':
@@ -248,14 +311,14 @@ function execute(instruction, registers, memory) {
         byte_1 = value & 0xFF;
 
         location = "memory";
-        position = start_address;
+        position = memory_address;
         result = [byte_1]
         break;
       case 'lw':
-        byte_1 = memory.read(start_address);
-        byte_2 = memory.read(start_address + 1);
-        byte_3 = memory.read(start_address + 2);
-        byte_4 = memory.read(start_address + 3);
+        byte_1 = memory.read(memory_address);
+        byte_2 = memory.read(memory_address + 1);
+        byte_3 = memory.read(memory_address + 2);
+        byte_4 = memory.read(memory_address + 3);
 
         result = byte_4;
         result |= byte_3 << 8;
@@ -266,17 +329,18 @@ function execute(instruction, registers, memory) {
         position = rt;
         break;
       case 'lh':
-        byte_1 = memory.read(start_address);
-        byte_2 = memory.read(start_address + 1);
+        byte_1 = memory.read(memory_address);
+        byte_2 = memory.read(memory_address + 1);
 
         result = byte_2;
         result |= byte_1 << 8;
 
         location = "registers";
         position = rt;
+        console.log(result)
         break;
       case 'lb':
-        byte_1 = memory.read(start_address);
+        byte_1 = memory.read(memory_address);
         result = byte_1;
         location = "registers";
         position = rt;
@@ -286,46 +350,59 @@ function execute(instruction, registers, memory) {
     }
   }
 
-  return {
+  if (location == "memory") {
+    for (var i = 0; i < result.length; i++) {
+      memory.write(position + i, result[i]);
+    }
+  }
+
+  latches.mem_wb = {
     "result": result,
     "location": location,
     "position": position
   }
 }
 
-function write(registers, memory, writeInfo) {
-  if (writeInfo["location"] == "memory") {
-    for (var i = 0; i < writeInfo["result"].length; i++) {
-      memory.write(writeInfo["position"] + i, writeInfo["result"][i]);
-    }
-  } else {
-    registers.write(writeInfo["position"], writeInfo["result"])
+function WB(latches, registers, memory) {
+  if (latches.mem_wb["location"] == "registers") {
+    registers.write(latches.mem_wb["position"], latches.mem_wb["result"])
   }
 }
 
-export function solution(registers, memory, pipeline) {
-  var binary, instruction, writeInfo;
-  past_binary = pipeline[0];
-  past_instruction = pipeline[1];
-  past_writeInfo = pipeline[2];
+export function solution(latches, registers, memory) {
+  var EA = ["addu","subu","and","or","nor","xor","sll","srl","sra","addiu","andi","ori","xori"]
+  var MA = ["jr","lb","lh","lw","lui","sb","sh","sw","beq"];
 
-  var new_binary = fetch(registers, memory);
-  if (past_binary != undefined) {
-    var new_instruction = decode(past_binary);
+  var DR = ["addu","subu","and","or","nor","xor","sll","srl","sra","addiu","andi","ori","xori","lb","lh","lw","lui","sb","sh","sw",];
+  var ER = ["jr","beq"];
+
+  if (latches.mem_wb != undefined) {
+    WB(latches, registers, memory);
+    latches.mem_wb = undefined;
   }
-  if (past_instruction != undefined) {
-    var new_writeInfo = execute(past_instruction, registers, memory);
+
+  if (latches.ex_mem != undefined) {
+    MEM(latches, registers, memory);
+    latches.ex_mem = undefined;
   }
-  if (past_writeInfo != undefined) {
-    write(registers, memory, past_writeInfo);
+
+  if (latches.id_ex != undefined)  {
+    EX(latches, registers, memory);
+    latches.id_ex = undefined;
   }
-  return [new_binary, new_instruction, new_writeInfo]
+
+  if (latches.if_id != undefined)  {
+    ID(latches, registers, memory);
+    latches.if_id = undefined;
+  }
+
+  if (!latches.term_if) {
+    IF(latches, registers, memory);
+  }
 }
 
 var functMap = {
-  0x20: "add",
   0x21: "addu",
-  0x22: "sub",
   0x23: "subu",
   0x24: "and",
   0x25: "or",
@@ -338,7 +415,6 @@ var functMap = {
 };
 
 var opcodeMap = {
-  0x08: "addi",
   0x09: "addiu",
   0x0c: "andi",
   0x0d: "ori",

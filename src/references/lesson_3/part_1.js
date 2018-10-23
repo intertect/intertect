@@ -24,8 +24,13 @@ function IF(latches, registers, memory) {
   binary |= byte_3 << 8;
   binary |= byte_2 << 16;
   binary |= byte_1 << 24;
+  binary = ToUint32(binary);
 
-  latches.if_id = ToUint32(binary);
+  if (binary == 0xFAFAFAFA) {
+    latches.term_if = true;
+  } else {
+    latches.if_id = binary;
+  }
 }
 
 function ID(latches, registers, memory) {
@@ -47,12 +52,23 @@ function ID(latches, registers, memory) {
     var funct = binary & 0x3f
 
     op_str = functMap[funct];
-    instruction = {
-      "op_str" : op_str,
-      "rs" : rs,
-      "rt" : rt,
-      "rd" : rd,
-      "shamt" : shamt
+
+    switch(op_str) {
+      case 'jr':
+        pc = nameToRegisterMap["$pc"];
+        position = pc;
+        result = ToUint32(registers.read(rs));
+        registers.write(position, result)
+        break;
+      default:
+        instruction = {
+          "op_str" : op_str,
+          "rs" : rs,
+          "rt" : rt,
+          "rd" : rd,
+          "shamt" : shamt
+        }
+        break;
     }
   }
 
@@ -61,9 +77,35 @@ function ID(latches, registers, memory) {
     var target = (binary & 0x3FFFFFF) << 2;
 
     op_str = opcode == 0x2 ? "j" : "jal";
-    instruction = {
-      "op_str" : op_str,
-      "target" : target
+    position = nameToRegisterMap["$pc"];
+    switch(op_str) {
+      case 'j':
+        pc = nameToRegisterMap["$pc"];
+        // Lop off the two top bits
+        target &= 0x3FFFFFFF;
+
+        pc_val = ToUint32(registers.read(pc));
+        // Keep only the top two bits
+        pc_val &= 0xC0000000;
+
+        result = pc_val | target;
+        registers.write(position, result)
+        break;
+      case 'jal':
+        pc = nameToRegisterMap["$pc"];
+        ra = nameToRegisterMap["$ra"];
+        // Lop off the two top bits
+        target &= 0x3FFFFFFF;
+
+        pc_val = ToUint32(registers.read(pc));
+
+        result = (pc_val & 0xC0000000) | target;
+
+        registers.write(position, result)
+        registers.write(ra, pc_val + 8);
+        break;
+      default:
+        break;
     }
   }
 
@@ -74,11 +116,25 @@ function ID(latches, registers, memory) {
     var imm = SignExtend16(binary & 0xFFFF);
 
     op_str = opcodeMap[opcode];
-    instruction = {
-      "op_str" : op_str,
-      "rs" : rs,
-      "rt" : rt,
-      "imm" : imm
+    switch(op_str) {
+      case 'beq':
+        if (registers.read(rs) == registers.read(rt)) {
+          pc = nameToRegisterMap["$pc"];
+          var target = imm << 2;
+
+          position = pc;
+          result = ToUint32(registers.read(pc) + target + 4);
+          registers.write(position, result)
+        }
+        break;
+      default:
+        instruction = {
+          "op_str" : op_str,
+          "rs" : rs,
+          "rt" : rt,
+          "imm" : imm
+        }
+        break;
     }
   }
 
@@ -96,7 +152,6 @@ function EX(latches, registers, memory) {
   var ra;
 
   var r_ops = ['addu', 'subu', 'and', 'or', 'xor', 'sll', 'srl', 'sra'];
-  var j_ops = ['j', 'jal'];
   var i_ops = ['addiu', 'andi', 'ori', 'xori', 'sw', 'sh', 'sb', 'lw', 'lh', 'lb'];
 
   var location, position, result, memory_address;
@@ -134,42 +189,6 @@ function EX(latches, registers, memory) {
         break;
       case 'sra':
         result = ToUint32(registers.read(rs) >> registers.read(rd));
-        break;
-      default:
-        break;
-    }
-  }
-
-  else if (j_ops.indexOf(op_str) != -1) {
-    // J format: oooooott ttttttt tttttttt tttttttt
-    var target = instruction["target"]
-
-    location = "registers";
-    position = nameToRegisterMap["$pc"];
-    switch(op_str) {
-      case 'j':
-        pc = nameToRegisterMap["$pc"];
-        // Lop off the two top bits
-        target &= 0x3FFFFFFF;
-
-        pc_val = ToUint32(registers.read(pc));
-        // Keep only the top two bits
-        pc_val &= 0xC0000000;
-
-        result = pc_val | target;
-
-        break;
-      case 'jal':
-        pc = nameToRegisterMap["$pc"];
-        ra = nameToRegisterMap["$ra"];
-        // Lop off the two top bits
-        target &= 0x3FFFFFFF;
-
-        pc_val = ToUint32(registers.read(pc));
-
-        result = (pc_val & 0xC0000000) | target;
-
-        registers.write(ra, pc_val + 8);
         break;
       default:
         break;
@@ -230,8 +249,7 @@ function MEM(latches, registers, memory) {
   var location = latches.ex_mem["location"];
   var position = latches.ex_mem["position"];
 
-  var r_ops = ['jr'];
-  var i_ops = ['beq', 'sw', 'sh', 'sb', 'lw', 'lh', 'lb'];
+  var mem_ops = ['sw', 'sh', 'sb', 'lw', 'lh', 'lb'];
 
   // All R (register) instructions start with 0s
   var rs, rt, rd;
@@ -239,25 +257,7 @@ function MEM(latches, registers, memory) {
 
   var pc, result;
 
-  if (r_ops.indexOf(op_str) != -1) {
-    rs = instruction["rs"]
-    rt = instruction["rt"]
-    rd = instruction["rd"]
-    var shamt = instruction["shamt"]
-
-    location = "registers";
-    switch(op_str) {
-      case 'jr':
-        pc = nameToRegisterMap["$pc"];
-        position = pc;
-        result = ToUint32(registers.read(rs));
-        break;
-      default:
-        break;
-    }
-  }
-
-  else if (i_ops.indexOf(op_str) != -1) {
+  if (mem_ops.indexOf(op_str) != -1) {
     // I format: ooooooss sssttttt iiiiiiii iiiiiiii
     rs = instruction["rs"]
     rt = instruction["rt"]
@@ -268,17 +268,6 @@ function MEM(latches, registers, memory) {
     var value;
 
     switch(op_str) {
-      case 'beq':
-        var target = instruction["target"]
-        if (registers.read(rs) == registers.read(rt)) {
-          pc = nameToRegisterMap["$pc"];
-          target = imm << 2;
-
-          location = "registers";
-          position = pc;
-          result = ToUint32(registers.read(pc) + target + 4);
-        }
-        break;
       case 'sw':
         value = ToUint32(registers.read(rt));
 
@@ -382,9 +371,7 @@ export var solution = {
 }
 
 var functMap = {
-  0x20: "add",
   0x21: "addu",
-  0x22: "sub",
   0x23: "subu",
   0x24: "and",
   0x25: "or",
@@ -397,7 +384,6 @@ var functMap = {
 };
 
 var opcodeMap = {
-  0x08: "addi",
   0x09: "addiu",
   0x0c: "andi",
   0x0d: "ori",
