@@ -173,22 +173,22 @@ function EX(latches, registers, memory) {
         result = ToUint32(registers.read(rs) - registers.read(rt));
         break;
       case 'and':
-        result = ToUint32(registers.read(rs) & registers.read(rd));
+        result = ToUint32(registers.read(rs) & registers.read(rt));
         break;
       case 'or':
-        result = ToUint32(registers.read(rs) | registers.read(rd));
+        result = ToUint32(registers.read(rs) | registers.read(rt));
         break;
       case 'xor':
-        result = ToUint32(registers.read(rs) ^ registers.read(rd));
+        result = ToUint32(registers.read(rs) ^ registers.read(rt));
         break;
       case 'sll':
-        result = ToUint32(registers.read(rs) << registers.read(rd));
+        result = ToUint32(registers.read(rs) << registers.read(rt));
         break;
       case 'srl':
-        result = ToUint32(registers.read(rs) >>> registers.read(rd));
+        result = ToUint32(registers.read(rs) >>> registers.read(rt));
         break;
       case 'sra':
-        result = ToUint32(registers.read(rs) >> registers.read(rd));
+        result = ToUint32(registers.read(rs) >> registers.read(rt));
         break;
       default:
         break;

@@ -32,21 +32,21 @@ export function solution(instruction, registers, memory) {
       rd = nameToRegisterMap[instruction[1]];
       rs = nameToRegisterMap[instruction[2]];
       rt = nameToRegisterMap[instruction[3]];
-      result = ToUint32(registers.read(rs) & registers.read(rd));
+      result = ToUint32(registers.read(rs) & registers.read(rt));
       registers.write(rd, result);
       break;
     case 'or':
       rd = nameToRegisterMap[instruction[1]];
       rs = nameToRegisterMap[instruction[2]];
       rt = nameToRegisterMap[instruction[3]];
-      result = ToUint32(registers.read(rs) | registers.read(rd));
+      result = ToUint32(registers.read(rs) | registers.read(rt));
       registers.write(rd, result);
       break;
     case 'xor':
       rd = nameToRegisterMap[instruction[1]];
       rs = nameToRegisterMap[instruction[2]];
       rt = nameToRegisterMap[instruction[3]];
-      result = ToUint32(registers.read(rs) ^ registers.read(rd));
+      result = ToUint32(registers.read(rs) ^ registers.read(rt));
       registers.write(rd, result);
       break;
     case 'sll':

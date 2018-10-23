@@ -53,27 +53,27 @@ export function solution(instruction, registers) {
         registers.write(rd, result);
         break;
       case 'and':
-        result = ToUint32(registers.read(rs) & registers.read(rd));
+        result = ToUint32(registers.read(rs) & registers.read(rt));
         registers.write(rd, result);
         break;
       case 'or':
-        result = ToUint32(registers.read(rs) | registers.read(rd));
+        result = ToUint32(registers.read(rs) | registers.read(rt));
         registers.write(rd, result);
         break;
       case 'xor':
-        result = ToUint32(registers.read(rs) ^ registers.read(rd));
+        result = ToUint32(registers.read(rs) ^ registers.read(rt));
         registers.write(rd, result);
         break;
       case 'sll':
-        result = ToUint32(registers.read(rs) << registers.read(rd));
+        result = ToUint32(registers.read(rs) << registers.read(rt));
         registers.write(rd, result);
         break;
       case 'srl':
-        result = ToUint32(registers.read(rs) >>> registers.read(rd));
+        result = ToUint32(registers.read(rs) >>> registers.read(rt));
         registers.write(rd, result);
         break;
       case 'sra':
-        result = ToUint32(registers.read(rs) >> registers.read(rd));
+        result = ToUint32(registers.read(rs) >> registers.read(rt));
         registers.write(rd, result);
         break;
       case 'jr':

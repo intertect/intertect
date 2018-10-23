@@ -33,7 +33,7 @@ function IF(latches, registers, memory) {
   }
 }
 
-function ID(latches, registers, memory) {
+function ID(latches, registers, memory, rs_val=undefined, rt_val=undefined) {
   var binary = latches.if_id;
   var opcode = binary >>> 26;
 
@@ -51,13 +51,27 @@ function ID(latches, registers, memory) {
     var shamt = binary >>> 6 & 0x1f
     var funct = binary & 0x3f
 
+    if (rs_val === undefined) {
+      rs_val = registers.read(rs);
+    }
+
     op_str = functMap[funct];
-    instruction = {
-      "op_str" : op_str,
-      "rs" : rs,
-      "rt" : rt,
-      "rd" : rd,
-      "shamt" : shamt
+    switch(op_str) {
+      case 'jr':
+        pc = nameToRegisterMap["$pc"];
+        position = pc;
+        result = ToUint32(rs_val);
+        registers.write(position, result)
+        break;
+      default:
+        instruction = {
+          "op_str" : op_str,
+          "rs" : rs,
+          "rt" : rt,
+          "rd" : rd,
+          "shamt" : shamt
+        }
+        break;
     }
   }
 
@@ -66,90 +80,6 @@ function ID(latches, registers, memory) {
     var target = (binary & 0x3FFFFFF) << 2;
 
     op_str = opcode == 0x2 ? "j" : "jal";
-    instruction = {
-      "op_str" : op_str,
-      "target" : target
-    }
-  }
-
-  else {
-    // I format: ooooooss sssttttt iiiiiiii iiiiiiii
-    rs = (binary >>> 21) & 0x1F;
-    rt = (binary >>> 16) & 0x1F;
-    var imm = SignExtend16(binary & 0xFFFF);
-
-    op_str = opcodeMap[opcode];
-    instruction = {
-      "op_str" : op_str,
-      "rs" : rs,
-      "rt" : rt,
-      "imm" : imm
-    }
-  }
-
-  latches.id_ex = instruction;
-}
-
-function EX(latches, registers, memory) {
-  var instruction = latches.id_ex;
-
-  // All R (register) instructions start with 0s
-  var rs, rt, rd;
-  var op_str = instruction["op_str"];
-
-  var pc, pc_val, result;
-  var ra;
-
-  var r_ops = ['addu', 'subu', 'and', 'or', 'xor', 'sll', 'srl', 'sra'];
-  var j_ops = ['j', 'jal'];
-  var i_ops = ['addiu', 'andi', 'ori', 'xori', 'sw', 'sh', 'sb', 'lw', 'lh', 'lb'];
-
-  var location, position, result, memory_address;
-  var writeInfo;
-
-  if (r_ops.indexOf(op_str) != -1) {
-    rs = instruction["rs"]
-    rt = instruction["rt"]
-    rd = instruction["rd"]
-    var shamt = instruction["shamt"]
-
-    location = "registers";
-    position = rd;
-    switch(op_str) {
-      case 'addu':
-        result = ToUint32(registers.read(rs) + registers.read(rt));
-        break;
-      case 'subu':
-        result = ToUint32(registers.read(rs) - registers.read(rt));
-        break;
-      case 'and':
-        result = ToUint32(registers.read(rs) & registers.read(rd));
-        break;
-      case 'or':
-        result = ToUint32(registers.read(rs) | registers.read(rd));
-        break;
-      case 'xor':
-        result = ToUint32(registers.read(rs) ^ registers.read(rd));
-        break;
-      case 'sll':
-        result = ToUint32(registers.read(rs) << registers.read(rd));
-        break;
-      case 'srl':
-        result = ToUint32(registers.read(rs) >>> registers.read(rd));
-        break;
-      case 'sra':
-        result = ToUint32(registers.read(rs) >> registers.read(rd));
-        break;
-      default:
-        break;
-    }
-  }
-
-  else if (j_ops.indexOf(op_str) != -1) {
-    // J format: oooooott ttttttt tttttttt tttttttt
-    var target = instruction["target"]
-
-    location = "registers";
     position = nameToRegisterMap["$pc"];
     switch(op_str) {
       case 'j':
@@ -162,7 +92,7 @@ function EX(latches, registers, memory) {
         pc_val &= 0xC0000000;
 
         result = pc_val | target;
-
+        registers.write(position, result)
         break;
       case 'jal':
         pc = nameToRegisterMap["$pc"];
@@ -174,7 +104,111 @@ function EX(latches, registers, memory) {
 
         result = (pc_val & 0xC0000000) | target;
 
+        registers.write(position, result)
         registers.write(ra, pc_val + 8);
+        break;
+      default:
+        break;
+    }
+  }
+
+  else {
+    // I format: ooooooss sssttttt iiiiiiii iiiiiiii
+    rs = (binary >>> 21) & 0x1F;
+    rt = (binary >>> 16) & 0x1F;
+    var imm = SignExtend16(binary & 0xFFFF);
+
+    if (rs_val === undefined) {
+      rs_val = registers.read(rs);
+    }
+
+    if (rt_val === undefined) {
+      rt_val = registers.read(rs);
+    }
+
+    op_str = opcodeMap[opcode];
+    switch(op_str) {
+      case 'beq':
+        if (rs_val == rt_val) {
+          pc = nameToRegisterMap["$pc"];
+          var target = imm << 2;
+
+          position = pc;
+          result = ToUint32(registers.read(pc) + target + 4);
+          registers.write(position, result)
+        }
+        break;
+      default:
+        instruction = {
+          "op_str" : op_str,
+          "rs" : rs,
+          "rt" : rt,
+          "imm" : imm
+        }
+        break;
+    }
+  }
+
+  latches.id_ex = instruction;
+}
+
+function EX(latches, registers, memory, rs_val=undefined, rt_val=undefined) {
+  var instruction = latches.id_ex;
+
+  // All R (register) instructions start with 0s
+  var rs, rt, rd;
+  var op_str = instruction["op_str"];
+
+  var pc, pc_val, result;
+  var ra;
+
+  var r_ops = ['addu', 'subu', 'and', 'or', 'xor', 'sll', 'srl', 'sra'];
+  var i_ops = ['addiu', 'andi', 'ori', 'xori'];
+
+  var location, position, result, memory_address;
+  var writeInfo;
+
+  if (r_ops.indexOf(op_str) != -1) {
+    rs = instruction["rs"]
+    rt = instruction["rt"]
+    rd = instruction["rd"]
+    var shamt = instruction["shamt"]
+
+    location = "registers";
+    position = rd;
+
+    if (rs_val === undefined) {
+      rs_val = registers.read(rs);
+    }
+
+    if (rt_val === undefined) {
+      rt_val = registers.read(rt);
+    }
+
+    switch(op_str) {
+      case 'addu':
+        result = ToUint32(rs_val + rt_val);
+        break;
+      case 'subu':
+        result = ToUint32(rs_val - rt_val);
+        break;
+      case 'and':
+        result = ToUint32(rs_val & rt_val);
+        break;
+      case 'or':
+        result = ToUint32(rs_val | rt_val);
+        break;
+      case 'xor':
+        result = ToUint32(rs_val ^ rt_val);
+        break;
+      case 'sll':
+        result = ToUint32(rs_val << rt_val);
+        break;
+      case 'srl':
+        result = ToUint32(rs_val >>> rt_val);
+        break;
+      case 'sra':
+        result = ToUint32(rs_val >> rt_val);
         break;
       default:
         break;
@@ -192,26 +226,30 @@ function EX(latches, registers, memory) {
     var byte_1, byte_2, byte_3, byte_4;
     var value;
 
+    if (rs_val === undefined) {
+      rs_val = registers.read(rs);
+    }
+
     switch(op_str) {
       case 'addiu':
         location = "registers";
         position = rt;
-        result = registers.read(rs) + SignExtend16(imm);
+        result = rs_val + SignExtend16(imm);
         break;
       case 'andi':
         location = "registers";
         position = rt;
-        result = ToUint32(registers.read(rs) & imm);
+        result = ToUint32(rs_val & imm);
         break;
       case 'ori':
         location = "registers";
         position = rt;
-        result = ToUint32(registers.read(rs) | imm);
+        result = ToUint32(rs_val | imm);
         break;
       case 'xori':
         location = "registers";
         position = rt;
-        result = ToUint32(registers.read(rs) ^ imm);
+        result = ToUint32(rs_val ^ imm);
         break;
       default:
         break;
@@ -235,8 +273,7 @@ function MEM(latches, registers, memory) {
   var location = latches.ex_mem["location"];
   var position = latches.ex_mem["position"];
 
-  var r_ops = ['jr'];
-  var i_ops = ['beq', 'sw', 'sh', 'sb', 'lw', 'lh', 'lb'];
+  var mem_ops = ['sw', 'sh', 'sb', 'lw', 'lh', 'lb'];
 
   // All R (register) instructions start with 0s
   var rs, rt, rd;
@@ -244,25 +281,7 @@ function MEM(latches, registers, memory) {
 
   var pc, result;
 
-  if (r_ops.indexOf(op_str) != -1) {
-    rs = instruction["rs"]
-    rt = instruction["rt"]
-    rd = instruction["rd"]
-    var shamt = instruction["shamt"]
-
-    location = "registers";
-    switch(op_str) {
-      case 'jr':
-        pc = nameToRegisterMap["$pc"];
-        position = pc;
-        result = ToUint32(registers.read(rs));
-        break;
-      default:
-        break;
-    }
-  }
-
-  else if (i_ops.indexOf(op_str) != -1) {
+  if (mem_ops.indexOf(op_str) != -1) {
     // I format: ooooooss sssttttt iiiiiiii iiiiiiii
     rs = instruction["rs"]
     rt = instruction["rt"]
@@ -273,17 +292,6 @@ function MEM(latches, registers, memory) {
     var value;
 
     switch(op_str) {
-      case 'beq':
-        var target = instruction["target"]
-        if (registers.read(rs) == registers.read(rt)) {
-          pc = nameToRegisterMap["$pc"];
-          target = imm << 2;
-
-          location = "registers";
-          position = pc;
-          result = ToUint32(registers.read(pc) + target + 4);
-        }
-        break;
       case 'sw':
         value = ToUint32(registers.read(rt));
 
@@ -357,6 +365,7 @@ function MEM(latches, registers, memory) {
   }
 
   latches.mem_wb = {
+    "instruction": instruction,
     "result": result,
     "location": location,
     "position": position
@@ -369,12 +378,76 @@ function WB(latches, registers, memory) {
   }
 }
 
+function binaryDependencies(binary) {
+  var dependencies = {
+    "read": [],
+    "write": []
+  };
+
+  var op_str;
+  if (binary != undefined) {
+    var opcode = binary >>> 26;
+    if (opcode == 0x0) {
+      var funct = binary & 0x3f
+      op_str = functMap[funct];
+
+      if (op_str == 'jr') {
+        dependencies.read = [rs]
+      }
+    } else {
+      op_str = opcodeMap[opcode];
+
+      if (op_str == 'beq') {
+        var rs = (binary >>> 21) & 0x1F;
+        var rt = (binary >>> 16) & 0x1F;
+        dependencies.read = [rs, rt]
+      }
+    }
+  }
+  return dependencies;
+}
+
+function instructionDependencies(instruction) {
+  var dependencies = {
+    "read": [],
+    "write": []
+  };
+
+  var r_ops = ['addu','subu','and','or','xor','sll','srl','sra'];
+  var i_ops = ['addiu','andi','ori','xori'];
+
+  if (instruction != undefined) {
+    if (r_ops.indexOf(instruction["op_str"]) != -1) {
+      dependencies.read = [instruction["rs"], instruction["rt"]]
+      dependencies.write = [instruction["rd"]]
+    }
+
+    else if (i_ops.indexOf(instruction["op_str"]) != -1) {
+      dependencies.read = [instruction["rs"]]
+      dependencies.write = [instruction["rt"]]
+    }
+  }
+  return dependencies;
+}
+
+function intersect(x, y) {
+  return x.filter(value => -1 !== y.indexOf(value));
+}
+
 export function solution(latches, registers, memory) {
   var EA = ["addu","subu","and","or","nor","xor","sll","srl","sra","addiu","andi","ori","xori"]
-  var MA = ["jr","lb","lh","lw","lui","sb","sh","sw","beq"];
+  var MA = ["j","jal","jr","beq","lb","lh","lw","lui","sb","sh","sw"];
 
-  var DR = ["addu","subu","and","or","nor","xor","sll","srl","sra","addiu","andi","ori","xori","lb","lh","lw","lui","sb","sh","sw",];
-  var ER = ["jr","beq"];
+  var idDependencies  = binaryDependencies(latches.if_id);
+  var exDependencies  = instructionDependencies(latches.id_ex["instruction"]);
+  var memDependencies = instructionDependencies(latches.ex_mem["instruction"]);
+  var wbDependencies  = instructionDependencies(latches.mem_wb["instruction"]);
+
+  var idExDependencies  = intersect(idDependencies["read"], exDependencies["write"])
+  var idMemDependencies = intersect(idDependencies["read"], memDependencies["write"])
+  var idWbDependencies  = intersect(idDependencies["read"], wbDependencies["write"])
+  var exMemDependencies = intersect(exDependencies["read"], memDependencies["write"])
+  var exWbDependencies  = intersect(exDependencies["read"], wbDependencies["write"])
 
   if (latches.mem_wb != undefined) {
     WB(latches, registers, memory);
@@ -386,9 +459,43 @@ export function solution(latches, registers, memory) {
     latches.ex_mem = undefined;
   }
 
+  /* ====== For ER commands, data hazards are checked in MEM stages ======== */
+  if (exMemDependencies.length != 0) {
+    if (EA.indexOf(latches.mem["instruction"]["op_str"])) {
+      // if ER in EX and EA in MEM, we forward from MEM -> EX
+      EX(latches, registers, memory);
+    } else {
+      return; // if ER in EX and MA in MEM, we stall
+    }
+  }
+
+  if (exWbDependencies.length != 0) {
+    // if ER in EX and EA/MA in WB, we always forward from WB -> EX
+    EX(latches, registers, memory);
+  }
+
   if (latches.id_ex != undefined)  {
     EX(latches, registers, memory);
     latches.id_ex = undefined;
+  }
+
+  /* ======= For DR commands, data hazards are checked in ID stages ======== */
+  if (idExDependencies.length != 0) {
+    return; // if DR in ID and EA/MA in EX, we must always stall
+  }
+
+  if (idMemDependencies.length != 0) {
+    if (EA.indexOf(latches.ex_mem["instruction"]["op_str"])) {
+      // if DR in ID and EA in MEM, we forward from MEM -> ID
+      ID(latches, registers, memory);
+    } else {
+      return; // if DR in ID and MA in MEM, we stall
+    }
+  }
+
+  if (idWbDependencies.length != 0) {
+    // if DR in ID and EA/MA in WB, we always forward from WB -> ID
+    ID(latches, registers, memory);
   }
 
   if (latches.if_id != undefined)  {
