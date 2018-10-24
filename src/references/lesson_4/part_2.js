@@ -29,12 +29,19 @@ function IF(latches, registers, memory) {
   if (binary == 0xFAFAFAFA) {
     latches.term_if = true;
   } else {
-    latches.if_id = binary;
+    latches.if_id = {
+      "binary" : binary,
+      // used for forwarding in hazards
+      "rs_val" : undefined,
+      "rt_val" : undefined
+    };
   }
 }
 
-function ID(latches, registers, memory, rs_val=undefined, rt_val=undefined) {
-  var binary = latches.if_id;
+function ID(latches, registers, memory) {
+  var fetch = latches.if_id;
+
+  var binary = fetch["binary"];
   var opcode = binary >>> 26;
 
   // All R (register) binarys start with 0s
@@ -44,6 +51,8 @@ function ID(latches, registers, memory, rs_val=undefined, rt_val=undefined) {
   var pc, pc_val, result;
   var instruction;
 
+  var rs_val, rt_val;
+
   if (opcode == 0x0) {
     rs = binary >>> 21 & 0x1f
     rt = binary >>> 16 & 0x1f
@@ -51,6 +60,7 @@ function ID(latches, registers, memory, rs_val=undefined, rt_val=undefined) {
     var shamt = binary >>> 6 & 0x1f
     var funct = binary & 0x3f
 
+    rs_val = fetch["rs_val"]
     if (rs_val === undefined) {
       rs_val = registers.read(rs);
     }
@@ -118,6 +128,9 @@ function ID(latches, registers, memory, rs_val=undefined, rt_val=undefined) {
     rt = (binary >>> 16) & 0x1F;
     var imm = SignExtend16(binary & 0xFFFF);
 
+    rs_val = fetch["rs_val"]
+    rt_val = fetch["rt_val"]
+
     if (rs_val === undefined) {
       rs_val = registers.read(rs);
     }
@@ -150,13 +163,18 @@ function ID(latches, registers, memory, rs_val=undefined, rt_val=undefined) {
   }
 
   latches.id_ex = instruction;
+
+  // used for forwarding in hazards
+  latches.id_ex["rs_val"] = undefined
+  latches.id_ex["rt_val"] = undefined
 }
 
-function EX(latches, registers, memory, rs_val=undefined, rt_val=undefined) {
+function EX(latches, registers, memory) {
   var instruction = latches.id_ex;
 
   // All R (register) instructions start with 0s
   var rs, rt, rd;
+  var rs_val, rt_val;
   var op_str = instruction["op_str"];
 
   var pc, pc_val, result;
@@ -176,6 +194,9 @@ function EX(latches, registers, memory, rs_val=undefined, rt_val=undefined) {
 
     location = "registers";
     position = rd;
+
+    rs_val = instruction["rs_val"]
+    rt_val = instruction["rt_val"]
 
     if (rs_val === undefined) {
       rs_val = registers.read(rs);
@@ -225,6 +246,8 @@ function EX(latches, registers, memory, rs_val=undefined, rt_val=undefined) {
     memory_address = ToUint32(registers.read(rs)) + ToUint32(imm);
     var byte_1, byte_2, byte_3, byte_4;
     var value;
+
+    rs_val = instruction["rs_val"]
 
     if (rs_val === undefined) {
       rs_val = registers.read(rs);
@@ -380,27 +403,30 @@ function WB(latches, registers, memory) {
 
 function binaryDependencies(binary) {
   var dependencies = {
-    "read": [],
-    "write": []
+    "read": new Map(),
+    "write": new Map()
   };
 
   var op_str;
+  var rs;
   if (binary != undefined) {
     var opcode = binary >>> 26;
     if (opcode == 0x0) {
       var funct = binary & 0x3f
       op_str = functMap[funct];
+      rs = binary >>> 21 & 0x1f
 
       if (op_str == 'jr') {
-        dependencies.read = [rs]
+        dependencies["read"][rs] = "rs_val"
       }
     } else {
       op_str = opcodeMap[opcode];
 
       if (op_str == 'beq') {
-        var rs = (binary >>> 21) & 0x1F;
-        var rt = (binary >>> 16) & 0x1F;
-        dependencies.read = [rs, rt]
+        rs = (binary >>> 21) & 0x1f;
+        var rt = (binary >>> 16) & 0x1f;
+        dependencies["read"][rs] = "rs_val"
+        dependencies["read"][rt] = "rt_val"
       }
     }
   }
@@ -409,8 +435,8 @@ function binaryDependencies(binary) {
 
 function instructionDependencies(instruction) {
   var dependencies = {
-    "read": [],
-    "write": []
+    "read": new Map(),
+    "write": new Map()
   };
 
   var r_ops = ['addu','subu','and','or','xor','sll','srl','sra'];
@@ -418,19 +444,24 @@ function instructionDependencies(instruction) {
 
   if (instruction != undefined) {
     if (r_ops.indexOf(instruction["op_str"]) != -1) {
-      dependencies.read = [instruction["rs"], instruction["rt"]]
-      dependencies.write = [instruction["rd"]]
+      Array.from()
+
+      dependencies["read"][instruction["rs"]] = "rs_val"
+      dependencies["read"][instruction["rt"]] = "rt_val"
+      dependencies["write"][instruction["rd"]] = "rd_val"
     }
 
     else if (i_ops.indexOf(instruction["op_str"]) != -1) {
-      dependencies.read = [instruction["rs"]]
-      dependencies.write = [instruction["rt"]]
+      dependencies["read"][instruction["rs"]] = "rs_val"
+      dependencies["write"][instruction["rt"]] = "rt_val"
     }
   }
   return dependencies;
 }
 
-function intersect(x, y) {
+function intersectKeys(xDeps, yDeps) {
+  var x = Array.from(xDeps.keys());
+  var y = Array.from(yDeps.keys());
   return x.filter(value => -1 !== y.indexOf(value));
 }
 
@@ -443,11 +474,11 @@ export function solution(latches, registers, memory) {
   var memDependencies = instructionDependencies(latches.ex_mem["instruction"]);
   var wbDependencies  = instructionDependencies(latches.mem_wb["instruction"]);
 
-  var idExDependencies  = intersect(idDependencies["read"], exDependencies["write"])
-  var idMemDependencies = intersect(idDependencies["read"], memDependencies["write"])
-  var idWbDependencies  = intersect(idDependencies["read"], wbDependencies["write"])
-  var exMemDependencies = intersect(exDependencies["read"], memDependencies["write"])
-  var exWbDependencies  = intersect(exDependencies["read"], wbDependencies["write"])
+  var idExDependencies  = intersectKeys(idDependencies["read"], exDependencies["write"])
+  var idMemDependencies = intersectKeys(idDependencies["read"], memDependencies["write"])
+  var idWbDependencies  = intersectKeys(idDependencies["read"], wbDependencies["write"])
+  var exMemDependencies = intersectKeys(exDependencies["read"], memDependencies["write"])
+  var exWbDependencies  = intersectKeys(exDependencies["read"], wbDependencies["write"])
 
   if (latches.mem_wb != undefined) {
     WB(latches, registers, memory);
@@ -460,9 +491,15 @@ export function solution(latches, registers, memory) {
   }
 
   /* ====== For ER commands, data hazards are checked in MEM stages ======== */
+  var dependency;
+  var dependencyLocation;
   if (exMemDependencies.length != 0) {
     if (EA.indexOf(latches.mem["instruction"]["op_str"])) {
       // if ER in EX and EA in MEM, we forward from MEM -> EX
+      dependency = exMemDependencies[0];
+      dependencyLocation = memDependencies["write"][dependency];
+      latches.id_ex[dependencyLocation] = dependency;
+
       EX(latches, registers, memory);
     } else {
       return; // if ER in EX and MA in MEM, we stall
@@ -471,6 +508,10 @@ export function solution(latches, registers, memory) {
 
   if (exWbDependencies.length != 0) {
     // if ER in EX and EA/MA in WB, we always forward from WB -> EX
+    dependency = exWbDependencies[0];
+    dependencyLocation = wbDependencies["write"][dependency];
+    latches.id_ex[dependencyLocation] = dependency;
+
     EX(latches, registers, memory);
   }
 
@@ -487,6 +528,10 @@ export function solution(latches, registers, memory) {
   if (idMemDependencies.length != 0) {
     if (EA.indexOf(latches.ex_mem["instruction"]["op_str"])) {
       // if DR in ID and EA in MEM, we forward from MEM -> ID
+      dependency = idMemDependencies[0];
+      dependencyLocation = memDependencies["write"][dependency];
+      latches.if_id[dependencyLocation] = dependency;
+
       ID(latches, registers, memory);
     } else {
       return; // if DR in ID and MA in MEM, we stall
@@ -495,6 +540,10 @@ export function solution(latches, registers, memory) {
 
   if (idWbDependencies.length != 0) {
     // if DR in ID and EA/MA in WB, we always forward from WB -> ID
+    dependency = idWbDependencies[0];
+    dependencyLocation = wbDependencies["write"][dependency];
+    latches.if_id[dependencyLocation] = dependency;
+
     ID(latches, registers, memory);
   }
 
