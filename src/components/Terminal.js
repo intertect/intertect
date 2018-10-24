@@ -844,7 +844,7 @@ class Terminal extends Component {
                   <div className="col-sm-6">
                     <Button outline
                       onClick={() => this.setState({ showRegisters : !this.state.showRegisters })} style={{width:"100%"}}>
-                      {this.state.showRegisters ? "Hide" : "Show" } CPU (Registers)
+                      {this.state.showRegisters ? "Hide" : "Show" } Registers
                     </Button>
 
                     <Collapse isOpen={this.state.showRegisters}>
