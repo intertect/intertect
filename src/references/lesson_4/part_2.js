@@ -469,16 +469,50 @@ export function solution(latches, registers, memory) {
   var EA = ["addu","subu","and","or","nor","xor","sll","srl","sra","addiu","andi","ori","xori"]
   var MA = ["j","jal","jr","beq","lb","lh","lw","lui","sb","sh","sw"];
 
-  var idDependencies  = binaryDependencies(latches.if_id);
-  var exDependencies  = instructionDependencies(latches.id_ex["instruction"]);
-  var memDependencies = instructionDependencies(latches.ex_mem["instruction"]);
-  var wbDependencies  = instructionDependencies(latches.mem_wb["instruction"]);
+  /* ====== Check for individual stage dependencies (for later use) ======== */
 
-  var idExDependencies  = intersectKeys(idDependencies["read"], exDependencies["write"])
-  var idMemDependencies = intersectKeys(idDependencies["read"], memDependencies["write"])
-  var idWbDependencies  = intersectKeys(idDependencies["read"], wbDependencies["write"])
-  var exMemDependencies = intersectKeys(exDependencies["read"], memDependencies["write"])
-  var exWbDependencies  = intersectKeys(exDependencies["read"], wbDependencies["write"])
+  var idDependencies, exDependencies, memDependencies, wbDependencies;
+  if (latches.if_id != undefined) {
+    idDependencies  = binaryDependencies(latches.if_id);
+  }
+
+  if (latches.id_ex != undefined) {
+    exDependencies  = instructionDependencies(latches.id_ex["instruction"]);
+  }
+
+  if (latches.ex_mem != undefined) {
+    memDependencies = instructionDependencies(latches.ex_mem["instruction"]);
+  }
+
+  if (latches.mem_wb != undefined) {
+    wbDependencies  = instructionDependencies(latches.mem_wb["instruction"]);
+  }
+
+  /* ====== Find overlaps between stages for data dependencies ======== */
+  var idExDependencies  = [];
+  var idMemDependencies = [];
+  var idWbDependencies  = [];
+  var exMemDependencies = [];
+  var exWbDependencies  = [];
+  if (idDependencies != undefined && exDependencies != undefined) {
+    idExDependencies = intersectKeys(idDependencies["read"], exDependencies["write"])
+  }
+
+  if (idDependencies != undefined && memDependencies != undefined) {
+    idMemDependencies = intersectKeys(idDependencies["read"], memDependencies["write"])
+  }
+
+  if (idDependencies != undefined && wbDependencies != undefined) {
+    idWbDependencies = intersectKeys(idDependencies["read"], wbDependencies["write"])
+  }
+
+  if (exDependencies != undefined && memDependencies != undefined) {
+    exMemDependencies = intersectKeys(exDependencies["read"], memDependencies["write"])
+  }
+
+  if (exDependencies != undefined && wbDependencies != undefined) {
+    exWbDependencies = intersectKeys(exDependencies["read"], wbDependencies["write"])
+  }
 
   if (latches.mem_wb != undefined) {
     WB(latches, registers, memory);
