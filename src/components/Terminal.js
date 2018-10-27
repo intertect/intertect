@@ -35,15 +35,13 @@ import {lessonParts, lessonContent, lessonRegisterInits, lessonAssembly,
 
 import MemoryTable from './MemoryTable.js'
 import RegistersTable from './RegistersTable.js'
+import LandingPage from './LandingPage.js'
 
 import '../styles/intro.css';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
 import 'font-awesome/css/font-awesome.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'mdbreact/dist/css/mdb.css';
-
-import yash from '../images/yash.png';
-import peter from '../images/peter.png';
 
 Array.range = (start, end) => Array.from({length: (end - start)}, (v, k) => k + start);
 
@@ -115,11 +113,11 @@ class Terminal extends Component {
     this.onChange = this.onChange.bind(this);
     this.loadLesson = this.loadLesson.bind(this);
     this.saveProgram = this.saveProgram.bind(this);
-    this.copyRegisters = this.copyRegisters.bind(this);
     this.toggleCompletedLevels = this.toggleCompletedLevels.bind(this);
     this.toggleShowAbout = this.toggleShowAbout.bind(this);
     this.userProgramExists = this.userProgramExists.bind(this);
     this.appendUserProgram = this.appendUserProgram.bind(this);
+    this.selectHandler = this.selectHandler.bind(this);
   }
 
   onChange(newValue) {
@@ -191,6 +189,10 @@ class Terminal extends Component {
     }
   }
 
+  selectHandler(lesson) {
+    this.loadLesson(lesson, 1, true);
+    this.setState({isIntroPaneOpen : true})
+  }
 
   loadLesson(lesson, lessonPartNum, resetCode) {
     if (lessonPartNum > lessonParts[lesson]) {
@@ -291,15 +293,6 @@ class Terminal extends Component {
 
       loadedLesson : true,
     })
-  }
-
-  copyRegisters(srcRegisters) {
-    var newRegisters = new Registers();
-    newRegisters.registers_ = srcRegisters.registers_;
-    newRegisters.usedRegisters = srcRegisters.usedRegisters;
-    newRegisters.lastOperation = srcRegisters.lastOperation;
-    newRegisters.lastUsedRegister = srcRegisters.lastUsedRegister;
-    return newRegisters;
   }
 
   pcToLineNumber(programCounter) {
@@ -534,27 +527,8 @@ class Terminal extends Component {
     }
 
     var completedLessons = [];
-    var lessonMenuButtons = [];
-
     var lessons = Array.range(1, 5)
-    var lessonTitles = [
-      "MIPS Assembly",
-      "MIPS Binary",
-      "Pipelining",
-      "Parallel Pipelining",
-    ]
     lessons.map((lesson) => {
-      lessonMenuButtons.push(
-        <Button outline onClick={() => {
-            this.loadLesson(lesson, 1, true);
-            this.setState({isIntroPaneOpen : true})
-          }}
-          className={(lesson <= this.state.completedLessons + 1) ? "enabled" : "disabled"}
-          style={{width:"75%"}}>
-
-          Lesson {lesson}: {lessonTitles[lesson-1]}
-        </Button>)
-
       var numPartsForLesson = lesson <= this.state.completedLessons ? lessonParts[this.state.completedLessons] : this.state.completedParts;
       var parts = Array.range(1, numPartsForLesson + 1)
       if (lesson <= this.state.completedLessons + 1) {
@@ -883,83 +857,7 @@ class Terminal extends Component {
 
       :
 
-      <div>
-        <Modal isOpen={this.state.showAbout} toggle={() => this.toggleShowAbout()} centered>
-          <ModalHeader>About Us</ModalHeader>
-          <ModalBody>
-            <div className="row">
-              <div className="col-sm-12">
-                Hey there! We{"'"}re really excited for you to learn more about computer architecture with
-                Intertect! We don{"'"}t want to take too much time that you could spend on the main platform,
-                but here{"'"}s a quick bio of the two of us if you were interested! We{"'"}re recent graduates of
-                Princeton (where we met) and even though we have pretty varied interests in CS, there{"'"}s plenty
-                of projects that lie in that intersection that really excite us!
-
-                <Table borderless style={{tableLayout: "fixed"}}>
-                  <TableBody>
-                    <tr>
-                      <td><img src={yash}  className="img-fluid" style={{ borderRadius: "50%" }} /></td>
-                      <td><img src={peter} className="img-fluid" style={{ borderRadius: "50%" }} /></td>
-                    </tr>
-
-                    <tr>
-                      <td>
-                        Yash is currently a developer at Oculus VR (Facebook), who{"'"}s extremely interested in computer vision,
-                        machine learning, and VR. For more info, visit:
-                        <a href="http://www.ypatel.io/" target="_blank" rel="noopener noreferrer">ypatel.io</a>
-                      </td>
-
-                      <td>
-                        Peter is currently a developer at Google Cloud. He{"'"}s really passionate about computer architecture,
-                        networks, and systems programming.
-                      </td>
-                    </tr>
-                  </TableBody>
-                </Table>
-              </div>
-              <br />
-            </div>
-          </ModalBody>
-          <ModalFooter>
-            <div className="row">
-              <div className="col-sm-12">
-                <Button outline onClick={() => this.toggleShowAbout()} style={{width:"100%"}}>
-                  Close
-                </Button>
-              </div>
-            </div>
-          </ModalFooter>
-        </Modal>
-
-        <div className="row">
-          <div className="col-sm-6" style={{position: "absolute", top:"25%", left:"25%"}}>
-            <Card style={{ marginTop: '1rem'}} className="text-center">
-              <CardHeader color="default-color">
-                <CardTitle componentclassName="h1">Intertect</CardTitle>
-              </CardHeader>
-              <CardBody>
-                <FadeIn>
-                  <div className="text-left">
-                    Welcome to Intertect, where you{"'"}ll be learning about computer architecture here! As computer science marches
-                    ahead into higher and higher levels of abstraction, understanding the computer has become more of an
-                    afterthought. We hope you{"'"}ll have a much better understanding of the computer and what{"'"}s going on
-                    under the hood after going through our platform!
-                  </div>
-
-                  <hr />
-                  {lessonMenuButtons}
-                  <hr />
-
-                  <Button outline
-                    onClick={() => this.setState({ showAbout : true })} style={{width:"100%"}}>
-                    Meet the Creators
-                  </Button>
-                </FadeIn>
-              </CardBody>
-            </Card>
-          </div>
-        </div>
-      </div>
+      <LandingPage completedLessons={this.state.completedLessons} selectHandler={this.selectHandler} />
     );
   }
 }
