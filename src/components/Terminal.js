@@ -16,6 +16,7 @@ import FadeIn from 'react-fade-in';
 import ReactMarkdown from 'react-markdown';
 import AceEditor from 'react-ace';
 import SlidingPane from 'react-sliding-pane';
+import YouTube from 'react-youtube';
 
 import 'brace/mode/javascript';
 import 'brace/theme/chrome';
@@ -605,6 +606,12 @@ class Terminal extends Component {
               this.setState({ isIntroPaneOpen: false });
             }}>
 
+          <YouTube videoId="FAUnDDTz30k" opts={{
+            width: "100%",
+            playerVars: {
+              autoplay: 1
+            }
+          }}/>
           <ReactMarkdown source={this.state.lessonContent} escapeHtml={false} />
         </SlidingPane>
 
