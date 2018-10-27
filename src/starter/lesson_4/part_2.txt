@@ -39,6 +39,12 @@ function IF(latches, registers, memory) {
 }
 
 function ID(latches, registers, memory) {
+  // happens in cases where the instruction was executed in ID stage
+  if (latches.if_id === undefined) {
+    latches.id_ex = undefined;
+    return;
+  }
+
   var fetch = latches.if_id;
 
   var binary = fetch["binary"];
@@ -150,6 +156,9 @@ function ID(latches, registers, memory) {
           result = ToUint32(registers.read(pc) + target + 4);
           registers.write(position, result)
         }
+
+        latches.id_ex = undefined;
+
         break;
       default:
         instruction = {
@@ -158,18 +167,24 @@ function ID(latches, registers, memory) {
           "rt" : rt,
           "imm" : imm
         }
+
+        latches.id_ex = instruction;
+
+        // used for forwarding in hazards
+        latches.id_ex["rs_val"] = undefined
+        latches.id_ex["rt_val"] = undefined
         break;
     }
   }
-
-  latches.id_ex = instruction;
-
-  // used for forwarding in hazards
-  latches.id_ex["rs_val"] = undefined
-  latches.id_ex["rt_val"] = undefined
 }
 
 function EX(latches, registers, memory) {
+  // happens in cases where the instruction was executed in ID stage
+  if (latches.id_ex === undefined) {
+    latches.ex_mem = undefined;
+    return;
+  }
+
   var instruction = latches.id_ex;
 
   // All R (register) instructions start with 0s
@@ -289,6 +304,11 @@ function EX(latches, registers, memory) {
 }
 
 function MEM(latches, registers, memory) {
+  if (latches.ex_mem === undefined) {
+    latches.mem_wb = undefined;
+    return;
+  }
+
   var instruction = latches.ex_mem["instruction"];
   var memory_address = latches.ex_mem["memory_address"];
 
@@ -396,6 +416,10 @@ function MEM(latches, registers, memory) {
 }
 
 function WB(latches, registers, memory) {
+  if (latches.mem_wb === undefined) {
+    return;
+  }
+
   if (latches.mem_wb["location"] == "registers") {
     registers.write(latches.mem_wb["position"], latches.mem_wb["result"])
   }
@@ -444,8 +468,6 @@ function instructionDependencies(instruction) {
 
   if (instruction != undefined) {
     if (r_ops.indexOf(instruction["op_str"]) != -1) {
-      Array.from()
-
       dependencies["read"][instruction["rs"]] = "rs_val"
       dependencies["read"][instruction["rt"]] = "rt_val"
       dependencies["write"][instruction["rd"]] = "rd_val"
@@ -473,11 +495,11 @@ function processMIPS(latches, registers, memory) {
 
   var idDependencies, exDependencies, memDependencies, wbDependencies;
   if (latches.if_id != undefined) {
-    idDependencies  = binaryDependencies(latches.if_id);
+    idDependencies = binaryDependencies(latches.if_id);
   }
 
   if (latches.id_ex != undefined) {
-    exDependencies  = instructionDependencies(latches.id_ex["instruction"]);
+    exDependencies = instructionDependencies(latches.id_ex["instruction"]);
   }
 
   if (latches.ex_mem != undefined) {
@@ -514,15 +536,11 @@ function processMIPS(latches, registers, memory) {
     exWbDependencies = intersectKeys(exDependencies["read"], wbDependencies["write"])
   }
 
-  if (latches.mem_wb != undefined) {
-    WB(latches, registers, memory);
-    latches.mem_wb = undefined;
-  }
+  WB(latches, registers, memory);
+  latches.mem_wb = undefined;
 
-  if (latches.ex_mem != undefined) {
-    MEM(latches, registers, memory);
-    latches.ex_mem = undefined;
-  }
+  MEM(latches, registers, memory);
+  latches.ex_mem = undefined;
 
   /* ====== For ER commands, data hazards are checked in MEM stages ======== */
   var dependency;
@@ -549,7 +567,7 @@ function processMIPS(latches, registers, memory) {
     EX(latches, registers, memory);
   }
 
-  if (latches.id_ex != undefined)  {
+  if (exMemDependencies.length == 0 && exWbDependencies.length == 0)  {
     EX(latches, registers, memory);
     latches.id_ex = undefined;
   }
@@ -581,7 +599,8 @@ function processMIPS(latches, registers, memory) {
     ID(latches, registers, memory);
   }
 
-  if (latches.if_id != undefined)  {
+  if (idExDependencies.length == 0 && idMemDependencies.length == 0 &&
+    idWbDependencies.length == 0)  {
     ID(latches, registers, memory);
     latches.if_id = undefined;
   }

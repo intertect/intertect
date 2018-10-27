@@ -80,7 +80,7 @@ class Terminal extends Component {
       loadedLesson: false,
 
       completedLessons: parseInt(localStorage.getItem('completedLessons')) || 3,
-      completedParts: parseInt(localStorage.getItem('completedParts')) || 0,
+      completedParts: parseInt(localStorage.getItem('completedParts')) || 2,
 
       lessonComplete: false,
       lessonCorrect: true,
