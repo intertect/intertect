@@ -157,8 +157,7 @@ function ID(latches, registers, memory) {
           registers.write(position, result)
         }
 
-        latches.id_ex = undefined;
-
+        instruction = undefined;
         break;
       default:
         instruction = {
@@ -167,14 +166,16 @@ function ID(latches, registers, memory) {
           "rt" : rt,
           "imm" : imm
         }
-
-        latches.id_ex = instruction;
-
-        // used for forwarding in hazards
-        latches.id_ex["rs_val"] = undefined
-        latches.id_ex["rt_val"] = undefined
         break;
     }
+  }
+
+  latches.id_ex = instruction;
+
+  // used for forwarding in hazards
+  if (instruction !== undefined) {
+    latches.id_ex["rs_val"] = undefined
+    latches.id_ex["rt_val"] = undefined
   }
 }
 
