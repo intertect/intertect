@@ -31,8 +31,6 @@ class Terminal extends Component {
   }
 
   render() {
-    console.log(this.props.completedLessons)
-
     var completedLessons = [];
     var lessons = Array.range(1, 5)
     lessons.map((lesson) => {

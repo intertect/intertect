@@ -11,9 +11,8 @@ import AceEditor from 'react-ace';
 import SlidingPane from 'react-sliding-pane';
 import YouTube from 'react-youtube';
 
-import MemoryTable from './MemoryTable.js'
-import RegistersTable from './RegistersTable.js'
 import Implement from './Implement.js'
+import Debugging from './Debugging.js'
 import PreviousLessons from './PreviousLessons.js'
 
 import {Memory, Registers, Latches, nameToRegisterMap} from '../utils/util.js';
@@ -98,7 +97,6 @@ class LessonPage extends Component {
       showMemory: (this.props.lesson != 1 || this.props.lessonPart > 5),
       showRegisters: true,
       unviewedStepExplanation: true,
-      unviewedMemoryExplanation: true,
 
       programRunning: false
     }
@@ -492,23 +490,6 @@ class LessonPage extends Component {
       stepExplanation = <div></div>;
     }
 
-    var memoryExplanation;
-    if (this.state.unviewedMemoryExplanation) {
-      memoryExplanation =
-        <Popover placement="right" component="a" popoverBody={pulsatingInterest}>
-          <PopoverHeader></PopoverHeader>
-          <PopoverBody>This is debug corner! You{"'"}ll see all the values of registers and memory in this
-          area, which you can use for debugging what{"'"}s is going on when you run your program.
-            <Button outline style={{width:"100%"}}
-              onClick={() => this.setState({ unviewedMemoryExplanation : false })}>
-              <i className="fa fa-stop" aria-hidden="true"></i> Close Help
-            </Button>
-          </PopoverBody>
-        </Popover>
-    } else {
-      memoryExplanation = <div></div>
-    }
-
     var currentInstruction;
     this.state.lesson > 1 ?
       currentInstruction = <Button outline style={{width:"100%"}}>
@@ -696,43 +677,12 @@ class LessonPage extends Component {
               </CardBody>
             </Card>
 
-            <Card style={{ marginTop: '1rem', width:"100%"}}>
-              <CardHeader color="default-color" className="text-center">
-                {memoryExplanation}
-                <CardTitle componentclassName="h4">
-                  Debugging
-                </CardTitle>
-              </CardHeader>
-              <CardBody>
-                <div className="row">
-                  <div className="col-sm-6">
-                    <Button outline
-                      onClick={() => this.setState({ showRegisters : !this.state.showRegisters })} style={{width:"100%"}}>
-                      {this.state.showRegisters ? "Hide" : "Show" } Registers
-                    </Button>
-
-                    <Collapse isOpen={this.state.showRegisters}>
-                      <RegistersTable
-                        studentRegisters={this.state.studentRegisters}
-                        referenceRegisters={this.state.referenceRegisters}
-                      />
-                    </Collapse>
-                  </div>
-
-                  <div className="col-sm-6">
-                    <Button outline
-                      onClick={() => this.setState({ showMemory : !this.state.showMemory })} style={{width:"100%"}}>
-                      {this.state.showMemory ? "Hide" : "Show"} Memory
-                    </Button>
-                    <Collapse isOpen={this.state.showMemory}>
-                      <MemoryTable
-                        memory={this.state.studentMemory}
-                      />
-                    </Collapse>
-                  </div>
-                </div>
-              </CardBody>
-            </Card>
+            <Debugging
+              showRegisters={this.state.showRegisters}
+              studentRegisters={this.state.studentRegisters}
+              referenceRegisters={this.state.referenceRegisters}
+              showMemory={this.state.showMemory}
+              studentMemory={this.state.studentMemory} />
           </div>
         </div>
       </div>
