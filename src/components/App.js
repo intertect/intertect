@@ -50,6 +50,7 @@ class Terminal extends Component {
       this.state.loadedLesson ?
 
       <LessonPage
+        completedLessons={this.state.completedLessons}
         lesson={this.state.lesson}
         lessonPartNum={this.state.lessonPart} />
       :

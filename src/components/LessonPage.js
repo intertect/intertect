@@ -14,6 +14,7 @@ import YouTube from 'react-youtube';
 import MemoryTable from './MemoryTable.js'
 import RegistersTable from './RegistersTable.js'
 import Implement from './Implement.js'
+import PreviousLessons from './PreviousLessons.js'
 
 import {Memory, Registers, Latches, nameToRegisterMap} from '../utils/util.js';
 import {lessonParts, lessonContent, lessonRegisterInits, lessonAssembly,
@@ -106,6 +107,8 @@ class LessonPage extends Component {
     this.saveProgram = this.saveProgram.bind(this);
     this.toggleCompletedLevels = this.toggleCompletedLevels.bind(this);
     this.toggleShowAbout = this.toggleShowAbout.bind(this);
+    this.toggleShowPreviousLessons = this.toggleShowPreviousLessons.bind(this);
+    this.toggleIntroPanel = this.toggleIntroPanel.bind(this);
     this.userProgramExists = this.userProgramExists.bind(this);
     this.appendUserProgram = this.appendUserProgram.bind(this);
     this.loadLesson = this.loadLesson.bind(this)
@@ -154,6 +157,18 @@ class LessonPage extends Component {
   toggleShowAbout() {
     this.setState({
       showAbout: false
+    });
+  }
+
+  toggleShowPreviousLessons() {
+    this.setState({
+      revealCompletedLevels: !this.state.revealCompletedLevels
+    });
+  }
+
+  toggleIntroPanel() {
+    this.setState({
+      isIntroPaneOpen: !this.state.isIntroPaneOpen
     });
   }
 
@@ -494,40 +509,6 @@ class LessonPage extends Component {
       memoryExplanation = <div></div>
     }
 
-    var completedLessons = [];
-    var lessons = Array.range(1, 5)
-    lessons.map((lesson) => {
-      var numPartsForLesson = lesson <= this.state.completedLessons ? lessonParts[this.state.completedLessons] : this.state.completedParts;
-      var parts = Array.range(1, numPartsForLesson + 1)
-      if (lesson <= this.state.completedLessons + 1) {
-        completedLessons.push(<ListGroupItem active>Lesson {lesson}</ListGroupItem>);
-        parts.map((part) => {
-          if (part > lessonParts[lesson]) {
-            return;
-          }
-          completedLessons.push(
-            <ListGroupItem>
-              <div className="row align-middle">
-                <div className="col-sm-3">Part {part}</div>
-                <div className="col-sm-9">
-                  <Button outline onClick={() => {
-                      this.setState({
-                        isIntroPaneOpen: true,
-                        revealCompletedLevels: false
-                      });
-
-                    this.loadLesson(lesson, part, true);
-                    }} style={{width:"100%"}}>
-                    Redo
-                  </Button>
-                </div>
-              </div>
-            </ListGroupItem>)
-          });
-        }
-      }
-    )
-
     var currentInstruction;
     this.state.lesson > 1 ?
       currentInstruction = <Button outline style={{width:"100%"}}>
@@ -579,21 +560,15 @@ class LessonPage extends Component {
           </Collapse>
         </Navbar>
 
-        <Modal isOpen={this.state.revealCompletedLevels} toggle={() => this.toggleCompletedLevels()} centered>
-          <ModalHeader>Completed Levels</ModalHeader>
-          <ModalBody>
-            <ListGroup> {completedLessons} </ListGroup>
-          </ModalBody>
-          <ModalFooter>
-            <div className="row">
-              <div className="col-sm-12">
-                <Button outline onClick={() => this.setState({revealCompletedLevels : false})} style={{width:"100%"}}>
-                  Close
-                </Button>
-              </div>
-            </div>
-          </ModalFooter>
-        </Modal>
+        <PreviousLessons
+          completedLessons={this.state.completedLessons}
+          completedParts={this.state.completedParts}
+          revealCompletedLevels={this.state.revealCompletedLevels}
+
+          loadLesson={this.loadLesson}
+          toggleCompletedLevels={this.toggleCompletedLevels}
+          toggleShowPreviousLessons={this.toggleShowPreviousLessons}
+          toggleIntroPanel={this.toggleIntroPanel} />
 
         <Modal isOpen={this.state.lessonCorrect && this.state.lessonComplete}
           frame position="bottom">
