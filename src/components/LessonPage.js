@@ -1,22 +1,23 @@
-/**
-* Copyright (c) 2018--present, Yash Patel and Peter DeLong
-* All rights reserved.
-*/
-
-/* eslint-disable import/no-named-as-default */
-
 import React, {Component} from 'react';
 import { Button, Card, CardBody, CardTitle, CardHeader,
   Dropdown, DropdownToggle, DropdownMenu, DropdownItem,
   Popover, PopoverHeader, PopoverBody,
   Modal, ModalHeader, ModalBody, ModalFooter, ListGroup, ListGroupItem,
-  Navbar, NavItem, NavbarNav, NavbarBrand, Collapse, Table, TableBody } from 'mdbreact';
+  Navbar, NavItem, NavbarNav, NavbarBrand, Collapse } from 'mdbreact';
+import PropTypes from 'prop-types';
 
-import FadeIn from 'react-fade-in';
 import ReactMarkdown from 'react-markdown';
 import AceEditor from 'react-ace';
 import SlidingPane from 'react-sliding-pane';
 import YouTube from 'react-youtube';
+
+import MemoryTable from './MemoryTable.js'
+import RegistersTable from './RegistersTable.js'
+
+import {Memory, Registers, Latches, nameToRegisterMap} from '../utils/util.js';
+import {lessonParts, lessonContent, lessonRegisterInits, lessonAssembly,
+  lessonStarterCode, lessonReferenceSolutions, lessonBinaryCode,
+  lessonPipelineStudent} from '../utils/lessonItems.js';
 
 import 'brace/mode/javascript';
 import 'brace/theme/chrome';
@@ -28,40 +29,39 @@ import 'brace/theme/solarized_dark';
 import 'brace/theme/solarized_light';
 import 'brace/theme/twilight';
 
-import {Memory, Registers, Latches, nameToRegisterMap} from '../utils/util.js';
-import {lessonParts, lessonContent, lessonRegisterInits, lessonAssembly,
-  lessonStarterCode, lessonReferenceSolutions, lessonBinaryCode,
-  lessonPipelineStudent} from '../utils/lessonItems.js';
-
-import MemoryTable from './MemoryTable.js'
-import RegistersTable from './RegistersTable.js'
-import LandingPage from './LandingPage.js'
-
 import '../styles/intro.css';
-import 'react-sliding-pane/dist/react-sliding-pane.css';
-import 'font-awesome/css/font-awesome.min.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'mdbreact/dist/css/mdb.css';
-
-Array.range = (start, end) => Array.from({length: (end - start)}, (v, k) => k + start);
 
 function ToUint32(x) {
   return x >>> 0;
 }
 
-class Terminal extends Component {
+class LessonPage extends Component {
   constructor(props) {
     super(props);
 
-    // Validate localStorage
-    localStorage.clear()
-    if (localStorage.getItem('completedLessons') > 4) {
-      localStorage.setItem('completedLessons', 4);
+    if (localStorage.getItem('completedParts') > lessonParts[this.props.completedLessons]) {
+      localStorage.setItem('completedParts', lessonParts[this.props.completedLessons]);
     }
+    var completedParts = localStorage.getItem('completedParts');
 
-    var completedLessons = localStorage.getItem('completedLessons');
-    if (localStorage.getItem('completedParts') > lessonParts[completedLessons]) {
-      localStorage.setItem('completedParts', lessonParts[completedLessons]);
+    var lessonPart = `lesson_${this.props.lesson}/part_${this.props.lessonPartNum}`;
+    var letters = Object.values(lessonContent[lessonPart]);
+
+    var studentRegisters = new Registers();
+    var referenceRegisters = new Registers();
+
+    studentRegisters.load(lessonRegisterInits[lessonPart]);
+    referenceRegisters.load(lessonRegisterInits[lessonPart]);
+
+    var studentMemory = new Memory();
+    var referenceMemory = new Memory();
+
+    // we want to load the binary program into memory after lesson 3
+    if (this.props.lesson > 2) {
+      for (var i = 0; i < lessonBinaryCode[lessonPart].length; i++) {
+        studentMemory.write(i, lessonBinaryCode[lessonPart][i]);
+        referenceMemory.write(i, lessonBinaryCode[lessonPart][i]);
+      }
     }
 
     this.state = {
@@ -73,13 +73,11 @@ class Terminal extends Component {
       programCounter: 0,
       running: false,
 
-      lesson: null,
-      lessonPart: null,
-      lessonContent: "",
-      loadedLesson: false,
+      lesson: this.props.lesson,
+      lessonPart: this.props.lessonPartNum,
 
-      completedLessons: parseInt(localStorage.getItem('completedLessons')) || 3,
-      completedParts: parseInt(localStorage.getItem('completedParts')) || 2,
+      completedLessons: this.props.completedLessons,
+      completedParts: completedParts || 2,
 
       lessonComplete: false,
       lessonCorrect: true,
@@ -87,19 +85,26 @@ class Terminal extends Component {
       // program the student starts this particular lesson with
       starterProgram: JSON.parse(localStorage.getItem('starterProgram')) || {},
 
-      studentProgram: "",
-      assemblyProgram: [],
-      binaryProgram: [],
-      memory: new Memory(),
-      studentPipeline: [],
-      referencePipeline: [],
+      studentProgram: lessonStarterCode[lessonPart],
+      lessonContent : letters[letters.length - 1],
+      assemblyProgram : lessonAssembly[lessonPart].split("\n"),
+      binaryProgram : lessonBinaryCode[lessonPart],
+
+      studentRegisters : studentRegisters,
+      referenceRegisters : referenceRegisters,
 
       studentLatches: new Latches(),
       referenceLatches: new Latches(),
 
-      showRegisters: true,
-      showMemory: false,
+      studentMemory : studentMemory,
+      referenceMemory : referenceMemory,
 
+      studentPipeline: [],
+      referencePipeline: [],
+
+      // memory becomes relevant after lesson 1.5
+      showMemory: (this.props.lesson != 1 || this.props.lessonPart > 5),
+      showRegisters: true,
       unviewedStepExplanation: true,
       unviewedImplementExplanation: true,
       unviewedMemoryExplanation: true,
@@ -107,17 +112,16 @@ class Terminal extends Component {
 
       theme: "solarized_dark",
 
-      programRunning: false,
-    };
+      programRunning: false
+    }
 
     this.onChange = this.onChange.bind(this);
-    this.loadLesson = this.loadLesson.bind(this);
     this.saveProgram = this.saveProgram.bind(this);
     this.toggleCompletedLevels = this.toggleCompletedLevels.bind(this);
     this.toggleShowAbout = this.toggleShowAbout.bind(this);
     this.userProgramExists = this.userProgramExists.bind(this);
     this.appendUserProgram = this.appendUserProgram.bind(this);
-    this.selectHandler = this.selectHandler.bind(this);
+    this.loadLesson = this.loadLesson.bind(this)
   }
 
   onChange(newValue) {
@@ -187,11 +191,6 @@ class Terminal extends Component {
       script.text = this.state.studentProgram;
       document.body.appendChild(script);
     }
-  }
-
-  selectHandler(lesson) {
-    this.loadLesson(lesson, 1, true);
-    this.setState({isIntroPaneOpen : true})
   }
 
   loadLesson(lesson, lessonPartNum, resetCode) {
@@ -266,7 +265,6 @@ class Terminal extends Component {
     }
 
     var letters = Object.values(lessonContent[lessonPart]);
-
     this.setState({
       lessonComplete: false,
       lessonCorrect: true,
@@ -570,8 +568,7 @@ class Terminal extends Component {
       </Button>
       : currentInstruction = <div></div>
 
-    return (this.state.loadedLesson ?
-
+    return (
       <div>
         <SlidingPane
             isOpen={ this.state.isIntroPaneOpen }
@@ -696,7 +693,6 @@ class Terminal extends Component {
                   Close
                 </Button>
               </div>
-
               <div className="col-sm-6">
                 <Button outline color="danger" style={{width:"100%"}}
                   onClick={() => {
@@ -841,7 +837,6 @@ class Terminal extends Component {
                       onClick={() => this.setState({ showMemory : !this.state.showMemory })} style={{width:"100%"}}>
                       {this.state.showMemory ? "Hide" : "Show"} Memory
                     </Button>
-
                     <Collapse isOpen={this.state.showMemory}>
                       <MemoryTable
                         memory={this.state.studentMemory}
@@ -854,12 +849,8 @@ class Terminal extends Component {
           </div>
         </div>
       </div>
-
-      :
-
-      <LandingPage completedLessons={this.state.completedLessons} selectHandler={this.selectHandler} />
-    );
+    )
   }
 }
 
-export default Terminal;
+export default LessonPage;

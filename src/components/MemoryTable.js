@@ -15,6 +15,8 @@ class MemoryTable extends Component {
 
   render() {
     var memoryTable = [];
+    if (this.props.memory == undefined) return null;
+
     var memory = Object.keys(this.props.memory.memory_);
     for (var i = 0; i < memory.length; i++) {
       var memoryAddr = memory[i];

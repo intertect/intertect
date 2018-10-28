@@ -18,6 +18,8 @@ class RegistersTable extends Component {
   }
 
   render() {
+    if (this.props.studentRegisters == undefined) return null;
+
     var registerTable = [];
     var register;
     for (var i = 0; i < this.props.studentRegisters.usedRegisters.length; i++) {

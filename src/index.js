@@ -8,7 +8,7 @@
 
 import React from 'react';
 import { render } from 'react-dom';
-import Terminal from './components/Terminal';
+import App from './components/App';
 
 require('./favicon.ico');
-render(<Terminal />, document.getElementById("terminal"));
+render(<App />, document.getElementById("app"));

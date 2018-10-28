@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
-import { Button, Card, CardHeader, CardTitle, CardBody, Table  } from 'mdbreact';
+import { Button, Card, CardHeader, CardTitle, CardBody  } from 'mdbreact';
 import FadeIn from 'react-fade-in';
+import PropTypes from 'prop-types';
 
 import '../styles/intro.css';
+
+Array.range = (start, end) => Array.from({length: (end - start)}, (v, k) => k + start);
 
 class LandingPage extends Component {
   constructor(props) {
     super(props);
-    this.props = {
-    }
   }
 
   render() {
@@ -64,6 +65,11 @@ class LandingPage extends Component {
       </div>
     );
   }
+}
+
+LandingPage.propTypes = {
+  completedLessons: PropTypes.number,
+  selectHandler: PropTypes.func
 }
 
 export default LandingPage;
