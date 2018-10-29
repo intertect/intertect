@@ -9,9 +9,7 @@ import React, {Component} from 'react';
 
 import { Button, Card, CardBody, CardTitle, CardHeader,
   Dropdown, DropdownToggle, DropdownMenu, DropdownItem,
-  Popover, PopoverHeader, PopoverBody,
-  Modal, ModalHeader, ModalBody, ModalFooter, ListGroup, ListGroupItem,
-  Navbar, NavItem, NavbarNav, NavbarBrand, Collapse } from 'mdbreact';
+  Popover, PopoverHeader, PopoverBody } from 'mdbreact';
 import PropTypes from 'prop-types';
 
 import AceEditor from 'react-ace';
@@ -130,6 +128,12 @@ class Implement extends Component {
       </div>
     );
   }
+}
+
+Implement.propTypes = {
+  theme: PropTypes.string,
+  studentProgram: PropTypes.string,
+  onChange: PropTypes.func
 }
 
 export default Implement;

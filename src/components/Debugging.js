@@ -7,13 +7,13 @@
 
 import React, {Component} from 'react';
 import { Button, Card, CardBody, CardTitle, CardHeader,
-  Dropdown, DropdownToggle, DropdownMenu, DropdownItem,
-  Popover, PopoverHeader, PopoverBody,
-  Modal, ModalHeader, ModalBody, ModalFooter, ListGroup, ListGroupItem,
-  Navbar, NavItem, NavbarNav, NavbarBrand, Collapse } from 'mdbreact';
+  Popover, PopoverHeader, PopoverBody, Collapse } from 'mdbreact';
+import PropTypes from 'prop-types';
 
 import MemoryTable from './MemoryTable.js'
 import RegistersTable from './RegistersTable.js'
+
+import {Memory, Registers} from '../utils/util.js';
 
 import '../styles/intro.css';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
@@ -98,6 +98,14 @@ class Debugging extends Component {
       </Card>
     );
   }
+}
+
+Debugging.propTypes = {
+  showRegisters: PropTypes.bool,
+  showMemory: PropTypes.bool,
+  studentRegisters: PropTypes.instanceOf(Registers),
+  referenceRegisters: PropTypes.instanceOf(Registers),
+  studentMemory: PropTypes.instanceOf(Memory)
 }
 
 export default Debugging;

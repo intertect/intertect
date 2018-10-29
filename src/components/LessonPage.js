@@ -1,13 +1,11 @@
 import React, {Component} from 'react';
 import { Button, Card, CardBody, CardTitle, CardHeader,
-  Dropdown, DropdownToggle, DropdownMenu, DropdownItem,
   Popover, PopoverHeader, PopoverBody,
-  Modal, ModalHeader, ModalBody, ModalFooter, ListGroup, ListGroupItem,
+  Modal, ModalHeader, ModalBody, ModalFooter,
   Navbar, NavItem, NavbarNav, NavbarBrand, Collapse } from 'mdbreact';
 import PropTypes from 'prop-types';
 
 import ReactMarkdown from 'react-markdown';
-import AceEditor from 'react-ace';
 import SlidingPane from 'react-sliding-pane';
 import YouTube from 'react-youtube';
 
@@ -94,7 +92,7 @@ class LessonPage extends Component {
       referencePipeline: [],
 
       // memory becomes relevant after lesson 1.5
-      showMemory: (this.props.lesson != 1 || this.props.lessonPart > 5),
+      showMemory: (this.props.lesson != 1 || this.props.lessonPartNum > 5),
       showRegisters: true,
       unviewedStepExplanation: true,
 
@@ -683,6 +681,13 @@ class LessonPage extends Component {
       </div>
     )
   }
+}
+
+LessonPage.propTypes = {
+  completedLessons: PropTypes.number,
+  lesson: PropTypes.number,
+  lessonPartNum: PropTypes.number,
+  toggleLoadedLesson: PropTypes.func
 }
 
 export default LessonPage;

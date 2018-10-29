@@ -7,11 +7,9 @@
 
 import React, {Component} from 'react';
 
-import { Button, Card, CardBody, CardTitle, CardHeader,
-  Dropdown, DropdownToggle, DropdownMenu, DropdownItem,
-  Popover, PopoverHeader, PopoverBody,
-  Modal, ModalHeader, ModalBody, ModalFooter, ListGroup, ListGroupItem,
-  Navbar, NavItem, NavbarNav, NavbarBrand, Collapse } from 'mdbreact';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter,
+  ListGroup, ListGroupItem } from 'mdbreact';
+import PropTypes from 'prop-types';
 
 import '../styles/intro.css';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
@@ -19,14 +17,10 @@ import 'font-awesome/css/font-awesome.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'mdbreact/dist/css/mdb.css';
 
-import {lessonParts, lessonContent, lessonRegisterInits, lessonAssembly,
-  lessonStarterCode, lessonReferenceSolutions, lessonBinaryCode,
-  lessonPipelineStudent} from '../utils/lessonItems.js';
+import { lessonParts } from '../utils/lessonItems.js';
 
-
-class Terminal extends Component {
+class PreviousLessons extends Component {
   constructor(props) {
-    console.log(props)
     super(props);
   }
 
@@ -82,4 +76,14 @@ class Terminal extends Component {
   }
 }
 
-export default Terminal;
+PreviousLessons.propTypes = {
+  completedLessons: PropTypes.number,
+  completedParts: PropTypes.number,
+  toggleShowPreviousLessons: PropTypes.func,
+  toggleIntroPanel: PropTypes.func,
+  loadLesson: PropTypes.func,
+  revealCompletedLevels: PropTypes.func,
+  toggleCompletedLevels: PropTypes.func,
+}
+
+export default PreviousLessons;
