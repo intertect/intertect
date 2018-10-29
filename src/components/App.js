@@ -35,6 +35,13 @@ class Terminal extends Component {
     };
 
     this.selectHandler = this.selectHandler.bind(this);
+    this.toggleLoadedLesson = this.toggleLoadedLesson.bind(this);
+  }
+
+  toggleLoadedLesson() {
+    this.setState({
+      loadedLesson: !this.state.loadedLesson
+    });
   }
 
   selectHandler(lesson) {
@@ -52,7 +59,9 @@ class Terminal extends Component {
       <LessonPage
         completedLessons={this.state.completedLessons}
         lesson={this.state.lesson}
-        lessonPartNum={this.state.lessonPart} />
+        lessonPartNum={this.state.lessonPart}
+
+        toggleLoadedLesson={this.toggleLoadedLesson} />
       :
       <LandingPage
         completedLessons={this.state.completedLessons}

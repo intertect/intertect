@@ -287,9 +287,7 @@ class LessonPage extends Component {
       referenceMemory : referenceMemory,
 
       // memory becomes relevant after lesson 1.5
-      showMemory: (lesson != 1 || lessonPartNum > 5),
-
-      loadedLesson : true,
+      showMemory: (lesson != 1 || lessonPartNum > 5)
     })
   }
 
@@ -519,10 +517,7 @@ class LessonPage extends Component {
 
         <Navbar color="default-color-dark" dark>
           <NavbarBrand href="#">
-            <Button outline onClick={() => this.setState({
-                  loadedLesson : false,
-                  lesson : null,
-                })}>
+            <Button outline onClick={() => this.props.toggleLoadedLesson()}>
               Main Menu
             </Button>
           </NavbarBrand>
