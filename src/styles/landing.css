@@ -1,0 +1,92 @@
+.landing__navbar {
+  box-shadow: none !important;
+
+  .landing-navbar__brand {
+    font-weight: bolder;
+    font-size: 1.5rem;
+  }
+
+  .landing-navbar__item {
+    font-weight: lighter;
+    font-size: 1.25rem;
+  }
+
+  .landing-navbar__dropdown-menu {
+    right: 0 !important;
+    left: auto;
+  }
+
+  a {
+    color: white;
+  }
+}
+
+.landing__section {
+  text-align: center;
+  padding: 4rem 3rem 3rem 3rem;
+
+  h2 {
+    font-weight: bolder;
+  }
+}
+
+.landing__section-1 {
+  background-color: #2BBBAD;
+  color: white;
+  padding-bottom: 0;
+
+  .landing-section__title {
+    font-size: 300%;
+  }
+
+  .landing-section__desk {
+    position: relative;
+
+    a {
+      color: #2BBBAD;
+    }
+
+    h5 {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-weight: bold;
+    }
+
+    @media screen and (max-width: 500px) {
+      h5 {
+        font-size: 1rem;
+      }
+    }
+
+    @media screen and (max-width: 400px) {
+      h5 {
+        font-size: 0.75rem;
+      }
+    }
+  }
+}
+
+.landing__section-2 {
+  background-color: white;
+}
+
+.landing__section-3 {
+  background-color: #2BBBAD;
+  color: white;
+}
+
+.landing-section__content {
+  max-width: 600px;
+  display: inline-block;
+
+  .landing-section-content__creator {
+    border-radius: 50%;
+  }
+
+  .landing-section-creator__bio {
+    text-align: left;
+    padding: 1.5rem 3px 0 3px;
+  }
+}
