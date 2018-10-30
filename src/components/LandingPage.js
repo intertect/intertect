@@ -59,7 +59,7 @@ class LandingPage extends Component {
         </div>
 
         <div className="landing__section landing__section-2">
-          <h2 className="display-1 h2-responsive">Peek Under the Hood</h2>
+          <h1 className="landing-section__title">Peek Under the Hood</h1>
           <div className="landing-section__content">
             <div className="row">
               <div className="col-6">
@@ -75,14 +75,14 @@ class LandingPage extends Component {
         </div>
 
         <div className="landing__section landing__section-3">
-          <h2 className="display-1 h2-responsive">Meet the Creators</h2>
+          <h1 className="landing-section__title">Meet the Creators</h1>
           <div className="landing-section__content">
             <div className="row">
               <div className="col-4 p-3">
                 <div className="p-4">
                   <img src={yash} className="landing-section-content__creator img-fluid"/>
                   <h5 className="landing-section-creator__bio">
-                    Yash is currently a developer at Oculus VR (Facebook), who&apos;s extremely interested in computer vision, machine learning, and VR. For more info, visit: ypatel.io
+                    Yash is a software developer at Oculus VR (Facebook), who&apos;s interested in computer vision, machine learning, and VR.
                   </h5>
                 </div>
               </div>
@@ -90,7 +90,7 @@ class LandingPage extends Component {
                 <div className="p-4">
                   <img src={peter} className="landing-section-content__creator img-fluid"/>
                   <h5 className="landing-section-creator__bio">
-                    Peter is currently a developer at Google Cloud. He&apos;s really passionate about computer architecture, networks, and systems programming.
+                    Peter is a software developer at Google Cloud. He&apos;s really likes computer architecture, networks, and systems programming.
                   </h5>
                 </div>
               </div>
@@ -98,7 +98,7 @@ class LandingPage extends Component {
                 <div className="p-4">
                   <img src={lucy} className="landing-section-content__creator img-fluid"/>
                   <h5 className="landing-section-creator__bio">
-                    Lucy is a software developer at LinkedIn. She likes making software that helps people and in her spare time also sings and creates art. 
+                    Lucy is a software developer at LinkedIn. She likes making software that helps people and in her spare time also sings and creates art.
                   </h5>
                 </div>
               </div>
