@@ -1,26 +1,3 @@
-.landing__navbar {
-  box-shadow: none !important;
-
-  .landing-navbar__brand {
-    font-weight: bolder;
-    font-size: 1.5rem;
-  }
-
-  .landing-navbar__item {
-    font-weight: lighter;
-    font-size: 1.25rem;
-  }
-
-  .landing-navbar__dropdown-menu {
-    right: 0 !important;
-    left: auto;
-  }
-
-  a {
-    color: white;
-  }
-}
-
 .landing__section {
   text-align: center;
   padding: 4rem 3rem 3rem 3rem;
@@ -48,7 +25,7 @@
 
     h5 {
       position: absolute;
-      top: 50%;
+      top: 55%;
       left: 50%;
       transform: translate(-50%, -50%);
       font-weight: bold;
@@ -85,8 +62,11 @@
     border-radius: 50%;
   }
 
-  .landing-section-creator__bio {
+  h5 {
     text-align: left;
+  }
+
+  .landing-section-creator__bio {
     padding: 1.5rem 3px 0 3px;
   }
 }

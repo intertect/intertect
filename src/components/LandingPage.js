@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { NavbarBrand, Navbar, NavbarNav, NavItem, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'mdbreact';
 import PropTypes from 'prop-types';
 
+import '../styles/shared.css';
 import '../styles/landing.css';
 
 import yash from '../images/yash.png';
@@ -9,6 +10,7 @@ import peter from '../images/peter.png';
 import lucy from '../images/lucy.png';
 import cpu from '../images/cpu.png';
 import desk from '../images/desk.svg';
+import sand from '../images/sand.svg';
 
 Array.range = (start, end) => Array.from({length: (end - start)}, (v, k) => k + start);
 
@@ -21,13 +23,13 @@ class LandingPage extends Component {
     return (
       <div className="landing">
         <Navbar color="default-color" className="landing__navbar">
-          <NavbarBrand className="landing-navbar__brand px-3" href="/">
+          <NavbarBrand className="landing-navbar__brand mx-3" href="/">
             Intertect
           </NavbarBrand>
 
           <NavbarNav right>
             <NavItem className="landing-navbar__item">
-              <Dropdown className="px-3">
+              <Dropdown className="landing-navbar__animated-link mx-3">
                 <DropdownToggle nav caret>Lessons</DropdownToggle>
                 <DropdownMenu className="landing-navbar__dropdown-menu">
                   <DropdownItem href="#" onClick={() => this.props.selectHandler(1)}>
@@ -61,29 +63,26 @@ class LandingPage extends Component {
         <div className="landing__section landing__section-2">
           <div className="landing-section__content">
             <div className="row">
-              <div className="col-6">
-                <h1 className="landing-section__title">Constructive</h1>
+              <div className="col-6 px-5">
+                <h1 className="h1-responsive">Constructive</h1>
                 <img src={cpu} className="img-fluid"/>
-                <h4 className="h4-responsive">
-                  Through a series of exercises, you will build a MIPS processor. But don&apos;t worry if you haven&apos;t the slightest clue how one works!
-                  Our exercises start with abstracted representations of the processor in Javascript, so that it&apos;s easy to understand for people of all
-                  technical backgrounds.
-                </h4>
+                <h5 className="pt-3 px-4">
+                  Through a series of exercises, you will build a MIPS processor. But don&apos;t worry if you haven&apos;t the slightest clue how one works! Our exercises start with abstracted representations of the processor in Javascript, so that it&apos;s easy to understand for people of all technical backgrounds.
+                </h5>
               </div>
-              <div className="col-6">
-                <h1 className="landing-section__title">Flexible</h1>
-                <img src={cpu} className="img-fluid"/>
-                <h4 className="h4-responsive">
-                  During your journey of building this processor, you&apos;ll have plenty of opportunities to experiment and expand its functionality. Intertect
-                  gives you a sandbox to test out any program you can conjure up, so explore away!
-                </h4>
+              <div className="col-6 px-5">
+                <h1 className="h1-responsive">Flexible</h1>
+                <h5 className="pt-5 px-4">
+                  During your journey of building this processor, you&apos;ll have plenty of opportunities to experiment and expand its functionality. Intertect gives you a sandbox to test out any program you can conjure up, so explore away!
+                </h5>
+                <img src={sand} className="img-fluid pt-3"/>
               </div>
             </div>
           </div>
         </div>
 
         <div className="landing__section landing__section-3">
-          <h1 className="landing-section__title">Meet the Creators</h1>
+          <h1 className="h1-responsive">Meet the Creators</h1>
           <div className="landing-section__content">
             <div className="row">
               <div className="col-4 p-3">

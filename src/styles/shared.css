@@ -1,0 +1,50 @@
+a:hover {
+  color: #00695c !important;
+}
+
+/* TODO: font */
+
+/* Navbar styling */
+.landing__navbar {
+  box-shadow: none !important;
+
+  .landing-navbar__brand {
+    font-weight: bolder;
+    font-size: 1.5rem;
+  }
+
+  .landing-navbar__item {
+    font-weight: lighter;
+    font-size: 1.25rem;
+  }
+
+  .landing-navbar__dropdown-menu {
+    right: 0 !important;
+    left: auto;
+  }
+
+  .landing-navbar__animated-link:before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: #00695c;
+    visibility: hidden;
+    -webkit-transform: scaleX(0);
+    transform: scaleX(0);
+    -webkit-transition: all 0.3s ease-in-out 0s;
+    transition: all 0.3s ease-in-out 0s;
+  }
+
+  .landing-navbar__animated-link:hover:before {
+    visibility: visible;
+    -webkit-transform: scaleX(1);
+    transform: scaleX(1);
+  }
+
+  a {
+    color: white;
+  }
+}
