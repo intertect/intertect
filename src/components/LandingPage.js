@@ -59,15 +59,23 @@ class LandingPage extends Component {
         </div>
 
         <div className="landing__section landing__section-2">
-          <h1 className="landing-section__title">Peek Under the Hood</h1>
           <div className="landing-section__content">
             <div className="row">
               <div className="col-6">
+                <h1 className="landing-section__title">Constructive</h1>
                 <img src={cpu} className="img-fluid"/>
-              </div>
-              <div className="p-4 col-6 text-left align-self-center">
                 <h4 className="h4-responsive">
-                  Intertect presents information with exercises starting at the most abstract representation so that it&apos;s easy to understand for people with little or no experience.
+                  Through a series of exercises, you will build a MIPS processor. But don&apos;t worry if you haven&apos;t the slightest clue how one works!
+                  Our exercises start with abstracted representations of the processor in Javascript, so that it&apos;s easy to understand for people of all
+                  technical backgrounds.
+                </h4>
+              </div>
+              <div className="col-6">
+                <h1 className="landing-section__title">Flexible</h1>
+                <img src={cpu} className="img-fluid"/>
+                <h4 className="h4-responsive">
+                  During your journey of building this processor, you&apos;ll have plenty of opportunities to experiment and expand its functionality. Intertect
+                  gives you a sandbox to test out any program you can conjure up, so explore away!
                 </h4>
               </div>
             </div>
