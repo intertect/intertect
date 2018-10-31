@@ -2,7 +2,8 @@ import React, {Component} from 'react';
 import { Button, Card, CardBody, CardTitle, CardHeader,
   Popover, PopoverHeader, PopoverBody,
   Modal, ModalHeader, ModalBody, ModalFooter,
-  Navbar, NavItem, NavbarNav, NavbarBrand, Collapse } from 'mdbreact';
+  Navbar, NavItem, NavbarNav, NavbarBrand, Collapse,
+  Dropdown, DropdownMenu, DropdownItem, DropdownToggle } from 'mdbreact';
 import PropTypes from 'prop-types';
 
 import ReactMarkdown from 'react-markdown';
@@ -15,7 +16,7 @@ import PreviousLessons from './PreviousLessons.js'
 import {Memory, Registers, Latches, nameToRegisterMap} from '../utils/util.js';
 import {lessonParts, lessonContent, lessonRegisterInits, lessonAssembly,
   lessonStarterCode, lessonReferenceSolutions, lessonBinaryCode,
-  lessonPipelineStudent} from '../utils/lessonItems.js';
+  lessonPipelineStudent, lessonTests} from '../utils/lessonItems.js';
 
 import '../styles/intro.css';
 
@@ -62,7 +63,7 @@ class LessonPage extends Component {
       running: false,
 
       lesson: this.props.lesson,
-      lessonPart: this.props.lessonPartNum,
+      lessonPartNum: this.props.lessonPartNum,
 
       completedLessons: this.props.completedLessons,
       completedParts: completedParts || 2,
@@ -95,7 +96,9 @@ class LessonPage extends Component {
       showRegisters: true,
       unviewedStepExplanation: true,
 
-      programRunning: false
+      programRunning: false,
+
+      testProgram: "default"
     }
 
     this.onChange = this.onChange.bind(this);
@@ -107,6 +110,7 @@ class LessonPage extends Component {
     this.userProgramExists = this.userProgramExists.bind(this);
     this.appendUserProgram = this.appendUserProgram.bind(this);
     this.loadLesson = this.loadLesson.bind(this)
+    this.loadTest = this.loadTest.bind(this)
   }
 
   onChange(newValue) {
@@ -190,6 +194,44 @@ class LessonPage extends Component {
     }
   }
 
+  loadTest(lesson, lessonPartNum, assemblyProgram, binaryProgram) {
+    var lessonPart = `lesson_${lesson}/part_${lessonPartNum}`;
+
+    var studentRegisters = new Registers();
+    var referenceRegisters = new Registers();
+
+    var studentMemory = new Memory();
+    var referenceMemory = new Memory();
+
+    studentRegisters.load(lessonRegisterInits[lessonPart]);
+    referenceRegisters.load(lessonRegisterInits[lessonPart]);
+
+    if (lesson > 1) {
+      this.setState({
+        binaryProgram : binaryProgram,
+      })
+
+      // we want to load the binary program into memory after lesson 3
+      if (lesson > 2) {
+        for (var i = 0; i < lessonBinaryCode[lessonPart].length; i++) {
+          studentMemory.write(i, lessonBinaryCode[lessonPart][i]);
+          referenceMemory.write(i, lessonBinaryCode[lessonPart][i]);
+        }
+      }
+    }
+
+    this.setState({
+      programCounter: 0,
+      assemblyProgram : assemblyProgram.split("\n"),
+
+      studentRegisters : studentRegisters,
+      referenceRegisters : referenceRegisters,
+
+      studentMemory : studentMemory,
+      referenceMemory : referenceMemory,
+    })
+  }
+
   loadLesson(lesson, lessonPartNum, resetCode) {
     if (lessonPartNum > lessonParts[lesson]) {
       lessonPartNum = 1;
@@ -237,51 +279,22 @@ class LessonPage extends Component {
       this.setState({ studentProgram : starterProgram[lessonPart] });
     }
 
-    var studentRegisters = new Registers();
-    var referenceRegisters = new Registers();
-
-    var studentMemory = new Memory();
-    var referenceMemory = new Memory();
-
-    studentRegisters.load(lessonRegisterInits[lessonPart]);
-    referenceRegisters.load(lessonRegisterInits[lessonPart]);
-
-    // only need the binary code available for lessons 2 and up
-    if (lesson > 1) {
-      this.setState({
-        binaryProgram : lessonBinaryCode[lessonPart],
-      })
-
-      // we want to load the binary program into memory after lesson 3
-      if (lesson > 2) {
-        for (var i = 0; i < lessonBinaryCode[lessonPart].length; i++) {
-          studentMemory.write(i, lessonBinaryCode[lessonPart][i]);
-          referenceMemory.write(i, lessonBinaryCode[lessonPart][i]);
-        }
-      }
-    }
-
+    this.loadTest(lesson, lessonPartNum, lessonAssembly[lessonPart],
+      lessonBinaryCode[lessonPart]);
     var letters = Object.values(lessonContent[lessonPart]);
     this.setState({
+      testProgram: "default",
+
       lessonComplete: false,
       lessonCorrect: true,
-
-      programCounter: 0,
 
       lesson : lesson,
       lessonPart : lessonPartNum,
 
       lessonContent : letters[letters.length - 1],
-      assemblyProgram : lessonAssembly[lessonPart].split("\n"),
-
-      studentRegisters : studentRegisters,
-      referenceRegisters : referenceRegisters,
 
       studentLatches: new Latches(),
       referenceLatches: new Latches(),
-
-      studentMemory : studentMemory,
-      referenceMemory : referenceMemory,
 
       // memory becomes relevant after lesson 1.5
       showMemory: (lesson != 1 || lessonPartNum > 5)
@@ -372,7 +385,7 @@ class LessonPage extends Component {
     var instruction = this.getNextInstruction();
     var pcRegister = nameToRegisterMap["$pc"];
 
-    var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPart}`;
+    var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPartNum}`;
     var solution = lessonReferenceSolutions[lessonPart];
 
     if (this.state.lesson < 4 && typeof(instruction) !== 'undefined') {
@@ -494,6 +507,22 @@ class LessonPage extends Component {
       </Button>
       : currentInstruction = <div></div>
 
+    var testPrograms = Object.keys(lessonTests);
+    var testProgramDropdown = [];
+    for (i = 0; i < testPrograms.length; i++) {
+      var lessonTest = lessonTests[testPrograms[i]];
+      var testProgram = testPrograms[i];
+      testProgramDropdown.push(
+        <DropdownItem onClick={() => {
+          this.setState({ testProgram : testProgram })
+          this.loadTest(this.state.lesson, this.state.lessonPartNum,
+            lessonTest.assembly, lessonTest.binary)
+          }}>
+
+          { testProgram }
+        </DropdownItem>)
+    }
+
     return (
       <div>
         <SlidingPane
@@ -550,15 +579,15 @@ class LessonPage extends Component {
                     });
 
                     this.saveProgram(this.state.lesson,
-                      this.state.lessonPart, this.state.starterProgram)
-                    this.loadLesson(this.state.lesson, this.state.lessonPart + 1, true);
+                      this.state.lessonPartNum, this.state.starterProgram)
+                    this.loadLesson(this.state.lesson, this.state.lessonPartNum + 1, true);
                   }}> Next Lesson
                 </Button>
               </div>
 
               <div className="col-sm-6">
                 <Button outline color="danger" onClick={() =>
-                  this.loadLesson(this.state.lesson, this.state.lessonPart, false)} style={{width:"100%"}}>
+                  this.loadLesson(this.state.lesson, this.state.lessonPartNum, false)} style={{width:"100%"}}>
                   I Want To Stay Here
                 </Button>
               </div>
@@ -574,7 +603,7 @@ class LessonPage extends Component {
             <div className="row">
               <div className="col-sm-6">
                 <Button outline style={{width:"100%"}}
-                  onClick={() => this.loadLesson(this.state.lesson, this.state.lessonPart, false)}>
+                  onClick={() => this.loadLesson(this.state.lesson, this.state.lessonPartNum, false)}>
                   <i className="fa fa-refresh" aria-hidden="true"></i> Reset
                 </Button>
               </div>
@@ -606,7 +635,7 @@ class LessonPage extends Component {
                 <Button outline color="danger" style={{width:"100%"}}
                   onClick={() => {
                     this.setState({confirmRestart : false })
-                    this.loadLesson(this.state.lesson, this.state.lessonPart, true);
+                    this.loadLesson(this.state.lesson, this.state.lessonPartNum, true);
                   }}>
                   Continue
                 </Button>
@@ -634,6 +663,15 @@ class LessonPage extends Component {
                   <div className="col-sm-12">
                     {currentInstruction}
                     <ul className="shell-body" style={{width:"100%"}}>{ assemblyList }</ul>
+
+                    <Dropdown>
+                      <DropdownToggle caret outline color="default" style={{width:"100%"}}>
+                        {this.state.testProgram}
+                      </DropdownToggle>
+                      <DropdownMenu style={{width:"100%"}}>
+                        {testProgramDropdown}
+                      </DropdownMenu>
+                    </Dropdown>
                   </div>
                   <div className="col-sm-12">
                     <Button outline color="success" style={{width:"100%"}}
@@ -654,7 +692,7 @@ class LessonPage extends Component {
                   </div>
                   <div className="col-sm-12">
                     <Button outline color="warning" style={{width:"100%"}}
-                      onClick={() => { this.loadLesson(this.state.lesson, this.state.lessonPart, false) }}>
+                      onClick={() => { this.loadLesson(this.state.lesson, this.state.lessonPartNum, false) }}>
                       <i className="fa fa-refresh" aria-hidden="true"></i> Reset
                     </Button>
                   </div>

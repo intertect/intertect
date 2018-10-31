@@ -147,6 +147,16 @@ const lesson_3_part_1_reference = require('../references/lesson_3/part_1.js');
 const lesson_4_part_1_reference = require('../references/lesson_4/part_1.js');
 const lesson_4_part_2_reference = require('../references/lesson_4/part_2.js');
 
+/* ========================================================================= */
+/* Allows choosing of test programs */
+/* ========================================================================= */
+export const lessonTests = {
+  "test": {
+    "binary": lesson_2_part_1_binary,
+    "assembly": lesson_2_part_1_assembly
+  }
+}
+
 // number of parts for each lesson
 export const lessonParts = {
   1 : 6,
