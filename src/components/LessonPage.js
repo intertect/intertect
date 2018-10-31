@@ -7,7 +7,6 @@ import PropTypes from 'prop-types';
 
 import ReactMarkdown from 'react-markdown';
 import SlidingPane from 'react-sliding-pane';
-import YouTube from 'react-youtube';
 
 import Implement from './Implement.js'
 import Debugging from './Debugging.js'
@@ -503,13 +502,6 @@ class LessonPage extends Component {
             onRequestClose={ () => {
               this.setState({ isIntroPaneOpen: false });
             }}>
-
-          <YouTube videoId="FAUnDDTz30k" opts={{
-            width: "100%",
-            playerVars: {
-              autoplay: 1
-            }
-          }}/>
           <ReactMarkdown source={this.state.lessonContent} escapeHtml={false} />
         </SlidingPane>
 
@@ -629,7 +621,7 @@ class LessonPage extends Component {
             onChange={this.onChange}
             studentProgram={this.state.studentProgram} />
 
-          <div className="col-sm-6">
+          <div classNamef="col-sm-6">
             <Card style={{ marginTop: '1rem', width:"100%"}}>
               <CardHeader color="default-color" className="text-center">
                 {stepExplanation}
