@@ -16,7 +16,7 @@ import PreviousLessons from './PreviousLessons.js'
 import {Memory, Registers, Latches, nameToRegisterMap} from '../utils/util.js';
 import {lessonParts, lessonContent, lessonRegisterInits, lessonAssembly,
   lessonStarterCode, lessonReferenceSolutions, lessonBinaryCode,
-  lessonPipelineStudent, lessonTests} from '../utils/lessonItems.js';
+  lessonPipelineStudent, availableTests, lessonTests} from '../utils/lessonItems.js';
 
 import '../styles/intro.css';
 
@@ -98,7 +98,7 @@ class LessonPage extends Component {
 
       programRunning: false,
 
-      testProgram: "default"
+      testProgram: lessonPart
     }
 
     this.onChange = this.onChange.bind(this);
@@ -283,13 +283,13 @@ class LessonPage extends Component {
       lessonBinaryCode[lessonPart]);
     var letters = Object.values(lessonContent[lessonPart]);
     this.setState({
-      testProgram: "default",
+      testProgram: lessonPart,
 
       lessonComplete: false,
       lessonCorrect: true,
 
       lesson : lesson,
-      lessonPart : lessonPartNum,
+      lessonPartNum : lessonPartNum,
 
       lessonContent : letters[letters.length - 1],
 
@@ -507,18 +507,18 @@ class LessonPage extends Component {
       </Button>
       : currentInstruction = <div></div>
 
-    var testPrograms = Object.keys(lessonTests);
+    var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPartNum}`;
+    var testPrograms = lessonTests[lessonPart];
     var testProgramDropdown = [];
     for (i = 0; i < testPrograms.length; i++) {
-      var lessonTest = lessonTests[testPrograms[i]];
       var testProgram = testPrograms[i];
+      var lessonTest = availableTests[testProgram];
       testProgramDropdown.push(
         <DropdownItem onClick={() => {
           this.setState({ testProgram : testProgram })
           this.loadTest(this.state.lesson, this.state.lessonPartNum,
             lessonTest.assembly, lessonTest.binary)
           }}>
-
           { testProgram }
         </DropdownItem>)
     }

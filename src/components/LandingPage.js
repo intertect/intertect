@@ -97,7 +97,7 @@ class LandingPage extends Component {
                 <div className="p-4">
                   <img src={peter} className="landing-section-content__creator img-fluid"/>
                   <h5 className="landing-section-creator__bio">
-                    Peter is a software developer at Google Cloud. He&apos;s really likes computer architecture, networks, and systems programming.
+                    Peter is a software developer at Google Cloud. He really likes computer architecture, networks, and systems programming.
                   </h5>
                 </div>
               </div>
