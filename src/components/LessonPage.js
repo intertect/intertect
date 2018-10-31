@@ -134,19 +134,6 @@ class LessonPage extends Component {
     }
   }
 
-  loadCode(lesson, lessonPartNum, starterProgram) {
-    var lessonPart = `lesson_${lesson}/part_${lessonPartNum}`;
-
-    // lesson parts are made incrementally to keep student code in tact
-    var updatedStarterProgram = Object.assign({}, starterProgram);
-    updatedStarterProgram[lessonPart] = this.state.studentProgram;
-    this.setState({
-      starterProgram: updatedStarterProgram,
-    })
-
-    localStorage.setItem('starterProgram', JSON.stringify(updatedStarterProgram));
-  }
-
   toggleCompletedLevels() {
     this.setState({
       revealCompletedLevels: false
@@ -192,6 +179,23 @@ class LessonPage extends Component {
       script.text = this.state.studentProgram;
       document.body.appendChild(script);
     }
+  }
+
+  chooseTest() {
+
+  }
+
+  loadCode(lesson, lessonPartNum, starterProgram) {
+    var lessonPart = `lesson_${lesson}/part_${lessonPartNum}`;
+
+    // lesson parts are made incrementally to keep student code in tact
+    var updatedStarterProgram = Object.assign({}, starterProgram);
+    updatedStarterProgram[lessonPart] = this.state.studentProgram;
+    this.setState({
+      starterProgram: updatedStarterProgram,
+    })
+
+    localStorage.setItem('starterProgram', JSON.stringify(updatedStarterProgram));
   }
 
   loadTest(lesson, lessonPartNum, assemblyProgram, binaryProgram) {
@@ -510,9 +514,11 @@ class LessonPage extends Component {
     var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPartNum}`;
     var testPrograms = lessonTests[lessonPart];
     var testProgramDropdown = [];
-    for (i = 0; i < testPrograms.length; i++) {
+
+    var testProgramsCounts = Array.range(0, testPrograms.length);
+    testProgramsCounts.map((i) => {
+      var lessonTest = availableTests[testPrograms[i]];
       var testProgram = testPrograms[i];
-      var lessonTest = availableTests[testProgram];
       testProgramDropdown.push(
         <DropdownItem onClick={() => {
           this.setState({ testProgram : testProgram })
@@ -521,7 +527,7 @@ class LessonPage extends Component {
           }}>
           { testProgram }
         </DropdownItem>)
-    }
+      })
 
     return (
       <div>
