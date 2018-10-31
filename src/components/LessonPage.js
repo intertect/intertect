@@ -2,7 +2,9 @@ import React, {Component} from 'react';
 import { Button, Card, CardBody, CardTitle, CardHeader,
   Popover, PopoverHeader, PopoverBody,
   Modal, ModalHeader, ModalBody, ModalFooter,
-  Navbar, NavItem, NavbarNav, NavbarBrand, Collapse } from 'mdbreact';
+  Navbar, NavItem, NavbarNav, NavbarBrand, Collapse,
+  NavLink, Dropdown, DropdownItem, DropdownToggle,
+  DropdownMenu } from 'mdbreact';
 import PropTypes from 'prop-types';
 
 import ReactMarkdown from 'react-markdown';
@@ -18,6 +20,7 @@ import {lessonParts, lessonContent, lessonRegisterInits, lessonAssembly,
   lessonPipelineStudent} from '../utils/lessonItems.js';
 
 import '../styles/intro.css';
+import '../styles/shared.css';
 
 function ToUint32(x) {
   return x >>> 0;
@@ -495,7 +498,7 @@ class LessonPage extends Component {
       : currentInstruction = <div></div>
 
     return (
-      <div>
+      <div className="lesson">
         <SlidingPane
             isOpen={ this.state.isIntroPaneOpen }
             width='50%'
@@ -505,25 +508,42 @@ class LessonPage extends Component {
           <ReactMarkdown source={this.state.lessonContent} escapeHtml={false} />
         </SlidingPane>
 
-        <Navbar color="default-color-dark" dark>
-          <NavbarBrand href="#">
-            <Button outline onClick={() => this.props.toggleLoadedLesson()}>
-              Main Menu
-            </Button>
+        <Navbar color="default-color" className="landing__navbar">
+          <NavbarBrand className="landing-navbar__brand mx-3" href="#" onClick={() => this.props.toggleLoadedLesson()}>
+            Intertect
           </NavbarBrand>
-          <Collapse isOpen={true}>
-            <NavbarNav>
-              <NavItem>
-                <Button outline onClick={() => this.setState({ revealCompletedLevels : true })}>
-                  Previous Levels
-                </Button>
 
-                <Button outline onClick={() => this.setState({ isIntroPaneOpen : true })}>
-                  Intro Text
-                </Button>
-              </NavItem>
-            </NavbarNav>
-          </Collapse>
+          <NavbarNav right className="flex-row">
+            <NavItem className="landing-navbar__item mr-3">
+              <Dropdown>
+                <DropdownToggle nav caret className="landing-navbar__animated-link">Lessons</DropdownToggle>
+                <DropdownMenu className="landing-navbar__dropdown-menu">
+                  <DropdownItem href="#">
+                    1: MIPS Assembly
+                  </DropdownItem>
+                  <DropdownItem href="#">
+                    2: MIPS Binary
+                  </DropdownItem>
+                  <DropdownItem href="#">
+                    3: Pipelining
+                  </DropdownItem>
+                  <DropdownItem href="#">
+                    4: Parallel Pipelining
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </NavItem>
+            <NavItem className="landing-navbar__item mr-3">
+              <a className="nav-link" href="#" onClick={() => this.setState({ revealCompletedLevels : true })}>
+                Previous Levels
+              </a>
+            </NavItem>
+            <NavItem className="landing-navbar__item mr-3">
+              <div className="position-relative">
+                <a className="nav-link landing-navbar__animated-link" href="#" onClick={() => this.setState({ isIntroPaneOpen : true })}>Instructions</a>
+              </div>
+            </NavItem>
+          </NavbarNav>
         </Navbar>
 
         <PreviousLessons

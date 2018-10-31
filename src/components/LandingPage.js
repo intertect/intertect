@@ -8,7 +8,7 @@ import '../styles/landing.css';
 import yash from '../images/yash.png';
 import peter from '../images/peter.png';
 import lucy from '../images/lucy.png';
-import cpu from '../images/cpu.png';
+import cpu from '../images/cpu.svg';
 import desk from '../images/desk.svg';
 import sand from '../images/sand.svg';
 

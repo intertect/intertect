@@ -60,7 +60,6 @@ class Terminal extends Component {
         completedLessons={this.state.completedLessons}
         lesson={this.state.lesson}
         lessonPartNum={this.state.lessonPart}
-
         toggleLoadedLesson={this.toggleLoadedLesson} />
       :
       <LandingPage

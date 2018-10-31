@@ -69,13 +69,8 @@ class Implement extends Component {
     return (
       <div className="col-sm-6" style={{display: "flex"}}>
         <Card style={{ marginTop: '1rem', width:"100%"}} className="text-center">
-          <CardHeader color="default-color">
-            {implementExplanation}
-            <CardTitle componentclassName="h4">
-              Implement
-            </CardTitle>
-          </CardHeader>
           <CardBody>
+          {implementExplanation}
             <AceEditor
               mode="javascript"
               theme={this.state.theme}
