@@ -147,6 +147,75 @@ const lesson_3_part_1_reference = require('../references/lesson_3/part_1.js');
 const lesson_4_part_1_reference = require('../references/lesson_4/part_1.js');
 const lesson_4_part_2_reference = require('../references/lesson_4/part_2.js');
 
+/* ========================================================================= */
+/* Allows choosing of test programs */
+/* ========================================================================= */
+// all the tests available: those labelled as <lesson>_<lesson_part> are default
+export const availableTests = {
+  "lesson_1/part_1": {
+    "assembly": lesson_1_part_1_assembly
+  },
+  "lesson_1/part_2": {
+    "assembly": lesson_1_part_2_assembly
+  },
+  "lesson_1/part_3": {
+    "assembly": lesson_1_part_3_assembly
+  },
+  "lesson_1/part_4": {
+    "assembly": lesson_1_part_4_assembly
+  },
+  "lesson_1/part_5": {
+    "assembly": lesson_1_part_5_assembly
+  },
+  "lesson_1/part_6": {
+    "assembly": lesson_1_part_6_assembly
+  },
+
+  "lesson_2/part_1": {
+    "assembly": lesson_2_part_1_assembly,
+    "binary": lesson_2_part_1_binary
+  },
+  "lesson_2/part_2": {
+    "assembly": lesson_2_part_2_assembly,
+    "binary": lesson_2_part_2_binary
+  },
+
+  "lesson_3/part_1": {
+    "assembly": lesson_3_part_1_assembly,
+    "binary": lesson_3_part_1_binary
+  },
+  "lesson_3/part_2": {
+    "assembly": lesson_3_part_2_assembly,
+    "binary": lesson_3_part_2_binary
+  },
+  "lesson_3/part_3": {
+    "assembly": lesson_3_part_3_assembly,
+    "binary": lesson_3_part_3_binary
+  },
+  "lesson_3/part_4": {
+    "assembly": lesson_3_part_4_assembly,
+    "binary": lesson_3_part_4_binary
+  },
+  "lesson_3/part_5": {
+    "assembly": lesson_3_part_5_assembly,
+    "binary": lesson_3_part_5_binary
+  },
+
+  "lesson_4/part_1": {
+    "assembly": lesson_4_part_1_assembly,
+    "binary": lesson_4_part_1_binary
+  },
+  "lesson_4/part_2": {
+    "assembly": lesson_4_part_2_assembly,
+    "binary": lesson_4_part_2_binary
+  },
+
+  "test": {
+    "binary": lesson_2_part_1_binary,
+    "assembly": lesson_2_part_1_assembly
+  }
+}
+
 // number of parts for each lesson
 export const lessonParts = {
   1 : 6,
@@ -280,6 +349,28 @@ export const lessonReferenceSolutions = {
   "lesson_4/part_1" : lesson_4_part_1_reference.solution,
   "lesson_4/part_2" : lesson_4_part_2_reference.solution,
 };
+
+// tests that are available for the lessons
+export const lessonTests = {
+  "lesson_1/part_1": ["lesson_1/part_1","test"],
+  "lesson_1/part_2": ["lesson_1/part_2"],
+  "lesson_1/part_3": ["lesson_1/part_3"],
+  "lesson_1/part_4": ["lesson_1/part_4"],
+  "lesson_1/part_5": ["lesson_1/part_5"],
+  "lesson_1/part_6": ["lesson_1/part_6"],
+
+  "lesson_2/part_1": ["lesson_2/part_1"],
+  "lesson_2/part_2": ["lesson_2/part_2"],
+
+  "lesson_3/part_1": ["lesson_3/part_1"],
+  "lesson_3/part_2": ["lesson_3/part_2"],
+  "lesson_3/part_3": ["lesson_3/part_3"],
+  "lesson_3/part_4": ["lesson_3/part_4"],
+  "lesson_3/part_5": ["lesson_3/part_5"],
+
+  "lesson_4/part_1": ["lesson_4/part_1"],
+  "lesson_4/part_2": ["lesson_4/part_2"]
+}
 
 // specifies (for pipelining implementation), which parts come from solution
 // and which from the student for each part
