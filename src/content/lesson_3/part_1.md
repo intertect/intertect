@@ -43,7 +43,9 @@ an instruction and save it in the IF/ID latch. During the next cycle, ID will pu
 latch and perform the decode before saving its result in the ID/EX latch and so on. While this 
 is implemented in hardware in reality, we're emulating it as objects here. 
 
-- We **expect** all instructions to be decoded with the appropriate names. Object latch saves must match **exactly** these names/types for these cases:
+- We **expect** all instructions to be decoded with the appropriate names. If any latch is
+set to `undefined`, we assume the pipeline stage reading from this latch is to be skipped. 
+Object latch saves must match **exactly** these names/types for these cases:
   
 - `latches.if_id` (IF/ID latch): Must be the `unsigned 32-bit` binary instruction! Remember once
   again to call `ToUint32(x)` on whatever binary result you get before storing it in the latch

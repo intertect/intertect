@@ -21,6 +21,7 @@ which you should have encoded in the output of the execute stage
 # Latch API Reference
 This is left here as a reference to refer to:
 
+- For any latch set to `undefined`, we assume the pipeline stage reading from this latch is to be skipped. 
 - `latches.if_id` (IF/ID latch): Must be the `unsigned 32-bit` binary instruction! Remember once
   again to call `ToUint32(x)` on whatever binary result you get before storing it in the latch
 - `latches.id_ex` (ID/EX latch): Construct an object that has the following fields/values:
@@ -51,6 +52,8 @@ This is left here as a reference to refer to:
   - `position`: Position in the final saving location where the result is to be saved, i.e. for
   `memory` this indicates an offset and for `registers` this indicates the particular register 
 - `latches.mem_wb` (MEM/WB latch): 
+  - `instruction`: Instruction that was decoded during ID stage. This will not be used for
+  further execution but will be critical later when parallelizing our pipeline
   - `result`: Value to be written/stored
   - `location`: Should either be `"memory"` or `"registers"` to indicate which stage of the
   pipeline saving should occur
