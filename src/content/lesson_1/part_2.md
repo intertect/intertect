@@ -10,9 +10,78 @@ reminder, you can click on any instruction on the sidebar to be taken to a
 glossary containing all the information you could possibly want to know about
 it.
 
-## Where Is The Rest Of The Long-Winded Introduction?
-There isn't any! You don't have any excuses now. [`subu`](#subu) is just like
-[`addu`](#addu) but with subtraction instead of addition.
+## Code structure
+
+### Overview
+Hopefully the structure of the code is clear to you now, but in case it isn't,
+this is an explanation of the structure of the code we have given you.
+
+The `instruction` variable which is passed into your `processMIPS` function
+contains all the information you will need to perform the operation. It is an
+array with the following structure:
+
+1. The text name of the instruction
+2. The name of the destination register ("rd")
+3. The name of the source register ("rs")
+4. The name of the target register ("rt")
+5. The shift amount field (which we'll explain later)
+
+In order to execute the code, the code simply enumerates each of the possible
+operations, and then performs the necessary work for whichever particular
+instruction it is. This is the simplest way to write an emulator; while the
+later lessons will deal with more and more complicated ideas, this basic
+structure will remain for the most part.
+
+## Registers
+The `registers` variable contains an interface to the registers so you don't
+have to implement this functionality yourself (and also allows us to check your
+work). It provides a two-method interface: `registers.read(register)` and
+`registers.write(register, value)`.
+
+The register object takes in the numeric value of the register so we have
+provided you with `nameToRegisterMap` which, when given the name of a register
+from the `instruction` array, returns the number of that register.
+
+## Memory
+The memory abstraction is just like the register abstraction. It provides the
+two methods `memory.read(location)` and `memory.write(location.value)`. You
+won't use memory until a later part, but now you know why it's there!
+
+## R-Format Instructions
+Now it's time to introduce you to some of the details of the MIPS instruction
+set, starting with R-Format instructions. What are R-Format instructions?
+They're "Register Format" instructions! Simply put, R-Format instructions are
+those which operate entirely on register values. Instructions like
+[`addu`](#addu), [`subu`](#subu) are R-Format instructions and they operate
+completely on registers.
+
+R-Format instructions contain the following information:
+
+1. The operation to perform
+2. The destination register (called "`rd`")
+3. The source register (called "`rs`")
+4. The target register (called "`rt`")
+5. The shift amount
+
+The previous definition isn't entirely correct, but it gives a base on which we
+will continue to build. We will go into significantly more detail in the coming
+parts and lessons but this should be enough information for now.
+
+## More Instruction Formats
+There are two other instruction formats that you will encounter during the
+course of these lessons. They are I- and J-Format instructions. J-Format
+instructions are those involved with jumps and are mostly just an address.
+
+I-Format instructions are a little bit more complicated. An I, or Immediate,
+format instruction is one that contains information about only two registers and
+then a constant value that is used during the operation. For example, if you
+wanted to add 1 to the value contained in the register `$t0`, there isn't a way
+to do that with R-Format instructions since they only carry information about
+registers. However, using an I-Format instruction, the 1 would be contained
+within the instruction itself.
+
+Don't worry if this section didn't make perfect sense; in the following parts,
+you'll be introduced to these instruction formats in much more detail.
 
 ---
 # The MIPS Instruction Set
