@@ -3,7 +3,7 @@
 If you've been paying close attention, you might have been confused by all the
 `nop`s littering the branching and jumping code. Wonder no longer! Those are
 because of the **Branch Delay Slot**. What is a branch delay slot? I'm glad
-you asked
+you asked.
 
 ## What on Earth is a Branch Delay Slot?
 
