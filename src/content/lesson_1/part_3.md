@@ -7,7 +7,7 @@ used much, but when dealing with binary protocols and systems programming, they
 come up really frequently. 
 
 (Not to make value judgments, but these are my favorite instructions. You don't 
-even need any of the other arithmetic instructions! All you need is `nor` or 
+even need any of the other arithmetic instructions! All you need is [`nor`](#nor) or 
 `nand` and you can make all of them. Really slowly, of course.)
 
 # Note on Notation
@@ -24,7 +24,8 @@ these two (outside the use of the prefix), simply keep in mind that the letter
 characters used in hex numbers are always capitalized!
 
 ## Your Task
-You task is to implement the `add`, `or`, `nor`, `xor`, `sll`, `srl`, and `sra`
+You task is to implement the [`or`](#or), [`nor`](#nor), [`xor`](#xor), [`sll`](#sll), 
+[`srl`](#srl), and [`sra`](#sra)
 instructions. These perform the bitwise AND, OR, NOR, and XOR boolean operations as
 well as left logical shift, right logical shift, and right arithmetic shift. If
 you're not sure what all of that meant, keep reading. Otherwise, you can go
@@ -52,8 +53,8 @@ up carrot is the logical AND operator
 
 ## Shift Operations
 There are three kinds of shifts that we want you to implement: shift left
-logical (`sll`), shift right logical (`srl`), and shift right arithmetic
-(`sra`).
+logical ([`sll`](#sll)), shift right logical ([`srl`](#srl)), and shift right arithmetic
+([`sra`](#sra)).
 
 Shift left logical means you shift each of the bits in the target by some
 amount, filling on the right with 0. For example, shifting `0b1111` left by 2

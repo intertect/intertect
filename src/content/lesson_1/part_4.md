@@ -9,16 +9,16 @@ quite comparable.
 ## Your Task
 You task in this part is to implement 
 
-## Where is `subiu`?
+## Where is [`subiu`](#subiu)?
 It wasn't us who left out the instruction. Instead, the designers of the MIPS
 instruction set decided that since you can just add negative constants, having
-an additional `subiu` (and corresponding `subi`) instruction was pointless.
+an additional [`subiu`](#subiu) (and corresponding `subi`) instruction was pointless.
 This makes the physical processor just a little bit simpler.
 
 ## On Immediate Operands
 Something interesting to note is that these immediate operands are only 16 bits
 wide. We'll see why this is the case in lesson two. You will have to be careful
-with the `addiu` instruction because in order to get negative constants, you
+with the [`addiu`](#addiu) instruction because in order to get negative constants, you
 will have to sign-extend the immediate operand. This works as follows: If the
 immediate operand is negative (when considering 16 bits), expand the constant to
 32 bits by filling on the left with the sign bit. As an example (in the full 32
