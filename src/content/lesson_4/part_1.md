@@ -1,6 +1,6 @@
 # Part 1: Parallelizing
 Welcome to the final lesson on computer architecture! This lesson is going to be
-concentrating on exploiting the pipelining you setup in Lesson 3 for speed. You'll
+concentrating on exploiting the modularization you did Lesson 3 for speed. You'll
 be specifically working on parallelizing the operations of the pipeline. Like we
 mentioned, there could be complications when instructions depend upon one another,
 but we're going to assume that that's not the case in this part of the lesson. In the
@@ -16,20 +16,19 @@ the binary  `0xFAFAFAFA`, program execution should terminate!
 
 # Your Task
 In the previous lesson, we had a mock `processMIPS` function that you could see
-to get a sense of what was going on behind the scenes using your implementations of 
-`fetch` and the remainder of the pipeline. Now, it's your turn to implement this
+to get a sense of what was going on behind the scenes. Now, it's your turn to implement this
 function! It's going to be different from the previous lesson, since this time we
 are executing instructions in **parallel.** Therefore, you must continue execution 
 of previously run commands whose results were saved in the latches at the
 following step of the pipeline. Here are some notes to help you through this:
 
 - Program termination is now denoted by an arbitrary sequence of binary that will never
-appear otherwise in a program: `0xFAFAFAFA`. You **will** have to modify `ID` and use
-the `latches.term_if` in this step!
+appear otherwise in a program: `0xFAFAFAFA`. You **will** have to modify `ID` and set
+the `latches.term_if` in this step if you encounter this binary!
 - The `latches` variable is an object that should maximally have its **four**
-latch slots used. This will *only* **not** be the case at the beginning and end of the
-program execution, i.e. where you are first loading things into an empty pipeline or
-flushing out the remaining steps before program termination.
+latch slots used. The *only* times when this will **not** be the case are at the 
+beginning and end of the program execution, i.e. where you are first loading things 
+into an empty pipeline or flushing out the remaining steps before program termination.
 - You should execute a stage of the pipeline if a given `latch` slot acts as input to it
 and is not `undefined.` In line with that, whenever you execute a stage of the pipeline,
 make sure to `flush` it, i.e. set the corresponding latch from which you got the input
