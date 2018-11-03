@@ -2,8 +2,8 @@ import React, {Component} from 'react';
 import { Button, Card, CardBody, CardTitle, CardHeader,
   Popover, PopoverHeader, PopoverBody,
   Modal, ModalHeader, ModalBody, ModalFooter,
-  Navbar, NavItem, NavbarNav, NavbarBrand, Collapse,
-  NavLink, Dropdown, DropdownItem, DropdownToggle,
+  Navbar, NavItem, NavbarNav, NavbarBrand,
+  Dropdown, DropdownItem, DropdownToggle,
   DropdownMenu } from 'mdbreact';
 import PropTypes from 'prop-types';
 

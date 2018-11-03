@@ -1,11 +1,11 @@
 # Part 2: Heading Off On Your Own
 
-In this lesson, you'll be implementing the [`subu`](#subu) instruction.  Over the course
-of these lessons you'll be adding to your code over so by the end you'll have a
-complete emulator.
+In this lesson, you'll be implementing the [`subu`](#subu) instruction. Each
+of the parts in Lesson 1 will be adding to your code from previous ones, so by 
+the end, you'll have a complete MIPS emulator.
 
 ## Your Task
-Your task this time is to implement the [`subu`](#subu) instruction.  As a reminder, you
+Your task this time is to implement the [`subu`](#subu) instruction. As a reminder, you
 can click on any instruction on the sidebar to be taken to a glossary containing
 all the information you could possibly want to know about it.
 

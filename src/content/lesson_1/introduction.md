@@ -2,36 +2,36 @@
 
 Welcome to the first lesson! The goal of this lesson to familiarize you with
 assembly language, and have you write a basic emulator for the MIPS I
-instruction set.  This might sound quite complicated now, but taken one step at
-a time, it’s surprisingly straightforward.  The upside to assembly language is
-that each instruction is quite simple.  The downside is that you need a lot of
-them to do anything.  We've populated the Assembly editor with a program that
-will test all parts of the instruction set.  Feel free to edit the assembly and
+instruction set. This might sound quite complicated now, but taken one step at
+a time, it’s surprisingly straightforward. The upside to assembly language is
+that each instruction is quite simple. The downside is that you need a lot of
+them to do anything. We've populated the Assembly editor with a program that
+will test all parts of the instruction set. Feel free to edit the assembly and
 see how it changes the behavior of the program.
 
 # Assembly Language
 
 # MIPS Registers
-The MIPS architecture contains 32 general purpose registers.  The name might
+The MIPS architecture contains 32 general purpose registers. The name might
 make you wonder if there are special purpose registers and you'd be correct.
 There are also two registers for integer multiplication and division, as well as
-another 32 for floating point arithmetic.  You won't be implementing
+another 32 for floating point arithmetic. You won't be implementing
 multiplication, division, or floating point instructions in this lesson since
 they add significant operating complexity.
 
 The general purpose registers are organized as follows
 
 ## 0 (`$zero`) <a id="zero"></a>
-The `$zero` register is hardwired to be 0.  There isn't any other value it can
-take.  This exists as an optimization since you can't assign to a whole register
-at once unless you're reading from memory.  This allows a register to be set to
-0 (generally the most common initialization value) in one shot.  A write to this
+The `$zero` register is hardwired to be 0. There isn't any other value it can
+take. This exists as an optimization since you can't assign to a whole register
+at once unless you're reading from memory. This allows a register to be set to
+0 (generally the most common initialization value) in one shot. A write to this
 register does nothing, so generally any instruction that uses this as a
 destination won't do anything.
 
 ## 1 (`$at`) <a id="at"></a>
-Assembler temporary register.  This is reserved for use by the assembler to
-implement pseudo-instructions.  These are assembly instructions that you write
+Assembler temporary register. This is reserved for use by the assembler to
+implement pseudo-instructions. These are assembly instructions that you write
 that require more than one machine-language instruction to actually implement.
 The `$at` register allows for a temporary storage location that won't overwrite
 another register that's in use.
@@ -55,23 +55,23 @@ More temporary values
 Reserved for kernel use
 
 ## 28 (`gp`) <a id="gp"></a>
-Global pointer.  Points to the bottom of the global data segment
+Global pointer. Points to the bottom of the global data segment
 
 ## 29 (`sp`) <a id="sp"></a>
-Stack pointer.  Points to the current top of the stack
+Stack pointer. Points to the current top of the stack
 
 ## 30 (`fp`) <a id="fp"></a>
-Frame pointer.  Points to the beginning of the stack for the current function
+Frame pointer. Points to the beginning of the stack for the current function
 
 ## 31 (`ra`) <a id="ra"></a>
-Return address.  This points to the address of the next instruction following a
-function call.  Returning from a function is implemented by jumping to this
+Return address. This points to the address of the next instruction following a
+function call. Returning from a function is implemented by jumping to this
 address at the end of the function.
 
-All of these conventions are just that: conventions.  There aren't any built-in
+All of these conventions are just that: conventions. There aren't any built-in
 requirement about how each of the registers is supposed to be used except for
 `$zero` since it's hardwired to `0` and `$ra` since it's modified by Jump And
-Link instructions.  For these lessons we will treat registers 2-27 as exactly
+Link instructions. For these lessons we will treat registers 2-27 as exactly
 the same, and all other registers as their conventions dictate.
 
 # The MIPS Instruction Set
@@ -94,10 +94,10 @@ instruction), perform an unsigned add on them, and write the value to `$rt`.
 Take the unsigned integer values from `$rs` and `$rt`, perform an unsigned
 subtraction (`$rs - $rt`) on them, and save the result into `$rd`
 
-You might be wondering where the immediate subtraction operations are.  There
-are two reasons you don't see them here.  It's because if in assembly you write
+You might be wondering where the immediate subtraction operations are. There
+are two reasons you don't see them here. It's because if in assembly you write
 `subi $rt, $rs, val`, you can just take the two's-compliment of val and add it!
-This saves space on the chip so it was common in older architectures.  You can
+This saves space on the chip so it was common in older architectures. You can
 also do the same with `subu $rd, $rs, $rt` using the `$at` register for
 calculating the two's-compliment at runtime.
 
@@ -134,7 +134,7 @@ the left with 0), saving the result into `$rt`
 
 ### Shift Left Logical (`sll $rt, $rs, val`)
 Perform a logical shift left of `$rt` by `val` places, saving the result into
-`$rt`.  This is integer multiplication by 2
+`$rt`. This is integer multiplication by 2
 
 ### Shift Right Logical (`srl $rt, $rs, val`)
 Perform a logical right shift of `$rs` by `val` places, filling the vacated
@@ -147,9 +147,9 @@ This is integer division by 2
 
 ## Control Flow
 
-Many of these instructions multiply their arguments by 4.  This is because each
+Many of these instructions multiply their arguments by 4. This is because each
 instruction is exactly 4 bytes long, and so the last two bits of an address will
-always be zero.  By having the argument being the offset or address / 4, you can
+always be zero. By having the argument being the offset or address / 4, you can
 get 4 times as much reach with any of these instructions
 
 ### Branch On Equal (`beq $rt, $rs, val`)
@@ -188,8 +188,8 @@ pseudo-instructions work since it's impossible to have a 32 bit immediate value
 ## Special
 
 ### No Operation (`noop`)
-Do nothing.  This might not seem like a useful instruction to have in an
+Do nothing. This might not seem like a useful instruction to have in an
 instruction set archiecture, but it can really come in handy when you need to
 fill a space with something and you want to make sure that nothing could
-possibly happen if you end up there.  It certainly doesn't come up much, but
+possibly happen if you end up there. It certainly doesn't come up much, but
 it's very handy to have around when it does.

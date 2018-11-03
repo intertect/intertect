@@ -1,26 +1,26 @@
 # Part 4: Immediate Instructions
 
 Immediate instructions are those which have a constant specified along with the
-instruction itself.  The immediate operand simply replaces one of the two
-operand registers that we saw before.  Other than that, these instructions are
+instruction itself. The immediate operand simply replaces one of the two
+operand registers that we saw before. Other than that, these instructions are
 mostly the same.
 
 ## Your Task
 You task in this part is to implement
 
 ## Where is `subiu`?
-It wasn't us who left out the instruction.  Instead, the designers of the MIPS
+It wasn't us who left out the instruction. Instead, the designers of the MIPS
 instruction set decided that since you can just add negative constants, having
 an additional `subiu` (and corresponding `subi`) instruction was pointless.
 This makes the physical processor just a little bit simpler.
 
 ## On Immediate Operands
 Something interesting to note is that these immediate operands are only 16 bits
-wide.  We'll see why this is the case in lesson two. You will have to be careful
+wide. We'll see why this is the case in lesson two. You will have to be careful
 with the `addiu` instruction because in order to get negative constants, you
-will have to sign-extend the immediate operand.  This works as follows: If the
+will have to sign-extend the immediate operand. This works as follows: If the
 immediate operand is negative (when considering 16 bits), expand the constant to
-32 bits by filling on the left with the sign bit.  As an example (in the full 32
+32 bits by filling on the left with the sign bit. As an example (in the full 32
 bits this time), we consider `addiu $t0, $t0, −2` which decrements `$t0` by 2.
 
 ```

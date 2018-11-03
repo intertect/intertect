@@ -123,19 +123,19 @@ sure data is available.
 In order to derive the rules for forwarding, we are first going to
 define two kinds of instructions by when their result become available:
 
-1.  EA instructions are those whose results are produced in the Execute
+1. EA instructions are those whose results are produced in the Execute
     (third) stage
       - Everything except loads, stores, and control flow
-2.  MA instructions are those whose results are produced in the Memory
+2. MA instructions are those whose results are produced in the Memory
     (fourth) stage
       - Loads and stores
 
 Next, we define another two kinds of instructions based on when they
 require the values of their arguments:
 
-1.  DR instructions require their arguments in the Decode (second) stage
+1. DR instructions require their arguments in the Decode (second) stage
       - Control flow instructions
-2.  ER instructions require their arguments in the Execute (third) stage
+2. ER instructions require their arguments in the Execute (third) stage
       - Everything else
       - Loads and stores are here because they calculate the target in
         the execute stage and merely read in the Memory stage.
@@ -152,16 +152,16 @@ Writeback has finished the result won't be back in the register file.
 
 There are three possible cases for the instruction in the execute slot:
 
-1.  No data dependencies\! Nothing to do here.
-2.  EA instruction so we must delay for one cycle
-3.  MA instruction so we must delay for two cycles
+1. No data dependencies\! Nothing to do here.
+2. EA instruction so we must delay for one cycle
+3. MA instruction so we must delay for two cycles
 
 ### Memory slot
 
-1.  No data dependencies.
-2.  EA instruction. In this case the value has already been computed and
+1. No data dependencies.
+2. EA instruction. In this case the value has already been computed and
     it can be forwarded to us
-3.  MA instruction. We have to delay one cycle for the result to become
+3. MA instruction. We have to delay one cycle for the result to become
     available.
       - In reality we'd have to wait longer since there are memory
         latencies, but we don't care about for the purposes of this
@@ -169,8 +169,8 @@ There are three possible cases for the instruction in the execute slot:
 
 ### Writeback slot
 
-1.  No data dependencies. Nothing to do
-2.  If there is a data dependency, then the result has already been
+1. No data dependencies. Nothing to do
+2. If there is a data dependency, then the result has already been
     computed and it should be forwarded to us
 
 ## ER instructions
@@ -179,15 +179,15 @@ In this case, we only have to look at the Memory and Writeback stages
 
 ### Memory slot
 
-1.  No data dependency.
-2.  EA instruction. We simply are forwarded the value
-3.  MA instruction. We must stall for one cycle for the result to become
+1. No data dependency.
+2. EA instruction. We simply are forwarded the value
+3. MA instruction. We must stall for one cycle for the result to become
     available
 
 ### Writeback slot
 
-1.  No data dependencies. Nothing to do
-2.  Same last last time: The value is available
+1. No data dependencies. Nothing to do
+2. Same last last time: The value is available
 
 ## Condensed Rules
 
