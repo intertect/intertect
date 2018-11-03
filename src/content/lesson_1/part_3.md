@@ -1,31 +1,45 @@
 # Part 3: Bitwise Instructions
 
-Bitwise instructions are the bread and butter of low-level programming.  They
-allow you to quickly manipulate binary data efficiently.  In very high-level
+Bitwise instructions are the bread and butter of low-level programming. They
+allow you to quickly manipulate binary data efficiently. In very high-level
 languages like Python, JavaScript, Perl, etc., you won't find these operators
 used much, but when dealing with binary protocols and systems programming, they
-come up really frequently.  Not to make value judgments, but these are my
-favorite instructions.  You don't even need any of the other arithmetic
-instructions! All you need is `nor` or `nand` and you can make all of them
-(really slowly, of course).
+come up really frequently. 
+
+(Not to make value judgments, but these are my favorite instructions. You don't 
+even need any of the other arithmetic instructions! All you need is `nor` or 
+`nand` and you can make all of them. Really slowly, of course.)
+
+# Note on Notation
+
+For this lesson part and many of those to come, we'll be encountering a lot of
+binary, in the content of both function arguments and (eventually) instructions themselves. As a
+result, we'll be referencing them quite often in our instructions panel. To
+prevent confusion, we use the standard numeric notation, where the
+prefix `0x` represents a hex value and `0b` a binary value. The hex is pretty
+obvious to see. *Be careful* with binary though: it is very easy to glance at a
+number such as `0b1100` and misinterpret that as being the hex number `0B1100`, which
+we would typically notate as `0x0B1100`. To distinguish
+these two (outside the use of the prefix), simply keep in mind that the letter 
+characters used in hex numbers are always capitalized!
 
 ## Your Task
 You task is to implement the `add`, `or`, `nor`, `xor`, `sll`, `srl`, and `sra`
-instructions.  These perform the bitwise AND, OR, NOR, and XOR operations as
-well as left logical shift, right logical shift, and right arithmetic shift.  If
-you're not sure what all of that meant, keep reading.  Otherwise, you can go
+instructions. These perform the bitwise AND, OR, NOR, and XOR boolean operations as
+well as left logical shift, right logical shift, and right arithmetic shift. If
+you're not sure what all of that meant, keep reading. Otherwise, you can go
 right ahead and start implementing.
 
 ## Introduction To Bitwise Operations
 If you aren't familiar with logical operations, check out the Wikipedia page on
 [Logical Connectives](https://en.wikipedia.org/wiki/Logical_connective) for a
-good introduction.  As you'll see, logical connectives deal with two truth
-values at a time, but our registers are 32 bits long.  These are therefore
+good introduction. As you'll see, logical connectives deal with two truth
+values at a time, but our registers are 32 bits long. These are therefore
 implemented by pairing the bits in the two registers (hence why they are called
 bitwise operators).
 
 As a quick example, taking the bitwise AND of `0b0110` and `0b0011` gives
-`0b0010`.  We'll write the two operands vertically to make this more clear.  The
+`0b0010`. We'll write the two operands vertically to make this more clear. The
 up carrot is the logical AND operator
 
 ```
@@ -37,25 +51,25 @@ up carrot is the logical AND operator
 ```
 
 ## Shift Operations
-There are three kinds of shifts that we want you to implement.  Shift left
+There are three kinds of shifts that we want you to implement: shift left
 logical (`sll`), shift right logical (`srl`), and shift right arithmetic
 (`sra`).
 
 Shift left logical means you shift each of the bits in the target by some
-amount, filling on the right with 0.  For example, shifting `0b1111` left by 2
-leaves us with `0b1100`.  In this case we assumed we only had 4 bits to work
+amount, filling on the right with 0. For example, shifting `0b1111` left by 2
+leaves us with `0b1100`. In this case we assumed we only had 4 bits to work
 with, in which case the top two bits got shifted off the top.
 
-Shift right logical means the reverse of this.  You shift all the bits to the
-right by some amount, filling with 0 from the left.  Therefore, our previous
+Shift right logical means the reverse of this. You shift all the bits to the
+right by some amount, filling with 0 from the left. Therefore, our previous
 example of `0b1111` shifted right logically by 2 would yield `0b0011`.
 
-Lastly, there's the arithmetic right shift.  This is the odd-instruction-out.
+Lastly, there's the arithmetic right shift. This is the odd-instruction-out.
 The difference is that it treats the number as signed so when it shifts in new
-bits, they match the sign bit.  In this way it's very close to integer division
-by two (rounded towards −∞).  In this way, −1 arithmetic shift right by 1 is
-still −1 but 1 arithmetic shift right by 1 is 0.  We can see this in the
-following way, starting with the −1 case.  For all of these we assume 4 bits for
+bits, they match the sign bit. In this way it's very close to integer division
+by two (rounded towards −∞). In this way, −1 arithmetic shift right by 1 is
+still −1 but 1 arithmetic shift right by 1 is 0. We can see this in the
+following way, starting with the −1 case. For all of these we assume 4 bits for
 simplicity.
 
 ```
@@ -63,15 +77,15 @@ simplicity.
 0b1111 >> 1 = 0b1111
 ```
 
-Where `>>` is the symbol for arithmetic shift right.  We see that a new 1 is
-shifted in to replace the old one.  For another example, consider −2
+Where `>>` is the symbol for arithmetic shift right. We see that a new 1 is
+shifted in to replace the old one. For another example, consider −2
 
 ```
 −2 = 0b1110
 0b1110 >> 1 = 0b1111
 ```
 
-Now it's more obvious what is happening.  For the positive versions of these
+Now it's more obvious what is happening. For the positive versions of these
 examples, we see:
 
 ```
