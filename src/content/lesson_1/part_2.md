@@ -10,43 +10,6 @@ reminder, you can click on any instruction on the sidebar to be taken to a
 glossary containing all the information you could possibly want to know about
 it.
 
-## Code structure
-
-### Overview
-Hopefully the structure of the code is clear to you now, but in case it isn't,
-this is an explanation of the structure of the code we have given you.
-
-The `instruction` variable which is passed into your `processMIPS` function
-contains all the information you will need to perform the operation. It is an
-array with the following structure:
-
-1. The text name of the instruction
-2. The name of the destination register ("rd")
-3. The name of the source register ("rs")
-4. The name of the target register ("rt")
-5. The shift amount field (which we'll explain later)
-
-In order to execute the code, the code simply enumerates each of the possible
-operations, and then performs the necessary work for whichever particular
-instruction it is. This is the simplest way to write an emulator; while the
-later lessons will deal with more and more complicated ideas, this basic
-structure will remain for the most part.
-
-## Registers
-The `registers` variable contains an interface to the registers so you don't
-have to implement this functionality yourself (and also allows us to check your
-work). It provides a two-method interface: `registers.read(register)` and
-`registers.write(register, value)`.
-
-The register object takes in the numeric value of the register so we have
-provided you with `nameToRegisterMap` which, when given the name of a register
-from the `instruction` array, returns the number of that register.
-
-## Memory
-The memory abstraction is just like the register abstraction. It provides the
-two methods `memory.read(location)` and `memory.write(location.value)`. You
-won't use memory until a later part, but now you know why it's there!
-
 ## R-Format Instructions
 Now it's time to introduce you to some of the details of the MIPS instruction
 set, starting with R-Format instructions. What are R-Format instructions?
@@ -82,6 +45,49 @@ within the instruction itself.
 
 Don't worry if this section didn't make perfect sense; in the following parts,
 you'll be introduced to these instruction formats in much more detail.
+
+## Code structure
+Now that we've gotten through all that preliminary information, it's time for
+you to understand the structure of the code that you will be writing. The code
+that we give you as a starting point is just a suggestion, and there are of
+course many other ways to write this emulator, but we feel like this is the most
+clear.
+
+### Overview
+Hopefully the structure of the code is clear to you now, but in case it isn't,
+this is an explanation of the structure of the code we have given you.
+
+The `instruction` variable which is passed into your `processMIPS` function
+contains all the information you will need to perform the operation. It is an
+array with the following structure:
+
+1. The text name of the instruction
+2. The name of the destination register ("rd")
+3. The name of the source register ("rs")
+4. The name of the target register ("rt")
+5. The shift amount field (which we'll explain later)
+
+In order to execute the code, the code simply enumerates each of the possible
+operations, and then performs the necessary work for whichever particular
+instruction it is. This is the simplest way to write an emulator; while the
+later lessons will deal with more and more complicated ideas, this basic
+structure will remain for the most part.
+
+### Registers
+The `registers` variable contains an interface to the registers so you don't
+have to implement this functionality yourself (and also allows us to check your
+work). It provides a two-method interface: `registers.read(register)` and
+`registers.write(register, value)`.
+
+The register object takes in the numeric value of the register so we have
+provided you with `nameToRegisterMap` which, when given the name of a register
+from the `instruction` array, returns the number of that register.
+
+### Memory
+The memory abstraction is just like the register abstraction. It provides the
+two methods `memory.read(location)` and `memory.write(location.value)`. You
+won't use memory until a later part, but now you know why it's there!
+
 
 ---
 # The MIPS Instruction Set
