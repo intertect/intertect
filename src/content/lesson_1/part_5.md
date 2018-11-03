@@ -9,13 +9,16 @@ There are some strange things about jump instructions that we'll gloss over for
 this lesson. Be prepared for strangeness starting in Lesson 2.
 
 ## Branch Instructions
-We only have you implement beq since that's enough to do anything else you might
-want to do. It's possible to emulate any other branch instruction if you really
-want to. For example, to check if one number is less than another, you can
+Branch instructions do exactly what they sound like: control the flow of operations
+whenever there's a branch (i.e. a conditional) in the program. You will be 
+implementing the [`beq`](#beq) instruction, which stands for "branch if equal."
+You only have to implement [`beq`](#beq), since that's enough to do anything else you might
+want to do: tt's possible to emulate any other branch instruction with just this
+one if you really wanted to! For example, to check if one number is less than another, you can
 subtract and use some bit shifts. It's not the most wonderful thing, but it
 works.
 
-### How To Calculate Where To Go?
+## How To Calculate Where To Go?
 Branch instructions are immediate format where the operand is an offset from the
 address of the *next* instruction. More specifically, the immediate operand is
 the offset *divided by 4*. Since all instructions are 32 bits, the bottom two
@@ -23,13 +26,16 @@ bits are always 0. This allows us to get four times greater coverage from a
 branch instruction. Once the bits have been shifted, they are also sign
 extended and then added to the address of the next instruction.
 
+## Program Counter
+[[@PETER: FILL HERE]]
+
 ## Jump Instruction
-
-Jump instructions are much more straightforward. `jr` resets the program counter
+Jump instructions are much more straightforward. [`jr`](#jr) resets the program counter
 with the address contained in whatever register is passed in. This allows us to
-go to any place in memory we could possibly want.
+go to any place in memory we could possibly want to jump to.
 
-`j` and `jal` use the same format, while their semantics are slightly different.
+The [`j`](#j) and [`jal`](#jal) instruction formats are identical, though their 
+semantics (explained in the paragraph below) slightly differ slightly.
 Both of them are an opcode followed by as many bits of address as possible,
 which happens to be 26. They both use the same divide-by-four trick as before,
 so we actually end up with 28 bits in the end. Instead of using these as an
@@ -37,9 +43,8 @@ offset, the target is instead overlaid on the program counter. This means the
 new address is the top 4 bits of the program counter (for the next instruction)
 and then 28 bits of address.
 
-`j` is an unconditional jump, which means it always goes to its target. `jal` is
-unconditional as well, but it also saves the address of the next instruction
-into the `$ra` or Return Address register. This allows the programmer to
+[`j`](#j) and [`jal`](#jal) are both unconditional jump instructions, meaning they always 
+go to their target location. [`jal`](#jal), however, additionallysaves the address of the next instruction into the `$ra` or Return Address register. This allows the programmer to
 implement returning from function calls.
 
 ---
