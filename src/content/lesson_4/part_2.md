@@ -18,14 +18,14 @@ data dependencies since we could then keep the pipeline full at all
 times. As we add data dependencies, however, our execution speed slows
 way down since we have to wait for results to become available. Looking
 back at the previous example, we would have to wait until the first
-instruction completes the Writeback stage before the second instruction
-can enter the Execute stage; That's two cycles of stalling that have to
-happen\!
+instruction completes the WB stage before the second instruction
+can enter the EX stage. That's two cycles of stalling that have to
+happen!
 
 That's where forwarding comes into play. Forwarding is an optimization
 performed by the processor that cuts down the number of stalled cycles.
 In the previous case, the processor would take the result of the first
-instruction's execute stage and forward it right back into the execute
+instruction's EX stage and forward it right back into the execute
 stage for the next instruction. In this way, the processor has
 completely eliminated the two cycles of stalls.
 
@@ -34,16 +34,14 @@ earliest pipeline stage after which the CPU knows the result of an
 operation? From this, it is possible to derive all the possible
 forwarding rules.
 
-For example, since jumps and branches happen in the decode stage, an add
-(which gets its result from the execute stage), followed by a branch
+For example, since jumps and branches happen in the ID stage, an add
+(which gets its result from the EX stage), followed by a branch
 depending on the result of that add, must stall for one cycle since the
-data cannot be available to the branch until after Execute has finished.
-I'll enumerate the rules completely in a later section.
+data cannot be available to the branch until after execute has finished.
 
 # Data Hazards
 
 There are three types of Data hazards:
-
   - Read After Write (RAW)
   - Write After Read (WAR)
   - Write After Write (WAW)
@@ -102,20 +100,20 @@ beq $t0, $t1, target
 
 The processor has to stall for one cycle since there is a RAW dependency
 between the `addi` and the `beq` instructions that won't be resolved by
-the time the `beq` instruction is in the Decode stage. The stall can be
+the time the `beq` instruction is in the ID stage. The stall can be
 eliminated if the programmer or compiler can reorder instructions so
 that there is an unrelated instruction between the `addi` and `beq`.
 
 However, there is another problem: The processor doesn't resolve the
-branch or jump until the Decode stage, so there will always be a stall
-in the fetch stage when we encounter a jump or branch. This, finally, is
+branch or jump until the ID stage, so there will always be a stall
+in the IF stage when we encounter a jump or branch. This, finally, is
 the explanation for the branch delay slot. By having flow control
-resolve in the decode stage and an unconditional instruction execution
+resolve in the ID stage and an unconditional instruction execution
 immediately following, this stall can be completely eliminated.
 
 # Forwarding
 
-A quick note before we get started with the forwarding rules: You must
+A quick note before we get started with the forwarding rules: you must
 always check all read registers for data dependencies. The rules below
 only deal with one register at a time, but you must check both to make
 sure data is available.
@@ -138,17 +136,17 @@ require the values of their arguments:
 2. ER instructions require their arguments in the Execute (third) stage
       - Everything else
       - Loads and stores are here because they calculate the target in
-        the execute stage and merely read in the Memory stage.
+        the EX stage and merely read in the MEM stage.
 
 Now that we have these definitions, we can see that there are a very
 limited number of cases that we have to consider.
 
 ## DR instructions
 
-We need to look at the Execute, Memory, and Writeback stages since until
-Writeback has finished the result won't be back in the register file.
+We need to look at the EX, MEM, and WB stages since until
+WB has finished the result won't be back in the register file.
 
-### Execute slot
+### EX slot
 
 There are three possible cases for the instruction in the execute slot:
 
@@ -156,7 +154,7 @@ There are three possible cases for the instruction in the execute slot:
 2. EA instruction so we must delay for one cycle
 3. MA instruction so we must delay for two cycles
 
-### Memory slot
+### MEM slot
 
 1. No data dependencies.
 2. EA instruction. In this case the value has already been computed and
@@ -167,7 +165,7 @@ There are three possible cases for the instruction in the execute slot:
         latencies, but we don't care about for the purposes of this
         lesson.
 
-### Writeback slot
+### WB slot
 
 1. No data dependencies. Nothing to do
 2. If there is a data dependency, then the result has already been
@@ -175,16 +173,16 @@ There are three possible cases for the instruction in the execute slot:
 
 ## ER instructions
 
-In this case, we only have to look at the Memory and Writeback stages
+In this case, we only have to look at the MEM and WB stages
 
-### Memory slot
+### MEM slot
 
 1. No data dependency.
 2. EA instruction. We simply are forwarded the value
 3. MA instruction. We must stall for one cycle for the result to become
     available
 
-### Writeback slot
+### WB slot
 
 1. No data dependencies. Nothing to do
 2. Same last last time: The value is available
