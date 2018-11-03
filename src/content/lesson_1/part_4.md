@@ -1,12 +1,13 @@
 # Part 4: Immediate Instructions
 
-Immediate instructions are those which have a constant specified along with the
+In addition to the register instructions, we have immediate (I) instructions. Unlike
+register instructions, immediates have a constant specified along with the
 instruction itself. The immediate operand simply replaces one of the two
-operand registers that we saw before. Other than that, these instructions are
-mostly the same.
+operand registers in R instructions. Other than that, these instructions are
+quite comparable.
 
 ## Your Task
-You task in this part is to implement
+You task in this part is to implement 
 
 ## Where is `subiu`?
 It wasn't us who left out the instruction. Instead, the designers of the MIPS
