@@ -99,6 +99,22 @@ examples, we see:
 0b0010 >> 1 = 0b0001
 ```
 
+### R-Format Instructions Revisited
+We kept saying we would talk about the "shift amount" part of the R-Format
+instruction. Now is the time for this! The shift amount is exactly what it
+sounds like: It's the number of bits to shift when executing a shift
+instruction. Even though the shift instructions look much more like I-Format
+instruction, they are still R-Format. It is unclear precisely why, but we
+believe it's because there was space left in the R-Format instruction binary
+format.
+
+To get into the weeds quickly, the R-Format instruction requires 5 bits for each
+of the register, and a combined 11 bits for the operation (we'll talk more about
+the binary format in Lesson 2); this leaves 5 bits left-over. Since shifts are
+meaningless after 32 positions (try to convince yourself of this fact), then all
+we need is 5 bits! Since the R-Format instruction had space, it got used for
+shifts as well.
+
 ---
 # The MIPS Instruction Set
 
