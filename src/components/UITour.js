@@ -32,12 +32,12 @@ class UITour extends Component {
       {
         selector: '#saveCode',
         content: `If you want to take a break and resume later on, click
-        here to save your current progress!`,
+        here to save your progress!`,
       },
 
       {
         selector: '#restartLevel',
-        content: `To start the level with a clean program, click here. This will erase all the
+        content: `To restart the level with a clean program, click here. This will erase all the
         progress you've made so far in the level, so make sure there's nothing you want to keep
         that hasn't been copied elsewhere.`,
       },
@@ -77,20 +77,20 @@ class UITour extends Component {
         selector: '#debugging',
         content: `When running the tests above, you'll see the "outputs" in this section. As you
         will learn, the outputs of processor instructions are always written to either memory or
-        registers, which display below.`,
+        registers, which are displayed separately here.`,
       },
       {
         selector: '#registersTable',
-        content: `As you run your program, you will see the values of registers updated here. Rows
-        highlighted in green are correct (i.e. the value we would expect to see), and red incorrect.
+        content: `As you run your program (with the Step or Run button in the test area), you will
+        see the values of registers updated here. Rows highlighted in green are correct and red incorrect.
         When you encounter an incorrect value, hover over the value column to see what we expected to
-        see instead. This should help you debug any problem you may have in your code!`,
+        see instead. This should help you debug any problems you may have in your code!`,
       },
       {
         selector: '#memoryTable',
         content: `Similar to the registers table, the memory table holds values for any memory
         address you stored into. Note that memory doesn't become relevant for a couple more lessons,
-        so feel free to minimize it to declutter your space in the meantime!`,
+        so feel free to minimize this table to declutter your space in the meantime!`,
       },
     ]
 
