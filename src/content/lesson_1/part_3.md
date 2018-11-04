@@ -14,22 +14,29 @@ course.)
 # Note on Notation
 
 For this lesson part and many of those to come, we'll be encountering a lot of
-binary, in the content of both function arguments and (eventually) instructions
+binary, in the context of both function arguments and (eventually) instructions
 themselves.  As a result, we'll be referencing them quite often in our
 instructions panel.  To prevent confusion, we use the standard numeric notation,
 where the prefix `0x` represents a hex value and `0b` a binary value.  The hex
 is pretty obvious to see. *Be careful* with binary though: it is very easy to
 glance at a number such as `0b1100` and misinterpret that as being the hex
 number `0B1100`, which we would typically notate as `0x0B1100`.  To distinguish
-these two (outside the use of the prefix), simply keep in mind that the letter
-characters used in hex numbers are always capitalized!
+these two (outside the use of the prefix), simply keep in mind that the letters
+used in hex numbers are always capitalized!
 
 # Your Task
-You task is to implement the [`or`](#or), [`nor`](#nor), [`xor`](#xor),
-[`sll`](#sll), [`srl`](#srl), and [`sra`](#sra) instructions.  These perform the
-bitwise AND, OR, NOR, and XOR boolean operations as well as left logical shift,
-right logical shift, and right arithmetic shift.  If you're not sure what all of
-that meant, keep reading.  Otherwise, you can go right ahead and start
+You task in this part is to implement the following instructions:
+
+1. [`or`](#or)
+2. [`nor`](#nor)
+3. [`xor`](#xor)
+4. [`sll`](#sll)
+5. [`srl`](#srl)
+6. [`sra`](#sra)
+
+These perform the bitwise AND, OR, NOR, and XOR boolean operations as well as 
+left logical shift, right logical shift, and right arithmetic shift.  If you're not 
+sure what all of that meant, keep reading.  Otherwise, you can go right ahead and start
 implementing.
 
 ## Introduction To Bitwise Operations
