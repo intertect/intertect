@@ -1,114 +1,114 @@
 # Testing individual instructions in isolation
 
 # addu
-# PRE: $3=0x10 $4=0x1
-addu $3, $4, $4
+# PRE: $v1=0x10 $a0=0x1
+addu $v1, $a0, $a0
 nop
 nop
 nop
 nop
-# POST: $3=0x11
+# POST: $v1=0x11
 
 # addiu
 # PRE:
-addiu $3, $zero, 1
-addiu $4, $zero, -1
+addiu $v1, $zero, 1
+addiu $a0, $zero, -1
 nop
 nop
 nop
 nop
-# POST: $3=0x1 $4=0xFFFFFFFF
+# POST: $v1=0x1 $a0=0xFFFFFFFF
 
 # subu
-# PRE: $5=0x10 $6=0x1
-subu $3, $5, $6
+# PRE: $a1=0x10 $a2=0x1
+subu $v1, $a1, $a2
 nop
 nop
 nop
 nop
-# POST: $3=0xF
+# POST: $v1=0xF
 
 # and
-# PRE: $7=0xFF $t8=0xF
-and $3, $7, $8
+# PRE: $a3=0xFF $t8=0xF
+and $v1, $a3, $t0
 nop
 nop
 nop
 nop
-# POST: $3=0xF
+# POST: $v1=0xF
 
 # andi
-# PRE: $7=0xFF
-andi $3, $7, 0xF
+# PRE: $a3=0xFF
+andi $v1, $a3, 0xF
 nop
 nop
 nop
 nop
-# POST: $3=0xF
+# POST: $v1=0xF
 
 # or
-# PRE: $8=0xF $9=0xF0
-or $3, $8, $9
+# PRE: $t0=0xF $t1=0xF0
+or $v1, $t0, $t1
 nop
 nop
 nop
 nop
-# POST: $3=0xFF
+# POST: $v1=0xFF
 
 # ori
-# PRE: $8=0xF $9=0xF0
-ori $3, $8, 0xF0
+# PRE: $t0=0xF $t1=0xF0
+ori $v1, $t0, 0xF0
 nop
 nop
 nop
 nop
-# POST: $3=0xFF
+# POST: $v1=0xFF
 
 # xor
-# PRE: $9=0xF0 $10=0xFF
-xor $3, $9, $10
+# PRE: $t1=0xF0 $t2=0xFF
+xor $v1, $t1, $t2
 nop
 nop
 nop
 nop
-# POST: $3=0xF
+# POST: $v1=0xF
 
 # xori
-# PRE: $9=0xF0
-xori $3, $9, 0xFF
+# PRE: $t1=0xF0
+xori $v1, $t1, 0xFF
 nop
 nop
 nop
 nop
-# POST: $3=0xF
+# POST: $v1=0xF
 
 # sll
-# PRE: $9=0xF0
-sll $3, $9, 1
+# PRE: $t1=0xF0
+sll $v1, $t1, 1
 nop
 nop
 nop
 nop
-# POST: $3=0x1E0
+# POST: $v1=0x1E0
 
 # srl
-# PRE: $9=0xF0
-srl $3, $9, 1
+# PRE: $t1=0xF0
+srl $v1, $t1, 1
 nop
 nop
 nop
 nop
-# POST: $3=0x78
+# POST: $v1=0x78
 
 # sra
-# PRE: $11=0x2 $12=0xFFFFFFFE
-sra $3, $11, 1
-sra $4, $12, 1
+# PRE: $t3=0x2 $t4=0xFFFFFFFE
+sra $v1, $t3, 1
+sra $a0, $t4, 1
 nop
 nop
 nop
 nop
-# POST: $3=0x1 $4=0xFFFFFFFF
+# POST: $v1=0x1 $a0=0xFFFFFFFF
 
 # j
 j jal_label
@@ -137,7 +137,7 @@ jal_label:
 
 # beq
 beq_label:
-        beq $0, $0, beq_done
+        beq $zero, $zero, beq_done
         nop
         j beq_label
         nop
@@ -148,9 +148,9 @@ beq_done:
         nop
 
 # bne
-        # PRE $13=0x1
+        # PRE $t5=0x1
 bne_label:
-        bne $13, $0, bne_done
+        bne $t5, $zero, bne_done
         nop
         j bne_label
         nop
@@ -161,77 +161,77 @@ bne_done:
         nop
 
 # slt
-# PRE $13=0x1
-slt $3, $13, $0
-slt $4, $0, $13
+# PRE $t5=0x1
+slt $v1, $t5, $zero
+slt $a0, $zero, $t5
 nop
 nop
 nop
 nop
-# POST $3=0x1 $4=0x0
+# POST $v1=0x1 $a0=0x0
 
 # sw
-# PRE $14=0xDEADBEEF
-sw $14, 0x0
+# PRE $t6=0xDEADBEEF
+sw $t6, 0x0
 nop
 nop
 nop
 nop
 
 # sh
-# PRE $14=0xDEADBEEF
-sh $14, 0x4
+# PRE $t6=0xDEADBEEF
+sh $t6, 0x4
 nop
 nop
 nop
 nop
 
 # sb
-# PRE $14=0xDEADBEEF
-sb $14, 0x6
+# PRE $t6=0xDEADBEEF
+sb $t6, 0x6
 nop
 nop
 nop
 nop
 
 # lw
-lw $3, 0x0
+lw $v1, 0x0
 nop
 nop
 nop
 nop
-# POST $3=0xDEADBEEF
+# POST $v1=0xDEADBEEF
 
 # lhu
-lw $3, 0x4
+lw $v1, 0x4
 nop
 nop
 nop
 nop
-# POST $3=0xBEEF
+# POST $v1=0xBEEF
 
 # lhu
-lw $3, 0x6
+lw $v1, 0x6
 nop
 nop
 nop
 nop
-# POST $3=0xEF
+# POST $v1=0xEF
 
 # Forwarding EX => EX (1 Ahead)
-addiu $3, $0, 1
-addiu $3, $3, 0x10
+addiu $v1, $zero, 1
+addiu $v1, $v1, 0x10
 nop
 nop
 nop
 nop
-# POST $3=0x11
+# POST $v1=0x11
 
 # Forwarding EX => DE (2 Ahead)
 ex_de_2_label:
-        addiu $3, $0, 0x0
+        addiu $v1, $zero, 0x0
         nop
-        beq $3, $0, ex_de_2_done
+        beq $v1, $zero, ex_de_2_done
         nop
         j ex_de_2_label
         nop
@@ -242,30 +242,30 @@ ex_de_2_done:
         nop
 
 # Forwarding MEM => EX (2 Ahead)
-lw $3, 0x0
+lw $v1, 0x0
 nop
-addiu $3, $3, 0x1
-nop
-nop
+addiu $v1, $v1, 0x1
 nop
 nop
-# POST $3=0xDEADBEF0
+nop
+nop
+# POST $v1=0xDEADBEF0
 
 # Forwarding MEM => MEM (1 Ahead)
-lw $3, 0x4
-sw $3, 0x8
+lw $v1, 0x4
+sw $v1, 0x8
 # 0x8 should contain 0xBE, 0xEF, 0xEF, 0x00
 
 # Forwarding MEM => DE (3 Ahead)
-        lw $4, 0x0
+        lw $a0, 0x0
         nop
         nop
         nop
         nop # Make sure we've cleared the pipeline
-        lw $3, 0x0
+        lw $v1, 0x0
         nop
         nop
-        beq $3, $4, mem_de_done
+        beq $v1, $a0, mem_de_done
         nop
 mem_de_3_label:
         j mem_de_3_label
@@ -278,8 +278,8 @@ mem_de_3_done:
 
 # Forwarding EX => DE (1 Ahead)
         # Requires 1 cycle of stalling
-        addiu $3, $0, 0x0
-        beq $3, $0, ex_de_1_done
+        addiu $v1, $zero, 0x0
+        beq $v1, $zero, ex_de_1_done
         nop
 ex_de_1_label:
         j ex_de_1_label
@@ -292,24 +292,24 @@ ex_de_1_done:
 
 # Forwarding MEM => EX (1 Ahead)
 # Requires 1 cycles of stalling
-lw $3, 0x0
-addiu $3, $3, 0x1
+lw $v1, 0x0
+addiu $v1, $v1, 0x1
 nop
 nop
 nop
 nop
-# POST $3=0xDEADBEF0
+# POST $v1=0xDEADBEF0
 
 # Forwarding MEM => DE (1 Ahead)
         # Requires 1 cycle of stalling
-        lw $3, 0x0
+        lw $v1, 0x0
         nop
         nop
         nop
         nop
-        lw $4, 0x0
+        lw $a0, 0x0
         nop
-        beq $3, $4, mem_de_1_done
+        beq $v1, $a0, mem_de_1_done
         nop
 mem_de_2_label:
         j mem_de_1_label
@@ -322,13 +322,13 @@ mem_de_2_done:
 
 # Forwarding MEM => DE (1 Ahead)
         # Requires 2 cycles of stalling
-        lw $3, 0x0
+        lw $v1, 0x0
         nop
         nop
         nop
         nop
-        lw $4, 0x0
-        beq $3, $4, mem_de_1_done
+        lw $a0, 0x0
+        beq $v1, $a0, mem_de_1_done
         nop
 mem_de_1_label:
         j mem_de_1_label
@@ -340,9 +340,9 @@ mem_de_1_done:
         nop
 
 # Branch delay
-        addiu $3, $zero, 0x1
+        addiu $v1, $zero, 0x1
         j done
-        addiu $3, $3, 0x1
+        addiu $v1, $v1, 0x1
 done:
-        addiu $3, $3, 0x1
-        # POST $3=0x
+        addiu $v1, $v1, 0x1
+        # POST $v1=0x
