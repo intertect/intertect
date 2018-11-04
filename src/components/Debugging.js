@@ -6,8 +6,7 @@
 /* eslint-disable import/no-named-as-default */
 
 import React, {Component} from 'react';
-import { Button, Card, CardBody, CardTitle, CardHeader,
-  Popover, PopoverHeader, PopoverBody, Collapse } from 'mdbreact';
+import { Button, Card, CardBody, CardTitle, CardHeader, Collapse } from 'mdbreact';
 import PropTypes from 'prop-types';
 
 import MemoryTable from './MemoryTable.js'

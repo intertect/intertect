@@ -8,8 +8,7 @@
 import React, {Component} from 'react';
 
 import { Button, Card, CardBody,
-  Dropdown, DropdownToggle, DropdownMenu, DropdownItem,
-  Popover, PopoverHeader, PopoverBody } from 'mdbreact';
+  Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'mdbreact';
 import PropTypes from 'prop-types';
 
 import AceEditor from 'react-ace';

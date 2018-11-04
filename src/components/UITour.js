@@ -96,6 +96,7 @@ class UITour extends Component {
 
     return (
       <Tour
+          closeWithMask={false}
           steps={steps}
           isOpen={!this.props.completedTour && this.props.isTourOpen}
           onRequestClose={this.props.closeTour} />
