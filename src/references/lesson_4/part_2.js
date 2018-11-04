@@ -397,6 +397,10 @@ function MEM(latches, registers, memory) {
         location = "registers";
         position = rt;
         break;
+      case 'lui':
+        result = imm << 16;
+        registers.write(rt, result);
+        break;
       default:
         break;
     }

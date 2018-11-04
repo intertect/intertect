@@ -1,9 +1,21 @@
-    case 'beq':
+    case 'sb':
       // TODO
       break;
-    case 'j':
+    case 'sh':
       // TODO
       break;
-    case 'jal':
+    case 'sw':
+      // TODO
+      break;
+    case 'lb':
+      // TODO
+      break;
+    case 'lh':
+      // TODO
+      break;
+    case 'lw':
+      // TODO
+      break;
+    case 'lui':
       // TODO
       break;

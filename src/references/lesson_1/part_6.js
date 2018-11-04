@@ -156,9 +156,9 @@ export function solution(instruction, registers, memory) {
       value = ToUint32(registers.read(rt));
 
       // From most to least significant
-      byte_1 = (value >> 24) & 0xFF;
-      byte_2 = (value >> 16) & 0xFF;
-      byte_3 = (value >> 8) & 0xFF;
+      byte_1 = (value >>> 24) & 0xFF;
+      byte_2 = (value >>> 16) & 0xFF;
+      byte_3 = (value >>> 8) & 0xFF;
       byte_4 = value & 0xFF;
 
       memory.write(start_address, byte_1);
@@ -176,7 +176,7 @@ export function solution(instruction, registers, memory) {
       value = ToUint32(registers.read(rt));
 
       // From most to least significant
-      byte_1 = (value >> 8) & 0xFF;
+      byte_1 = (value >>> 8) & 0xFF;
       byte_2 = value & 0xFF;
 
       memory.write(start_address, byte_1);
@@ -245,6 +245,12 @@ export function solution(instruction, registers, memory) {
 
       value = byte_1;
 
+      registers.write(rt, value);
+      break;
+    case 'lui':
+      rt = nameToRegisterMap[instruction[1]];
+      imm = instruction[2];
+      value = imm << 16;
       registers.write(rt, value);
       break;
     default:
