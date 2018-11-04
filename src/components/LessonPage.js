@@ -675,7 +675,7 @@ class LessonPage extends Component {
             onChange={this.onChange}
             studentProgram={this.state.studentProgram} />
 
-          <div classNamef="col-sm-6">
+          <div className="col-sm-6">
             <Card style={{ marginTop: '1rem', width:"100%"}}>
               <CardHeader color="default-color" className="text-center">
                 {stepExplanation}
