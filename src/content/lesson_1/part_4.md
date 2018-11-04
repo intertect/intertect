@@ -15,6 +15,31 @@ comparable.  The information contained within an I-Format instruction is:
 The target register takes the place of the destination register, `rd`, for
 I-Format instructions.
 
+# Code Structure
+The main difference for this part is that you are going to be dealing with a 
+slightly different instruction format.  The `instruction` parameter that is 
+being passed in will now have a slightly different format (but only slightly):
+
+0. The operation to perform
+1. The source register (`rs`)
+2. The target register (`rt`)
+3. The immediate operand
+
+In order to deal with the immediate operand, you are going to have to know
+whether to sign-extend or zero-extend the value that you get.  We have provided
+the `SignExtend32(val)` and `ZeroExtend32(val)` functions for your convenience.
+The exact meanings of what sign extending vs. zero extending is explained below,
+so make sure to read those sections if you're unclear on the differences!
+If you don't want to have to figure out what do do in this respect, then look no
+further:
+
+1. [addiu](#addiu) gets sign-extended since the value is a number
+2. [andi](#andi) gets zero-extended because it is a logical operation
+3. [ori](#ori) same
+4. [xori](#xori) same
+
+Isn't that straightforward?  Now get implementing!
+
 # Your Task
 You task in this part is to implement the following instructions:
 
@@ -43,7 +68,7 @@ where `N` is the number of bits in the number.  Therefore, the smallest possible
 number in a signed two's complement representation is `0x1000...`.  This also
 means that `-1 = 0b11...11`.
 
-In order to add two two's complement numbers, there are added just like any
+In order to add two two's complement numbers, just add them as you would any
 other binary numbers; surprisingly the math works out.  (If you're feeling
 adventurous, try to convince yourself of this fact.  Remember that when the
 result wouldn't fit in the number of bits available, it wraps around).  Read the
@@ -115,32 +140,6 @@ If we had 2 instead of −2, it would work as follows:
 (sign extending...)
 2 = 0b00000000000000000000000000000010
 ```
-
-## Code Structure
-Finally, we get to the nuts and bolts of the implementation for this section.  I
-hope you've made it this far, but the information here isn't terribly hard to
-figure out, so you would be fine in any case.  The main difference for this part
-is that you are going to be dealing with a slightly different instruction
-format.  The `instruction` parameter that is being passed in will now have a
-slightly different format (but only slightly):
-
-0. The operation to perform
-1. The source register (`rs`)
-2. The target register (`rt`)
-3. The immediate operand
-
-In order to deal with the immediate operand, you are going to have to know
-whether to sign-extend or zero-extend the value that you get.  We have provided
-the `SignExtend32(val)` and `ZeroExtend32(val)` functions for your convenience.
-If you don't want to have to figure out what do do in this respect, then look no
-further:
-
-1. [addiu](#addiu) gets sign-extended since the value is a number
-2. [andi](#andi) gets zero-extended because it is a logical operation
-3. [ori](#ori) same
-4. [xori](#xori) same
-
-Isn't that straightforward?  Now get implementing!
 
 ---
 # The MIPS Instruction Set
