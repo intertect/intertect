@@ -149,8 +149,8 @@ beq_done:
 
 # bne
         # PRE $13=0x1
-beq_label:
-        beq $13, $0, bne_done
+bne_label:
+        bne $13, $0, bne_done
         nop
         j bne_label
         nop
@@ -282,7 +282,7 @@ mem_de_3_done:
         beq $3, $0, ex_de_1_done
         nop
 ex_de_1_label:
-        j ex_de_1_label:
+        j ex_de_1_label
         nop
 ex_de_1_done:
         nop
@@ -312,7 +312,7 @@ nop
         beq $3, $4, mem_de_1_done
         nop
 mem_de_2_label:
-        j mem_de_1_label:
+        j mem_de_1_label
         nop
 mem_de_2_done:
         nop
@@ -331,7 +331,7 @@ mem_de_2_done:
         beq $3, $4, mem_de_1_done
         nop
 mem_de_1_label:
-        j mem_de_1_label:
+        j mem_de_1_label
         nop
 mem_de_1_done:
         nop

@@ -2,12 +2,12 @@ main:
 	addiu	$sp,$sp,-32
 	sw	$ra,28($sp)
 	sw	$fp,24($sp)
-	addui	$fp,$sp,$zero
+	addiu	$fp,$sp,0
 	ori	$a0,$zero,10			# 0xa
 	jal	fib
 	nop
 
-	addui	$sp,$fp,$zero
+	addiu	$sp,$fp,0
 	lw	$ra,28($sp)
 	lw	$fp,24($sp)
 	addiu	$sp,$sp,32
@@ -18,7 +18,7 @@ main:
 fib:
 	addiu	$sp,$sp,-32
 	sw	$fp,28($sp)
-	addui	$fp,$sp,$zero
+	addiu	$fp,$sp,0
 	sw	$a0,32($fp)
 	sw	$zero,8($fp)
 	ori	$v0,$zero,1			# 0x1
@@ -81,7 +81,7 @@ $L2:
 	nop
 
 	lw	$v0,16($fp)
-	addui	$sp,$fp,$zero
+	addiu	$sp,$fp,0
 	lw	$fp,28($sp)
 	addiu	$sp,$sp,32
 	jr	$ra
