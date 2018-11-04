@@ -9,6 +9,17 @@ There are a couple strange things about branch and jump instructions that we'll
 gloss over for this lesson, but be prepared for a little bit of strangeness
 starting in Lesson 2.
 
+# Your Task
+You task in this part is to implement the following instructions:
+
+1. [`beq`](#beq)
+2. [`j`](#j)
+3. [`jal`](#jal)
+4. [`jr`](#jr)
+5. [`nop`](#nop)
+
+Read on to learn how branch and jump instructions work!
+
 ## Branch Instructions
 Branch instructions do exactly what they sound like: They branch.  Branch
 instructions are used to implement conditional branches in the code.  Think if

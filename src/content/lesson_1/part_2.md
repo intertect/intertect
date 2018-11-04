@@ -52,8 +52,11 @@ two methods `memory.read(location)` and `memory.write(location.value)`.  You
 won't use memory until a later part, but now you know why it's there!
 
 # Your Task
-Your task this time is to implement the [`subu`](#subu) instruction.  As a
-reminder, you can click on any instruction on the sidebar to be taken to a
+You task in this part is to implement the following instruction:
+
+1. [`subu`](#subu)
+
+As a reminder, you can click on any instruction on the sidebar to be taken to a
 glossary containing all the information you could possibly want to know about
 it.
 
