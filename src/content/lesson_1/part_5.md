@@ -75,7 +75,7 @@ counter with the address contained in whatever register is passed in.  This
 allows us to go to any place in memory we could possibly want to jump to.
 
 The [`j`](#j) and [`jal`](#jal) instruction formats are identical, though their
-semantics (explained in the paragraph below) slightly differ slightly.  Both of
+semantics (explained in the paragraph below) differ slightly.  Both of
 them are an opcode followed by as many bits of address as possible, which
 happens to be 26.  They both use the same divide-by-four trick as before, so we
 actually end up with 28 bits in the end.  Instead of using these as an offset,
