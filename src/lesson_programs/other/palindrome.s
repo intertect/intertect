@@ -1,7 +1,7 @@
 isBitPalindrome:
 	addiu	$sp,$sp,-24
 	sw	$fp,20($sp)
-	addui	$fp,$sp,$zero
+	addiu	$fp,$sp,0
 	sw	$a0,24($fp)
 	sw	$zero,8($fp)
 	lw	$v0,24($fp)
@@ -35,7 +35,7 @@ $L2:
 	xor	$v0,$v1,$v0
 	sltu	$v0,$v0,1
 	andi	$v0,$v0,0x00ff
-	addui	$sp,$fp,$zero
+	addiu	$sp,$fp,0
 	lw	$fp,20($sp)
 	addiu	$sp,$sp,24
 	jr	$ra
@@ -45,14 +45,14 @@ main:
 	addiu	$sp,$sp,-32
 	sw	$ra,28($sp)
 	sw	$fp,24($sp)
-	addui	$fp,$sp,$zero
+	addiu	$fp,$sp,0
 	lui	$v0, 0xda16
 	ori	$v0, $v0, 0x685b
 	ori	$a0,$v0,0x685b
 	jal	isBitPalindrome
 	nop
 
-	addui	$sp,$fp,$zero
+	addiu	$sp,$fp,0
 	lw	$ra,28($sp)
 	lw	$fp,24($sp)
 	addiu	$sp,$sp,32

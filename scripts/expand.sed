@@ -1,5 +1,5 @@
 s/b\t\(.*\)/j\t\1/
-s/move\t\(.*\),\(.*\)/addui\t\1,\2,$zero/
+s/move\t\(.*\),\(.*\)/addiu\t\1,\2,0/
 s/$0\b/$zero/g
 s/$1\b/$at/g
 s/$2\b/$v0/g
