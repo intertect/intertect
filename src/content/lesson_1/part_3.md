@@ -24,7 +24,7 @@ number `0B1100`, which we would typically notate as `0x0B1100`.  To distinguish
 these two (outside the use of the prefix), simply keep in mind that the letter
 characters used in hex numbers are always capitalized!
 
-## Your Task
+# Your Task
 You task is to implement the [`or`](#or), [`nor`](#nor), [`xor`](#xor),
 [`sll`](#sll), [`srl`](#srl), and [`sra`](#sra) instructions.  These perform the
 bitwise AND, OR, NOR, and XOR boolean operations as well as left logical shift,

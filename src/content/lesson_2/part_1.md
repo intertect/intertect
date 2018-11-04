@@ -17,7 +17,7 @@ what to do if we passed "addu $t5, $t0, $t0" to it. But, it will understand some
 under the hood. While it may look like a jumbled mess, we'll see how understanding
 instructions like this is no more complicated than parsing the assembly instruction!
 
-## Your Task
+# Your Task
 This lesson will revolve around you changing your execute function to take the 
 **binary** instruction rather than the **assembly**. That being said, nearly all the code
 you wrote in lesson 1 **should** be transferrable to your final output from this lesson. The

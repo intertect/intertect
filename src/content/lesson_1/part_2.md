@@ -4,7 +4,54 @@ In this lesson, you'll be implementing the [`subu`](#subu) instruction.  Each of
 the parts in Lesson 1 will be adding to your code from previous ones, so by the
 end, you'll have a complete MIPS emulator.
 
-## Your Task
+# Code structure
+Now that we've gotten through all that preliminary information, it's time for
+you to understand the structure of the code that you will be writing.  The code
+that we give you as a starting point is just a suggestion, and there are of
+course many other ways to write this emulator, but we feel like this is the most
+clear.
+
+## Overview
+Hopefully the structure of the code is clear to you now, but in case it isn't,
+this is an explanation of the structure of the code we have given you.
+
+The `instruction` variable which is passed into your `processMIPS` function
+contains all the information you will need to perform the operation.  It is an
+array of strings that is the space-delimited form of the assembly instruction currently
+being executed (highlighted in the UI). This will be the case for all of Lesson 1,
+but it will differ slightly in future lessons. Keep that in the back of your mind 
+for when you have to adopt your code for future lessons! 
+
+As an example, the assembly code line `addu $t5, $t0, $t0` would have the following
+value passed in `instruction`: `["addu", "$t5", "$t0", "$t0"]`. In order to execute 
+the code, the code simply enumerates each of the possible
+operations, and then performs the necessary work for whichever particular
+instruction it is.  This is the simplest way to write an emulator; while the
+later lessons will deal with more and more complicated ideas, this basic
+structure will remain for the most part.
+
+## Registers
+The `registers` variable contains an interface to the registers so you don't
+have to implement this functionality yourself (and also allows us to check your
+work).  It provides a two-method interface: `registers.read(register)` and
+`registers.write(register, value)`. Specifically:
+
+- `registers.read(register)`: Returns the numeric value stored at that location. Note
+that read takes in the **numeric** value of the register. So, trying to call
+`registers.read("$t5")`, for example, will simply return `undefined`, since there's
+no such value as `$t5` in the registers object: instead, it is `0xd`. To make this
+conversion easier for you, `nameToRegisterMap` to you, which gives the numeric value
+associated with a register name. Make sure to use this whenever doing lookups or writes!
+- `registers.write(register, value)`: Writes the specified value into the register. Once
+again, the write functionality expects **numeric** values for the destination, which
+means you will have to look registers up in `nameToRegisterMap` before storing.
+
+## Memory
+The memory abstraction is just like the register abstraction.  It provides the
+two methods `memory.read(location)` and `memory.write(location.value)`.  You
+won't use memory until a later part, but now you know why it's there!
+
+# Your Task
 Your task this time is to implement the [`subu`](#subu) instruction.  As a
 reminder, you can click on any instruction on the sidebar to be taken to a
 glossary containing all the information you could possibly want to know about
@@ -15,7 +62,7 @@ Now it's time to introduce you to some of the details of the MIPS instruction
 set, starting with R-Format instructions.  What are R-Format instructions?
 They're "Register Format" instructions!  Simply put, R-Format instructions are
 those which operate entirely on register values.  Instructions like
-[`addu`](#addu), [`subu`](#subu) are R-Format instructions and they operate
+[`addu`](#addu) and [`subu`](#subu) are R-Format instructions and they operate
 completely on registers.
 
 R-Format instructions contain the following information:
@@ -45,48 +92,6 @@ within the instruction itself.
 
 Don't worry if this section didn't make perfect sense; in the following parts,
 you'll be introduced to these instruction formats in much more detail.
-
-## Code structure
-Now that we've gotten through all that preliminary information, it's time for
-you to understand the structure of the code that you will be writing.  The code
-that we give you as a starting point is just a suggestion, and there are of
-course many other ways to write this emulator, but we feel like this is the most
-clear.
-
-### Overview
-Hopefully the structure of the code is clear to you now, but in case it isn't,
-this is an explanation of the structure of the code we have given you.
-
-The `instruction` variable which is passed into your `processMIPS` function
-contains all the information you will need to perform the operation.  It is an
-array with the following structure:
-
-1. The text name of the instruction
-2. The name of the destination register ("rd")
-3. The name of the source register ("rs")
-4. The name of the target register ("rt")
-5. The shift amount field (which we'll explain later)
-
-In order to execute the code, the code simply enumerates each of the possible
-operations, and then performs the necessary work for whichever particular
-instruction it is.  This is the simplest way to write an emulator; while the
-later lessons will deal with more and more complicated ideas, this basic
-structure will remain for the most part.
-
-### Registers
-The `registers` variable contains an interface to the registers so you don't
-have to implement this functionality yourself (and also allows us to check your
-work).  It provides a two-method interface: `registers.read(register)` and
-`registers.write(register, value)`.
-
-The register object takes in the numeric value of the register so we have
-provided you with `nameToRegisterMap` which, when given the name of a register
-from the `instruction` array, returns the number of that register.
-
-### Memory
-The memory abstraction is just like the register abstraction.  It provides the
-two methods `memory.read(location)` and `memory.write(location.value)`.  You
-won't use memory until a later part, but now you know why it's there!
 
 
 ---

@@ -8,7 +8,7 @@ like our code, feel free to delete all of it and do this however you want.  In
 future lessons, you'll be implementing functionality on your own (with only
 written instructions like these).
 
-## Your Task
+# Your Task
 We think there's a bug in our implementation.  You're task is to find and fix
 it.
 

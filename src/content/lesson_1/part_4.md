@@ -15,7 +15,7 @@ comparable.  The information contained within an I-Format instruction is:
 The target register takes the place of the destination register, `rd`, for
 I-Format instructions.
 
-## Your Task
+# Your Task
 You task in this part is to implement the following instructions:
 
 1. [addiu](#addiu)
