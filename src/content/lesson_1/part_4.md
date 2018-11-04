@@ -125,9 +125,9 @@ format.  The `instruction` parameter that is being passed in will now have a
 slightly different format (but only slightly):
 
 0. The operation to perform
-2. The source register (`rs`)
-1. The target register (`rt`)
-2. The immediate operand
+1. The source register (`rs`)
+2. The target register (`rt`)
+3. The immediate operand
 
 In order to deal with the immediate operand, you are going to have to know
 whether to sign-extend or zero-extend the value that you get.  We have provided
@@ -140,7 +140,7 @@ further:
 3. [ori](#ori) same
 4. [xori](#xori) same
 
-Isn't that straightforward? Now get implementing!
+Isn't that straightforward?  Now get implementing!
 
 ---
 # The MIPS Instruction Set
