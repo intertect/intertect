@@ -34,43 +34,16 @@ class Implement extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      unviewedImplementExplanation: true,
       theme: this.props.theme,
       studentProgram: this.props.studentProgram
     };
   }
 
   render() {
-    var pulsatingInterest =
-      <div className="pulsating-dot__ripple">
-        <span></span>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>;
-
-    var implementExplanation;
-    if (this.state.unviewedImplementExplanation) {
-      implementExplanation =
-        <Popover placement="right" component="a" popoverBody={pulsatingInterest}>
-          <PopoverHeader></PopoverHeader>
-          <PopoverBody>This is where you{"'"}ll be implementing your code for the lesson! We{"'"}ve provided
-          you with a template to get started.
-            <Button outline style={{width:"100%"}}
-              onClick={() => this.setState({ unviewedImplementExplanation : false })}>
-              <i className="fa fa-stop" aria-hidden="true"></i> Close Help
-            </Button>
-          </PopoverBody>
-        </Popover>
-    } else {
-      implementExplanation = <div></div>
-    }
-
     return (
       <div className="col-sm-6" style={{display: "flex"}}>
-        <Card style={{ marginTop: '1rem', width:"100%"}} className="text-center">
+        <Card style={{ marginTop: '1rem', width:"100%"}} className="text-center" id="implement">
           <CardBody>
-          {implementExplanation}
             <AceEditor
               mode="javascript"
               theme={this.state.theme}
@@ -86,7 +59,7 @@ class Implement extends Component {
               }}
             />
             <br />
-            <Dropdown>
+            <Dropdown id="chooseTheme">
               <DropdownToggle caret outline color="default" style={{width:"100%"}}>
                 {this.state.theme.replace(/_/g," ")}
               </DropdownToggle>
@@ -106,14 +79,16 @@ class Implement extends Component {
               <div className="col-sm-6">
                 <Button outline style={{width:"100%"}}
                     onClick={() => this.saveProgram(this.state.lesson,
-                      this.state.lessonPart, this.state.starterProgram)}>
+                      this.state.lessonPart, this.state.starterProgram)}
+                    id="saveCode">
                   <i className="fa fa-save" aria-hidden="true"></i> Save Code
                 </Button>
               </div>
 
               <div className="col-sm-6">
                 <Button outline color="danger" style={{width:"100%"}}
-                    onClick={() => {this.setState({ confirmRestart : true })}}>
+                    onClick={() => {this.setState({ confirmRestart : true })}}
+                    id="restartLevel">
                   <i className="fa fa-warning" aria-hidden="true"></i> Restart Level
                 </Button>
               </div>

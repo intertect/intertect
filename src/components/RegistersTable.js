@@ -71,7 +71,7 @@ class RegistersTable extends Component {
     }
 
     return (
-      <Card style={{ marginTop: '1rem', width:"100%"}} className="text-center">
+      <Card style={{ marginTop: '1rem', width:"100%"}} className="text-center" id="registersTable">
         <CardHeader color="default-color">
           <CardTitle componentclassName="h1">
             Registers

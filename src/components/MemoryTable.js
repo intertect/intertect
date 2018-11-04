@@ -29,7 +29,7 @@ class MemoryTable extends Component {
     }
 
     return (
-      <Card style={{ marginTop: '1rem', width:"100%"}} className="text-center">
+      <Card style={{ marginTop: '1rem', width:"100%"}} className="text-center" id="memoryTable">
         <CardHeader color="default-color">
           <CardTitle componentclassName="h1">
             Memory

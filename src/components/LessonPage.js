@@ -10,6 +10,7 @@ import PropTypes from 'prop-types';
 import ReactMarkdown from 'react-markdown';
 import SlidingPane from 'react-sliding-pane';
 
+import UITour from './UITour.js'
 import Implement from './Implement.js'
 import Debugging from './Debugging.js'
 import PreviousLessons from './PreviousLessons.js'
@@ -94,13 +95,15 @@ class LessonPage extends Component {
       referencePipeline: [],
 
       // memory becomes relevant after lesson 1.5
-      showMemory: (this.props.lesson != 1 || this.props.lessonPartNum > 5),
+      showMemory: true, // (this.props.lesson != 1 || this.props.lessonPartNum > 5),
       showRegisters: true,
-      unviewedStepExplanation: true,
 
       programRunning: false,
 
-      testProgram: lessonPart
+      testProgram: lessonPart,
+
+      completedTour: false,
+      isTourOpen: false
     }
 
     this.onChange = this.onChange.bind(this);
@@ -113,6 +116,7 @@ class LessonPage extends Component {
     this.appendUserProgram = this.appendUserProgram.bind(this);
     this.loadLesson = this.loadLesson.bind(this)
     this.loadTest = this.loadTest.bind(this)
+    this.closeTour = this.closeTour.bind(this)
   }
 
   onChange(newValue) {
@@ -157,6 +161,13 @@ class LessonPage extends Component {
   toggleIntroPanel() {
     this.setState({
       isIntroPaneOpen: !this.state.isIntroPaneOpen
+    });
+  }
+
+  closeTour() {
+    this.setState({
+      completedTour: true,
+      isTourOpen: false
     });
   }
 
@@ -475,35 +486,6 @@ class LessonPage extends Component {
         </span>);
     }
 
-    var pulsatingInterest =
-      <div className="pulsating-dot__ripple">
-        <span></span>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>;
-
-    var stepExplanation;
-    if (this.state.unviewedStepExplanation) {
-      stepExplanation =
-        <Popover placement="right" component="a" popoverBody={pulsatingInterest}>
-          <PopoverHeader></PopoverHeader>
-          <PopoverBody>This is how you{"'"}ll be running your code!
-            <ul>
-              <li><b>Run</b>: Execute the entire assembly program with your implementation</li>
-              <li><b>Step</b>: Execute just the highlighted line with your implementation</li>
-              <li><b>Reset</b>: Reset all the register/memory values and bring the execution back to the beginning</li>
-            </ul>
-            <Button outline style={{width:"100%"}}
-              onClick={() => this.setState({ unviewedStepExplanation : false })}>
-              <i className="fa fa-stop" aria-hidden="true"></i>Close Help
-            </Button>
-          </PopoverBody>
-        </Popover>;
-    } else {
-      stepExplanation = <div></div>;
-    }
-
     var currentInstruction;
     this.state.lesson > 1 ?
       currentInstruction = <Button outline style={{width:"100%"}}>
@@ -537,7 +519,10 @@ class LessonPage extends Component {
             isOpen={ this.state.isIntroPaneOpen }
             width='50%'
             onRequestClose={ () => {
-              this.setState({ isIntroPaneOpen: false });
+              this.setState({
+                isIntroPaneOpen: false,
+                isTourOpen: true
+              });
             }}>
           <ReactMarkdown source={this.state.lessonContent} escapeHtml={false} />
         </SlidingPane>
@@ -669,16 +654,15 @@ class LessonPage extends Component {
           </ModalFooter>
         </Modal>
 
-        <div className="row" >
+        <div className="row">
           <Implement
             theme={"solarized_dark"}
             onChange={this.onChange}
             studentProgram={this.state.studentProgram} />
 
           <div className="col-sm-6">
-            <Card style={{ marginTop: '1rem', width:"100%"}}>
+            <Card style={{ marginTop: '1rem', width:"100%"}} id="testing">
               <CardHeader color="default-color" className="text-center">
-                {stepExplanation}
                 <CardTitle componentclassName="h4">
                   Testing
                 </CardTitle>
@@ -689,7 +673,7 @@ class LessonPage extends Component {
                     {currentInstruction}
                     <ul className="shell-body" style={{width:"100%"}}>{ assemblyList }</ul>
 
-                    <Dropdown>
+                    <Dropdown id="testSelect">
                       <DropdownToggle caret outline color="default" style={{width:"100%"}}>
                         {this.state.testProgram}
                       </DropdownToggle>
@@ -702,7 +686,8 @@ class LessonPage extends Component {
                     <Button outline color="success" style={{width:"100%"}}
                       onClick={() => {
                         this.setState({running: true})
-                      }}>
+                      }}
+                      id="run">
                       <i className="fa fa-play" aria-hidden="true"></i> Run
                     </Button>
                   </div>
@@ -711,13 +696,15 @@ class LessonPage extends Component {
                       // TODO: Factor this out into a method so it can be called not just from here. Running a program is really just calling step() repeatedly
                       onClick={() => {
                         this.step()
-                      }}>
+                      }}
+                      id="step">
                         <i className="fa fa-forward" aria-hidden="true"></i> Step
                     </Button>
                   </div>
                   <div className="col-sm-12">
                     <Button outline color="warning" style={{width:"100%"}}
-                      onClick={() => { this.loadLesson(this.state.lesson, this.state.lessonPartNum, false) }}>
+                      onClick={() => { this.loadLesson(this.state.lesson, this.state.lessonPartNum, false) }}
+                      id="reset">
                       <i className="fa fa-refresh" aria-hidden="true"></i> Reset
                     </Button>
                   </div>
@@ -733,6 +720,11 @@ class LessonPage extends Component {
               studentMemory={this.state.studentMemory} />
           </div>
         </div>
+
+        <UITour
+          completedTour={this.state.completedTour}
+          isTourOpen={this.state.isTourOpen}
+          closeTour={this.closeTour} />
       </div>
     )
   }
