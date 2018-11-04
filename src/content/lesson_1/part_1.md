@@ -70,7 +70,7 @@ are two reasons you don't see them here.  It's because if in assembly you write
 `subi $rt, $rs, val`, you can just take the two's-compliment of val and add it!
 This saves space on the chip so it was common in older architectures.  You can
 also do the same with `subu $rd, $rs, $rt` using the `$at` register for
-calculating the two's-compliment at runtime.
+calculating the two's-compliment when the program is assembled.
 
 ## Logic
 

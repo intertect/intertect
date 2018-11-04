@@ -5,29 +5,58 @@ virtual machine, in your browser, on your Operating System, running on a real
 physical processor.  If you're running in a VM, you've got even more levels in
 there.  Isn't that exciting?
 
-There are some strange things about jump instructions that we'll gloss over for
-this lesson.  Be prepared for strangeness starting in Lesson 2.
+There are a couple strange things about branch and jump instructions that we'll
+gloss over for this lesson, but be prepared for a little bit of strangeness
+starting in Lesson 2.
 
 ## Branch Instructions
-Branch instructions do exactly what they sound like: control the flow of
-operations whenever there's a branch (i.e. a conditional) in the program.  You
-will be implementing the [`beq`](#beq) instruction, which stands for "branch if
-equal."  You only have to implement [`beq`](#beq), since that's enough to do
-anything else you might want to do: tt's possible to emulate any other branch
-instruction with just this one if you really wanted to!  For example, to check
-if one number is less than another, you can subtract and use some bit shifts.
-It's not the most wonderful thing, but it works.
+Branch instructions do exactly what they sound like: They branch.  Branch
+instructions are used to implement conditional branches in the code.  Think if
+statements.  You will be implementing the [`beq`](#beq) and [`bne`](#bne)
+instructions, which stand for "branch if equal" and "branch if not equal".  You
+only have to implement [`beq`](#beq) and [`bne`](#bne), since it's possible to
+emulate any other branch instruction if you really wanted to!  For example, to
+check if one number is less than another, you can subtract and use some bit
+shifts.  It's not the most wonderful thing, but it works.  Thankfully, all of
+our test programs only need these two, so there won't be any insane control-flow
+acrobatics.
 
 ## How To Calculate Where To Go?
-Branch instructions are immediate format where the operand is an offset from the
-address of the *next* instruction.  More specifically, the immediate operand is
-the offset *divided by 4*.  Since all instructions are 32 bits, the bottom two
-bits are always 0.  This allows us to get four times greater coverage from a
-branch instruction.  Once the bits have been shifted, they are also sign
-extended and then added to the address of the next instruction.
+Branch instructions are immediate format instructions where the immediate
+operand is an offset from the address of the *next* instruction to the desired
+address.  More specifically, the immediate operand is the offset *divided by 4*.
+Since all instructions are 32 bits, the bottom two bits are always 0.  This
+allows us to get four times greater coverage from a branch instruction.  Once
+the bits have been shifted, they are also sign extended and then added to the
+address of the next instruction.
+
+For example, consider the following program;
+
+```asm
+beq $zero, $zero, target
+addiu $t0, $t0, 1
+target:
+    addiu $t0, $t0, 1
+```
+
+The addresses of the instructions are 0, 4, and 8 respectively.  Since the
+`target` label points at the instruction immediately following it, it has a
+value of 8.  Now lets perform the calculation.  The address of the instruction
+immediately following the branch is 4, so the offset in the instruction is `8 -
+4 = 4`.  We then divide by 4 to get the immediate operand of 1.  A similar
+process happens when the offsets are in reverse, but with negative numbers.
+
+To decode, first sign-extend the immediate operand to get a 32 bit value, then
+multiply by 4, and then add it to the current address.  That reminds me, we have
+to talk about the program counter.
 
 ## Program Counter
-[[@PETER: FILL HERE]]
+The program counter is simply a register that stores the address of the
+currently executing instruction.  It isn't directly visible to the programmer,
+so the only way to adjust it is through the use of jump and branch instructions.
+In order to simplify things, we created a fake register named `$pc` to hold this
+value and allow you to interact directly with it.  All you have to do is read
+and write to it like it were any other register.
 
 ## Jump Instruction
 Jump instructions are much more straightforward. [`jr`](#jr) resets the program
@@ -44,10 +73,10 @@ address is the top 4 bits of the program counter (for the next instruction) and
 then 28 bits of address.
 
 [`j`](#j) and [`jal`](#jal) are both unconditional jump instructions, meaning
-they always go to their target location. [`jal`](#jal), however,
-additionallysaves the address of the next instruction into the `$ra` or Return
-Address register.  This allows the programmer to implement returning from
-function calls.
+they always go to their target location. [`jal`](#jal), however, additionally
+saves the address of the next instruction into the `$ra` or Return Address
+register.  This allows the programmer to implement returning from function
+calls.
 
 ---
 # The MIPS Instruction Set
@@ -84,7 +113,7 @@ are two reasons you don't see them here.  It's because if in assembly you write
 `subi $rt, $rs, val`, you can just take the two's-compliment of val and add it!
 This saves space on the chip so it was common in older architectures.  You can
 also do the same with `subu $rd, $rs, $rt` using the `$at` register for
-calculating the two's-compliment at runtime.
+calculating the two's-compliment when the program is assembled.
 
 ## Logic
 

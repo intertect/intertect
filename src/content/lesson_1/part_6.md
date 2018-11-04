@@ -1,11 +1,14 @@
 # Part 6: Memory!
 Up until now, we've been executing instructions and keeping their results in
-registers.  However, in real programs we deal with memory because we can't hold
-nearly as much data in registers.  Since we can only directly manipulate data
-stored in registers, all the operations we can perform with memory revolve
-around bussing data between it and registers.  As a result, this part will
-hopefully be more straightforward than the previous ones, since loads and stores
-are quite similar to one another.
+registers.  However, in real programs we deal with main memory (RAM) since the
+combined capacity of all the registers in our machine is 124 bytes (since the
+zero register can't hold any value besides zero).
+
+The instructions in the MIPS architecture (and other RISC architectures) only
+operate on data that is stored in registers, so the only job for memory
+instructions is to read data from memory or write data back to memory.  This
+section will be straightforward since once you've gotten one of the operations,
+the rest of them are quite similar.
 
 ## Addressing
 In order to read/write a given number of bytes from/to memory, you're going to
@@ -19,7 +22,6 @@ enough, right?  Thankfully it is, but endianness can make this more complicated.
 When a computer writes bytes into memory, it has to decide what order it wants
 to write them in.  For example, if you have the word `0xDEADBEEF`, should the
 bytes be written as:
-
 
 | address | 0x0 | 0x1 | 0x2 | 0x3 |
 |---------|------|------|------|------|
@@ -47,6 +49,79 @@ itself or customized by the operator, but once it has booted, the endianness
 cannot change.  We have decided to use big-endian for these lessons because we
 think it's mildly easier to learn.  If you want to learn more, the Wikipedia
 page on [Endianness](https://en.wikipedia.org/wiki/Endianness) is fantastic.
+
+## Code Structure
+The way loads are stores are written is somewhat different from other
+instructions.  Instead of coming last, the immediate operand comes before the
+second register value, which is surrounded in parentheses.  The way to read a
+load or store (e.g. `lw $rt, 0x10($rs)`) is "Load a word (32 bits) from the
+address `$rs` + 0x10 and store that value in $rt".
+
+The purpose of the offset from the register value is to implement data
+structures!  We won't deal with those here but in a C-style struct, the offsets
+of the members are known at compile time.  This means that the compiler can
+hard-code the offsets in the immediate operands of loads and store, while using
+a register to keep track of where in memory the struct began.
+
+In order to implement the loads and stores, you will have to read the address
+out of `rs`, sign-extend the offset (since it's a number), and add them to get
+the address to read from.
+
+Let us look at an example of a store.  We'll assume that we're storing the value
+`0xDEADBEEF` to address `0x10`.  We also assume that memory is initialized to 0
+to begin with.
+
+The value in the register looks like this:
+
+| 0x0 | 0x1 | 0x2 | 0x3 |
+|------|------|------|------|
+| 0xDE | 0xAD | 0xBE | 0xEF |
+
+We start by writing to the first byte after the address and then write
+subsequent bytes to subsequent addresses:
+
+| 0x10 | 0x14 | 0x18 | 0x1C |
+|------|------|------|------|
+| 0xDE | 0x0 | 0x0 | 0x0 |
+
+And the next byte
+
+| 0x10 | 0x14 | 0x18 | 0x1C |
+|------|------|------|------|
+| 0xDE | 0xAD | 0x0 | 0x0 |
+
+etc.
+
+| 0x10 | 0x14 | 0x18 | 0x1C |
+|------|------|------|------|
+| 0xDE | 0xAD | 0xBE | 0x0 |
+
+etc.
+
+| 0x10 | 0x14 | 0x18 | 0x1C |
+|------|------|------|------|
+| 0xDE | 0xAD | 0xBE | 0xEF |
+
+All other store operations work the same way, but with different number of bytes
+to write.
+
+Things will be slightly more complicated for `lhu`, `lbu`, `sh`, `sb`.  These
+instructions operate on half-words (2 bytes) and single bytes respectively.  The
+load instructions end in a `u` since they are unsigned; this means that you
+should zero-extend the read values rather than sign-extend them.  The only
+difficulties with these instructions is making sure you're operating on the
+correct number of bytes.
+
+For `lhu`, you must read two bytes starting at the address you just calculated
+and zero-extend them to 32 bits before storing them in the low-order 16 bits of
+the register (there should be 16 bits of 0s at the top).
+
+`lb` is the same but you read only a single byte.
+
+`sh` must store only the lower 16 bytes of `rt` at the two bytes starting with
+the calculated address.
+
+`sb` is the same but only stores 1.
 
 ---
 # The MIPS Instruction Set
@@ -83,7 +158,7 @@ are two reasons you don't see them here.  It's because if in assembly you write
 `subi $rt, $rs, val`, you can just take the two's-compliment of val and add it!
 This saves space on the chip so it was common in older architectures.  You can
 also do the same with `subu $rd, $rs, $rt` using the `$at` register for
-calculating the two's-compliment at runtime.
+calculating the two's-compliment when the program is assembled.
 
 ## Logic
 
