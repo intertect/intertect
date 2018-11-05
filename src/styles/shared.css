@@ -11,6 +11,7 @@ a:hover {
 /* Navbar styling */
 .landing__navbar {
   box-shadow: none !important;
+  min-height: 50px;
 
   .landing-navbar__brand {
     font-weight: bolder;
@@ -46,6 +47,10 @@ a:hover {
     visibility: visible;
     -webkit-transform: scaleX(1);
     transform: scaleX(1);
+  }
+
+  .landing-navbar__animated-link.isOpen {
+    border-bottom: 2px solid white;
   }
 
   a {

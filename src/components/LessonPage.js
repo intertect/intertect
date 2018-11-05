@@ -99,10 +99,9 @@ class LessonPage extends Component {
       studentPipeline: [],
       referencePipeline: [],
 
-      // memory becomes relevant after lesson 1.5
-      showMemory: true, // (this.props.lesson != 1 || this.props.lessonPartNum > 5),
-      showRegisters: true,
-
+      // // memory becomes relevant after lesson 1.5
+      // showMemory: true, // (this.props.lesson != 1 || this.props.lessonPartNum > 5),
+      // showRegisters: true,
       theme: "solarized_dark",
 
       programRunning: false,
@@ -566,7 +565,7 @@ class LessonPage extends Component {
             </NavItem>
             <NavItem className="landing-navbar__item mr-3">
               <div className="position-relative">
-                <a className="nav-link landing-navbar__animated-link" href="#" onClick={() => this.setState({ isIntroPaneOpen : true })}>Instructions</a>
+                <a className={"nav-link landing-navbar__animated-link " + (this.state.isIntroPaneOpen ? 'isOpen' : 'isNotOpen')} href="#" onClick={() => this.setState({ isIntroPaneOpen : !this.state.isIntroPaneOpen })}>Instructions</a>
               </div>
             </NavItem>
           </NavbarNav>
@@ -598,7 +597,7 @@ class LessonPage extends Component {
                     <h3 className="h3-responsive">Testing</h3>
                     {currentInstruction}
                     <Dropdown className="align-self-center" id="testSelect">
-                      <DropdownToggle caret outline className="lesson-testing__program p-0 m-0" color="deep-purple">
+                      <DropdownToggle caret outline className="lesson-testing__program p-2 m-0" color="deep-purple">
                         {this.state.testProgram}
                       </DropdownToggle>
                       <DropdownMenu>
@@ -659,10 +658,8 @@ class LessonPage extends Component {
 
             <div className="lesson__debugging p-4">
               <Debugging
-                showRegisters={this.state.showRegisters}
                 studentRegisters={this.state.studentRegisters}
                 referenceRegisters={this.state.referenceRegisters}
-                showMemory={this.state.showMemory}
                 studentMemory={this.state.studentMemory} />
             </div>
           </div>

@@ -99,6 +99,9 @@
       background-color: #00C851;
     }
 
+    .btn {
+      pointer-events: none;
+    }
   }
 
   .btn {
@@ -107,5 +110,13 @@
 
   .btn:hover {
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+  }
+}
+
+.slide-pane__overlay {
+  top: 50px !important;
+
+  .slide-pane__header {
+    display: none !important;
   }
 }

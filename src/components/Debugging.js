@@ -19,8 +19,6 @@ class Debugging extends Component {
     super(props);
 
     this.state = {
-      showRegisters: this.props.showRegisters,
-      showMemory: this.props.showMemory
     }
   }
 
@@ -28,27 +26,27 @@ class Debugging extends Component {
     return (
       <div className="lesson-debugging d-flex" id="debugging">
         <div className="col-6 text-center">
-          <Button className="m-0" onClick={() => this.setState({ showRegisters : !this.state.showRegisters })}>
+          <Button className="m-0">
             CPU REGISTERS
           </Button>
 
-          <Collapse className="lesson-debugging__collapsible" isOpen={this.state.showRegisters}>
+          <div className="lesson-debugging__collapsible">
             <RegistersTable
               studentRegisters={this.props.studentRegisters}
               referenceRegisters={this.props.referenceRegisters}
             />
-          </Collapse>
+          </div>
         </div>
 
         <div className="col-6 text-center">
-          <Button className="m-0" onClick={() => this.setState({ showMemory : !this.state.showMemory })}>
+          <Button className="m-0">
             MEMORY
           </Button>
-          <Collapse className="lesson-debugging__collapsible" isOpen={this.state.showMemory}>
+          <div className="lesson-debugging__collapsible">
             <MemoryTable
               memory={this.props.studentMemory}
             />
-          </Collapse>
+          </div>
         </div>
       </div>
     );
@@ -56,8 +54,6 @@ class Debugging extends Component {
 }
 
 Debugging.propTypes = {
-  showRegisters: PropTypes.bool,
-  showMemory: PropTypes.bool,
   studentRegisters: PropTypes.instanceOf(Registers),
   referenceRegisters: PropTypes.instanceOf(Registers),
   studentMemory: PropTypes.instanceOf(Memory)
