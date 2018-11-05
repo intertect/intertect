@@ -1,10 +1,9 @@
 import React, {Component} from 'react';
-import { Button, Card, CardBody, CardTitle, CardHeader,
+import { Button,
+  Dropdown, DropdownItem, DropdownToggle, DropdownMenu,
   Popover, PopoverHeader, PopoverBody,
   Modal, ModalHeader, ModalBody, ModalFooter,
-  Navbar, NavItem, NavbarNav, NavbarBrand,
-  Dropdown, DropdownItem, DropdownToggle,
-  DropdownMenu } from 'mdbreact';
+  Navbar, NavItem, NavbarNav, NavbarBrand } from 'mdbreact';
 import PropTypes from 'prop-types';
 
 import ReactMarkdown from 'react-markdown';
@@ -19,8 +18,15 @@ import {lessonParts, lessonContent, lessonRegisterInits, lessonAssembly,
   lessonStarterCode, lessonReferenceSolutions, lessonBinaryCode,
   lessonPipelineStudent, availableTests, lessonTests} from '../utils/lessonItems.js';
 
-import '../styles/intro.css';
-import '../styles/shared.css';
+import 'brace/mode/javascript';
+import 'brace/theme/chrome';
+import 'brace/theme/dracula';
+import 'brace/theme/eclipse';
+import 'brace/theme/github';
+import 'brace/theme/monokai';
+import 'brace/theme/solarized_dark';
+import 'brace/theme/solarized_light';
+import 'brace/theme/twilight';
 
 function ToUint32(x) {
   return x >>> 0;
@@ -97,6 +103,8 @@ class LessonPage extends Component {
       showMemory: (this.props.lesson != 1 || this.props.lessonPartNum > 5),
       showRegisters: true,
       unviewedStepExplanation: true,
+
+      theme: "solarized_dark",
 
       programRunning: false,
 
@@ -506,8 +514,8 @@ class LessonPage extends Component {
 
     var currentInstruction;
     this.state.lesson > 1 ?
-      currentInstruction = <Button outline style={{width:"100%"}}>
-        Current Instruction: {
+      currentInstruction = <Button outline>
+        {
           typeof(this.getNextInstruction()) === 'undefined' ? "Done!" : ToUint32(this.getNextInstruction()).toString(2)
         }
       </Button>
@@ -590,6 +598,94 @@ class LessonPage extends Component {
           toggleShowPreviousLessons={this.toggleShowPreviousLessons}
           toggleIntroPanel={this.toggleIntroPanel} />
 
+        <div className="d-flex lesson__body">
+          <div className="lesson__body-left col-6 p-4">
+            <Implement
+              theme={this.state.theme}
+              onChange={this.onChange}
+              studentProgram={this.state.studentProgram} />
+          </div>
+
+          <div className="lesson__body-right col-6 d-flex flex-column p-0">
+            <div className="lesson__testing p-4 d-flex flex-column">
+              {stepExplanation}
+
+              <div className="lesson-testing__content-1 d-flex">
+                <div className="d-flex flex-column col p-0">
+                  <div className="d-flex justify-content-between pl-2 pb-2">
+                    <h3 className="h3-responsive">Testing</h3>
+                    {currentInstruction}
+                    <Dropdown className="align-self-center">
+                      <DropdownToggle caret outline className="lesson-testing__program p-0 m-0" color="deep-purple">
+                        {this.state.testProgram}
+                      </DropdownToggle>
+                      <DropdownMenu>
+                        {testProgramDropdown}
+                      </DropdownMenu>
+                    </Dropdown>
+                  </div>
+                  <div className="lesson-testing__shell-div">
+                    <ul className="lesson-testing__shell p-2 mb-0">{ assemblyList }</ul>
+                  </div>
+                </div>
+                <div className="lesson-testing__buttons col p-0 pl-3">
+                  <Button outline className="p-2 m-0 mb-4" color="success"
+                      onClick={() => this.setState({running: true})}>
+                    <i className="fa fa-play" aria-hidden="true"></i> Run
+                  </Button>
+                  <Button outline className="p-2 m-0 mb-4" color="default"
+                      // TODO: Factor this out into a method so it can be called not just from here. Running a program is really just calling step() repeatedly
+                      onClick={() => this.step()}>
+                    <i className="fa fa-forward" aria-hidden="true"></i> Step
+                  </Button>
+                  <Button outline className="p-2 m-0 mb-4" color="warning"
+                      onClick={() => this.loadLesson(this.state.lesson, this.state.lessonPartNum, false)}>
+                    <i className="fa fa-refresh" aria-hidden="true"></i> Reset
+                  </Button>
+                </div>
+              </div>
+
+              <div className="lesson-testing__content-2 d-flex justify-content-center px-2 pt-3 pb-0">
+                <Dropdown className="lesson-testing__button mr-3">
+                  <DropdownToggle caret outline className="lesson-testing__button lesson-testing__button-theme p-2 m-0"
+                      color="default">
+                    {this.state.theme.replace(/_/g," ")}
+                  </DropdownToggle>
+                  <DropdownMenu>
+                    <DropdownItem onClick={() => this.setState({ theme : "chrome" })} eventKey="chrome" className={this.state.theme == "chrome" ? "active" : "inactive"}>chrome</DropdownItem>
+                    <DropdownItem onClick={() => this.setState({ theme : "dracula" })} eventKey="dracula" className={this.state.theme == "dracula" ? "active" : "inactive"}>dracula</DropdownItem>
+                    <DropdownItem onClick={() => this.setState({ theme : "eclipse" })} eventKey="eclipse" className={this.state.theme == "eclipse" ? "active" : "inactive"}>eclipse</DropdownItem>
+                    <DropdownItem onClick={() => this.setState({ theme : "github" })} eventKey="github" className={this.state.theme == "github" ? "active" : "inactive"}>github</DropdownItem>
+                    <DropdownItem onClick={() => this.setState({ theme : "monokai" })} eventKey="monokai" className={this.state.theme == "monokai" ? "active" : "inactive"}>monokai</DropdownItem>
+                    <DropdownItem onClick={() => this.setState({ theme : "solarized_dark" })} eventKey="solarized_dark" className={this.state.theme == "solarized_dark" ? "active" : "inactive"}>solarized (dark)</DropdownItem>
+                    <DropdownItem onClick={() => this.setState({ theme : "solarized_light" })} eventKey="solarized_light" className={this.state.theme == "solarized_light" ? "active" : "inactive"}>solarized (light)</DropdownItem>
+                    <DropdownItem onClick={() => this.setState({ theme : "twilight" })} eventKey="twilight" className={this.state.theme == "twilight" ? "active" : "inactive"}>twilight</DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+                <Button outline className="lesson-testing__button lesson-testing__button-save p-2 m-0 mr-3"
+                    color="deep-purple"
+                    onClick={() => this.saveProgram(this.state.lesson, this.state.lessonPart, this.state.starterProgram)}>
+                  <i className="fa fa-save" aria-hidden="true"></i> Save Code
+                </Button>
+                <Button outline className="lesson-testing__button lesson-testing__button-restart p-2 m-0"
+                    color="danger"
+                    onClick={() => this.setState({ confirmRestart : true })}>
+                  <i className="fa fa-warning" aria-hidden="true"></i> Start Over
+                </Button>
+              </div>
+            </div>
+
+            <div className="lesson__debugging p-4">
+              <Debugging
+                showRegisters={this.state.showRegisters}
+                studentRegisters={this.state.studentRegisters}
+                referenceRegisters={this.state.referenceRegisters}
+                showMemory={this.state.showMemory}
+                studentMemory={this.state.studentMemory} />
+            </div>
+          </div>
+        </div>
+
         <Modal isOpen={this.state.lessonCorrect && this.state.lessonComplete}
           frame position="bottom">
 
@@ -668,71 +764,6 @@ class LessonPage extends Component {
             </div>
           </ModalFooter>
         </Modal>
-
-        <div className="row" >
-          <Implement
-            theme={"solarized_dark"}
-            onChange={this.onChange}
-            studentProgram={this.state.studentProgram} />
-
-          <div classNamef="col-sm-6">
-            <Card style={{ marginTop: '1rem', width:"100%"}}>
-              <CardHeader color="default-color" className="text-center">
-                {stepExplanation}
-                <CardTitle componentclassName="h4">
-                  Testing
-                </CardTitle>
-              </CardHeader>
-              <CardBody>
-                <div className="col-sm-12">
-                  <div className="col-sm-12">
-                    {currentInstruction}
-                    <ul className="shell-body" style={{width:"100%"}}>{ assemblyList }</ul>
-
-                    <Dropdown>
-                      <DropdownToggle caret outline color="default" style={{width:"100%"}}>
-                        {this.state.testProgram}
-                      </DropdownToggle>
-                      <DropdownMenu style={{width:"100%"}}>
-                        {testProgramDropdown}
-                      </DropdownMenu>
-                    </Dropdown>
-                  </div>
-                  <div className="col-sm-12">
-                    <Button outline color="success" style={{width:"100%"}}
-                      onClick={() => {
-                        this.setState({running: true})
-                      }}>
-                      <i className="fa fa-play" aria-hidden="true"></i> Run
-                    </Button>
-                  </div>
-                  <div className="col-sm-12">
-                    <Button outline color="default" style={{width:"100%"}}
-                      // TODO: Factor this out into a method so it can be called not just from here. Running a program is really just calling step() repeatedly
-                      onClick={() => {
-                        this.step()
-                      }}>
-                        <i className="fa fa-forward" aria-hidden="true"></i> Step
-                    </Button>
-                  </div>
-                  <div className="col-sm-12">
-                    <Button outline color="warning" style={{width:"100%"}}
-                      onClick={() => { this.loadLesson(this.state.lesson, this.state.lessonPartNum, false) }}>
-                      <i className="fa fa-refresh" aria-hidden="true"></i> Reset
-                    </Button>
-                  </div>
-                </div>
-              </CardBody>
-            </Card>
-
-            <Debugging
-              showRegisters={this.state.showRegisters}
-              studentRegisters={this.state.studentRegisters}
-              referenceRegisters={this.state.referenceRegisters}
-              showMemory={this.state.showMemory}
-              studentMemory={this.state.studentMemory} />
-          </div>
-        </div>
       </div>
     )
   }

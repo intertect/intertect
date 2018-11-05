@@ -2,9 +2,6 @@ import React, { Component } from 'react';
 import { NavbarBrand, Navbar, NavbarNav, NavItem, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'mdbreact';
 import PropTypes from 'prop-types';
 
-import '../styles/shared.css';
-import '../styles/landing.css';
-
 import yash from '../images/yash.png';
 import peter from '../images/peter.png';
 import lucy from '../images/lucy.png';
@@ -119,8 +116,7 @@ class LandingPage extends Component {
 
 LandingPage.propTypes = {
   completedLessons: PropTypes.number,
-  selectHandler: PropTypes.func,
-  toggleLoadedLesson: PropTypes.func
+  selectHandler: PropTypes.func
 }
 
 export default LandingPage;

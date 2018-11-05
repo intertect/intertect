@@ -6,20 +6,13 @@
 /* eslint-disable import/no-named-as-default */
 
 import React, {Component} from 'react';
-import { Button, Card, CardBody, CardTitle, CardHeader,
-  Popover, PopoverHeader, PopoverBody, Collapse } from 'mdbreact';
+import { Button, Popover, PopoverHeader, PopoverBody, Collapse } from 'mdbreact';
 import PropTypes from 'prop-types';
 
 import MemoryTable from './MemoryTable.js'
 import RegistersTable from './RegistersTable.js'
 
-import {Memory, Registers} from '../utils/util.js';
-
-import '../styles/intro.css';
-import 'react-sliding-pane/dist/react-sliding-pane.css';
-import 'font-awesome/css/font-awesome.min.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'mdbreact/dist/css/mdb.css';
+import { Memory, Registers } from '../utils/util.js';
 
 class Debugging extends Component {
   constructor(props) {
@@ -59,43 +52,32 @@ class Debugging extends Component {
     }
 
     return (
-      <Card style={{ marginTop: '1rem', width:"100%"}}>
-        <CardHeader color="default-color" className="text-center">
-          {memoryExplanation}
-          <CardTitle componentclassName="h4">
-            Debugging
-          </CardTitle>
-        </CardHeader>
-        <CardBody>
-          <div className="row">
-            <div className="col-sm-6">
-              <Button outline
-                onClick={() => this.setState({ showRegisters : !this.state.showRegisters })} style={{width:"100%"}}>
-                {this.state.showRegisters ? "Hide" : "Show" } Registers
-              </Button>
+      <div className="lesson-debugging d-flex">
+        {memoryExplanation}
+        <div className="col-6 text-center">
+          <Button className="m-0" onClick={() => this.setState({ showRegisters : !this.state.showRegisters })}>
+            CPU REGISTERS
+          </Button>
 
-              <Collapse isOpen={this.state.showRegisters}>
-                <RegistersTable
-                  studentRegisters={this.props.studentRegisters}
-                  referenceRegisters={this.props.referenceRegisters}
-                />
-              </Collapse>
-            </div>
+          <Collapse className="lesson-debugging__collapsible" isOpen={this.state.showRegisters}>
+            <RegistersTable
+              studentRegisters={this.props.studentRegisters}
+              referenceRegisters={this.props.referenceRegisters}
+            />
+          </Collapse>
+        </div>
 
-            <div className="col-sm-6">
-              <Button outline
-                onClick={() => this.setState({ showMemory : !this.state.showMemory })} style={{width:"100%"}}>
-                {this.state.showMemory ? "Hide" : "Show"} Memory
-              </Button>
-              <Collapse isOpen={this.state.showMemory}>
-                <MemoryTable
-                  memory={this.props.studentMemory}
-                />
-              </Collapse>
-            </div>
-          </div>
-        </CardBody>
-      </Card>
+        <div className="col-6 text-center">
+          <Button className="m-0" onClick={() => this.setState({ showMemory : !this.state.showMemory })}>
+            MEMORY
+          </Button>
+          <Collapse className="lesson-debugging__collapsible" isOpen={this.state.showMemory}>
+            <MemoryTable
+              memory={this.props.studentMemory}
+            />
+          </Collapse>
+        </div>
+      </div>
     );
   }
 }

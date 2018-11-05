@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import { Card, CardHeader, CardTitle, CardBody, Table  } from 'mdbreact';
+import { Table  } from 'mdbreact';
 import PropTypes from 'prop-types';
 
-import {Memory} from '../utils/util.js';
-
-import '../styles/intro.css';
+import { Memory } from '../utils/util.js';
 
 class MemoryTable extends Component {
   constructor(props) {
@@ -22,31 +20,24 @@ class MemoryTable extends Component {
       var memoryAddr = memory[i];
 
       var studentMemory = `0x${this.props.memory.read(memoryAddr).toString(16).toUpperCase()}`
-      memoryTable.push(<tr style={{textAlign: 'center'}} className="source-code">
+      memoryTable.push(<tr>
           <td>{memoryAddr}</td>
           <td>{studentMemory}</td>
         </tr>);
     }
 
     return (
-      <Card style={{ marginTop: '1rem', width:"100%"}} className="text-center">
-        <CardHeader color="default-color">
-          <CardTitle componentclassName="h1">
-            Memory
-          </CardTitle>
-        </CardHeader>
-        <CardBody>
-          <Table hover condensed>
-            <thead>
-              <tr>
-                <th style={{textAlign: 'center'}}>Address</th>
-                <th style={{textAlign: 'center'}}>Value</th>
-              </tr>
-            </thead>
-            <tbody> { memoryTable } </tbody>
-          </Table>
-        </CardBody>
-      </Card>
+      <div className="lesson-debugging__memory d-inline-block">
+        <Table hover condensed>
+          <thead>
+            <tr>
+              <th>Address</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody> { memoryTable } </tbody>
+        </Table>
+      </div>
     );
   }
 }

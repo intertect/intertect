@@ -11,12 +11,6 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter,
   ListGroup, ListGroupItem } from 'mdbreact';
 import PropTypes from 'prop-types';
 
-import '../styles/intro.css';
-import 'react-sliding-pane/dist/react-sliding-pane.css';
-import 'font-awesome/css/font-awesome.min.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'mdbreact/dist/css/mdb.css';
-
 import { lessonParts } from '../utils/lessonItems.js';
 
 class PreviousLessons extends Component {

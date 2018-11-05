@@ -10,7 +10,9 @@ import React, {Component} from 'react';
 import LandingPage from './LandingPage.js'
 import LessonPage from './LessonPage.js'
 
-import '../styles/intro.css';
+import '../styles/shared.css';
+import '../styles/landing.css';
+import '../styles/lesson.css';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
 import 'font-awesome/css/font-awesome.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
