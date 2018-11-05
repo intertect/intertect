@@ -1,38 +1,39 @@
 # Part 1: Starting Slowly
 
-Welcome to the first lesson on computer architecture! You've already read a
+Welcome to the first lesson on computer architecture!  You've already read a
 boatload of introduction (unless you skipped it), so now it's time for us to get
-started by implementing the [`addu`](#addu) instruction. We've already
-implemented this for you in order to give you a base to build on. If you don't
-like our code, feel free to delete all of it and do this however you want. In
+started by implementing the [`addu`](#addu) instruction.  We've already
+implemented this for you in order to give you a base to build on.  If you don't
+like our code, feel free to delete all of it and do this however you want.  In
 future lessons, you'll be implementing functionality on your own (with only
 written instructions like these).
 
-## Your Task
-We think there's a bug in our implementation. You're task is to find and fix it.
+# Your Task
+We think there's a bug in our implementation.  You're task is to find and fix
+it.
 
-For better or worse, in this lesson you won't be implementing much. We want to
+For better or worse, in this lesson you won't be implementing much.  We want to
 make sure you're comfortable with the interface before we start throwing too
 much at you.
 
 ## The [`addu`](#addu) Instruction
 The [`addu`](#addu) instruction is one of the most straightforward instructions
-in this architecture. It takes its second two operands, adds them, and writes
-the result into the first operand. You can click on any instance of the
+in this architecture.  It takes its second two operands, adds them, and writes
+the result into the first operand.  You can click on any instance of the
 [`addu`](#addu) instruction in this instructions panel to be taken to the
 glossary about it.
 
 ## What's In A Name?
-Why is this instruction called [`addu`](#addu) and not `add`? I'll let you in on
-a little secret: There *is* an `add` instruction, but we're not making you
-implement it. [`addu`](#addu) stands for Add Unsigned. However, signed (using
+Why is this instruction called [`addu`](#addu) and not `add`?  I'll let you in
+on a little secret: There *is* an `add` instruction, but we're not making you
+implement it.  [`addu`](#addu) stands for Add Unsigned.  However, signed (using
 two's-complement) and unsigned additions and subtractions are completely
-identical. The only difference between the two instructions is that `add` checks
-for signed integer overflow while [`addu`](#addu) does not. Specifically, `add`
-traps (calls into the kernel) if there is an overflow. Since we most certainly
-do not have a kernel running on this emulator, these two instructions are
-exactly the same, and we felt it pointless for you to implement the same
-functionality twice.
+identical.  The only difference between the two instructions is that `add`
+checks for signed integer overflow while [`addu`](#addu) does not.
+Specifically, `add` traps (calls into the kernel) if there is an overflow.
+Since we most certainly do not have a kernel running on this emulator, these two
+instructions are exactly the same, and we felt it pointless for you to implement
+the same functionality twice.
 
 ---
 # The MIPS Instruction Set
@@ -64,12 +65,12 @@ instruction), perform an unsigned add on them, and write the value to `$rt`.
 Take the unsigned integer values from `$rs` and `$rt`, perform an unsigned
 subtraction (`$rs - $rt`) on them, and save the result into `$rd`
 
-You might be wondering where the immediate subtraction operations are. There are
-two reasons you don't see them here. It's because if in assembly you write `subi
-$rt, $rs, val`, you can just take the two's-compliment of val and add it! This
-saves space on the chip so it was common in older architectures. You can also do
-the same with `subu $rd, $rs, $rt` using the `$at` register for calculating the
-two's-compliment at runtime.
+You might be wondering where the immediate subtraction operations are.  There
+are two reasons you don't see them here.  It's because if in assembly you write
+`subi $rt, $rs, val`, you can just take the two's-compliment of val and add it!
+This saves space on the chip so it was common in older architectures.  You can
+also do the same with `subu $rd, $rs, $rt` using the `$at` register for
+calculating the two's-compliment when the program is assembled.
 
 ## Logic
 
@@ -120,7 +121,7 @@ the left with 0), saving the result into `$rt`
 ### Shift Left Logical (`sll $rt, $rs, val`)
 
 Perform a logical shift left of `$rt` by `val` places, saving the result into
-`$rt`. This is integer multiplication by 2
+`$rt`.  This is integer multiplication by 2
 
 <a id="srl"></a>
 ### Shift Right Logical (`srl $rt, $rs, val`)
@@ -132,14 +133,14 @@ places on the left with 0, saving the result into `$rt`
 ### Shift Right Arithmetic (`sra $rt, $rs, val`)
 
 Perform an arithmetic right shift of `$rs` by `val` places, filling the vacated
-places with 0 if the leading bit was 0, and 1 if the leading place was one. This
-is integer division by 2
+places with 0 if the leading bit was 0, and 1 if the leading place was one.
+This is integer division by 2
 
 ## Control Flow
 
-Many of these instructions multiply their arguments by 4. This is because each
+Many of these instructions multiply their arguments by 4.  This is because each
 instruction is exactly 4 bytes long, and so the last two bits of an address will
-always be zero. By having the argument being the offset or address / 4, you can
+always be zero.  By having the argument being the offset or address / 4, you can
 get 4 times as much reach with any of these instructions
 
 <a id="beq"></a>
@@ -204,8 +205,8 @@ pseudo-instructions work since it's impossible to have a 32 bit immediate value
 
 <a id="noop"></a>
 ### No Operation (`noop`)
-Do nothing. This might not seem like a useful instruction to have in an
+Do nothing.  This might not seem like a useful instruction to have in an
 instruction set archiecture, but it can really come in handy when you need to
 fill a space with something and you want to make sure that nothing could
-possibly happen if you end up there. It certainly doesn't come up much, but it's
-very handy to have around when it does.
+possibly happen if you end up there.  It certainly doesn't come up much, but
+it's very handy to have around when it does.

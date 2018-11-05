@@ -1,46 +1,54 @@
 # Part 3: Bitwise Instructions
 
-Bitwise instructions are the bread and butter of low-level programming. They
-allow you to quickly manipulate binary data efficiently. In very high-level
+Bitwise instructions are the bread and butter of low-level programming.  They
+allow you to quickly manipulate binary data efficiently.  In very high-level
 languages like Python, JavaScript, Perl, etc., you won't find these operators
 used much, but when dealing with binary protocols and systems programming, they
 come up really frequently.
 
-(Not to make value judgments, but these are my favorite instructions. You don't
-even need any of the other arithmetic instructions! All you need is
-[`nor`](#nor) or `nand` and you can make all of them. Really slowly, of course.)
+(Not to make value judgments, but these are my favorite instructions.  You don't
+even need any of the other arithmetic instructions!  All you need is
+[`nor`](#nor) or `nand` and you can make all of them.  Really slowly, of
+course.)
 
 # Note on Notation
 
 For this lesson part and many of those to come, we'll be encountering a lot of
-binary, in the content of both function arguments and (eventually) instructions
-themselves. As a result, we'll be referencing them quite often in our
-instructions panel. To prevent confusion, we use the standard numeric notation,
-where the prefix `0x` represents a hex value and `0b` a binary value. The hex is
-pretty obvious to see. *Be careful* with binary though: it is very easy to
+binary, in the context of both function arguments and (eventually) instructions
+themselves.  As a result, we'll be referencing them quite often in our
+instructions panel.  To prevent confusion, we use the standard numeric notation,
+where the prefix `0x` represents a hex value and `0b` a binary value.  The hex
+is pretty obvious to see. *Be careful* with binary though: it is very easy to
 glance at a number such as `0b1100` and misinterpret that as being the hex
-number `0B1100`, which we would typically notate as `0x0B1100`. To distinguish
-these two (outside the use of the prefix), simply keep in mind that the letter
-characters used in hex numbers are always capitalized!
+number `0B1100`, which we would typically notate as `0x0B1100`.  To distinguish
+these two (outside the use of the prefix), simply keep in mind that the letters
+used in hex numbers are always capitalized!
 
-## Your Task
-You task is to implement the [`or`](#or), [`nor`](#nor), [`xor`](#xor),
-[`sll`](#sll), [`srl`](#srl), and [`sra`](#sra) instructions. These perform the
-bitwise AND, OR, NOR, and XOR boolean operations as well as left logical shift,
-right logical shift, and right arithmetic shift. If you're not sure what all of
-that meant, keep reading. Otherwise, you can go right ahead and start
+# Your Task
+You task in this part is to implement the following instructions:
+
+1. [`or`](#or)
+2. [`nor`](#nor)
+3. [`xor`](#xor)
+4. [`sll`](#sll)
+5. [`srl`](#srl)
+6. [`sra`](#sra)
+
+These perform the bitwise AND, OR, NOR, and XOR boolean operations as well as 
+left logical shift, right logical shift, and right arithmetic shift.  If you're not 
+sure what all of that meant, keep reading.  Otherwise, you can go right ahead and start
 implementing.
 
 ## Introduction To Bitwise Operations
 If you aren't familiar with logical operations, check out the Wikipedia page on
 [Logical Connectives](https://en.wikipedia.org/wiki/Logical_connective) for a
-good introduction. As you'll see, logical connectives deal with two truth values
-at a time, but our registers are 32 bits long. These are therefore implemented
-by pairing the bits in the two registers (hence why they are called bitwise
-operators).
+good introduction.  As you'll see, logical connectives deal with two truth
+values at a time, but our registers are 32 bits long.  These are therefore
+implemented by pairing the bits in the two registers (hence why they are called
+bitwise operators).
 
 As a quick example, taking the bitwise AND of `0b0110` and `0b0011` gives
-`0b0010`. We'll write the two operands vertically to make this more clear. The
+`0b0010`.  We'll write the two operands vertically to make this more clear.  The
 up carrot is the logical AND operator
 
 ```
@@ -57,20 +65,20 @@ logical ([`sll`](#sll)), shift right logical ([`srl`](#srl)), and shift right
 arithmetic ([`sra`](#sra)).
 
 Shift left logical means you shift each of the bits in the target by some
-amount, filling on the right with 0. For example, shifting `0b1111` left by 2
-leaves us with `0b1100`. In this case we assumed we only had 4 bits to work
+amount, filling on the right with 0.  For example, shifting `0b1111` left by 2
+leaves us with `0b1100`.  In this case we assumed we only had 4 bits to work
 with, in which case the top two bits got shifted off the top.
 
-Shift right logical means the reverse of this. You shift all the bits to the
-right by some amount, filling with 0 from the left. Therefore, our previous
+Shift right logical means the reverse of this.  You shift all the bits to the
+right by some amount, filling with 0 from the left.  Therefore, our previous
 example of `0b1111` shifted right logically by 2 would yield `0b0011`.
 
-Lastly, there's the arithmetic right shift. This is the odd-instruction-out.
+Lastly, there's the arithmetic right shift.  This is the odd-instruction-out.
 The difference is that it treats the number as signed so when it shifts in new
-bits, they match the sign bit. In this way it's very close to integer division
-by two (rounded towards −∞). In this way, −1 arithmetic shift right by 1 is
-still −1 but 1 arithmetic shift right by 1 is 0. We can see this in the
-following way, starting with the −1 case. For all of these we assume 4 bits for
+bits, they match the sign bit.  In this way it's very close to integer division
+by two (rounded towards −∞).  In this way, −1 arithmetic shift right by 1 is
+still −1 but 1 arithmetic shift right by 1 is 0.  We can see this in the
+following way, starting with the −1 case.  For all of these we assume 4 bits for
 simplicity.
 
 ```
@@ -78,15 +86,15 @@ simplicity.
 0b1111 >> 1 = 0b1111
 ```
 
-Where `>>` is the symbol for arithmetic shift right. We see that a new 1 is
-shifted in to replace the old one. For another example, consider −2
+Where `>>` is the symbol for arithmetic shift right.  We see that a new 1 is
+shifted in to replace the old one.  For another example, consider −2
 
 ```
 −2 = 0b1110
 0b1110 >> 1 = 0b1111
 ```
 
-Now it's more obvious what is happening. For the positive versions of these
+Now it's more obvious what is happening.  For the positive versions of these
 examples, we see:
 
 ```
@@ -101,18 +109,18 @@ examples, we see:
 
 ### R-Format Instructions Revisited
 We kept saying we would talk about the "shift amount" part of the R-Format
-instruction. Now is the time for this! The shift amount is exactly what it
+instruction.  Now is the time for this!  The shift amount is exactly what it
 sounds like: It's the number of bits to shift when executing a shift
-instruction. Even though the shift instructions look much more like I-Format
-instruction, they are still R-Format. It is unclear precisely why, but we
+instruction.  Even though the shift instructions look much more like I-Format
+instruction, they are still R-Format.  It is unclear precisely why, but we
 believe it's because there was space left in the R-Format instruction binary
 format.
 
 To get into the weeds quickly, the R-Format instruction requires 5 bits for each
 of the register, and a combined 11 bits for the operation (we'll talk more about
-the binary format in Lesson 2); this leaves 5 bits left-over. Since shifts are
+the binary format in Lesson 2); this leaves 5 bits left-over.  Since shifts are
 meaningless after 32 positions (try to convince yourself of this fact), then all
-we need is 5 bits! Since the R-Format instruction had space, it got used for
+we need is 5 bits!  Since the R-Format instruction had space, it got used for
 shifts as well.
 
 ---
@@ -145,12 +153,12 @@ instruction), perform an unsigned add on them, and write the value to `$rt`.
 Take the unsigned integer values from `$rs` and `$rt`, perform an unsigned
 subtraction (`$rs - $rt`) on them, and save the result into `$rd`
 
-You might be wondering where the immediate subtraction operations are. There are
-two reasons you don't see them here. It's because if in assembly you write `subi
-$rt, $rs, val`, you can just take the two's-compliment of val and add it! This
-saves space on the chip so it was common in older architectures. You can also do
-the same with `subu $rd, $rs, $rt` using the `$at` register for calculating the
-two's-compliment at runtime.
+You might be wondering where the immediate subtraction operations are.  There
+are two reasons you don't see them here.  It's because if in assembly you write
+`subi $rt, $rs, val`, you can just take the two's-compliment of val and add it!
+This saves space on the chip so it was common in older architectures.  You can
+also do the same with `subu $rd, $rs, $rt` using the `$at` register for
+calculating the two's-compliment when the program is assembled.
 
 ## Logic
 
@@ -201,7 +209,7 @@ the left with 0), saving the result into `$rt`
 ### Shift Left Logical (`sll $rt, $rs, val`)
 
 Perform a logical shift left of `$rt` by `val` places, saving the result into
-`$rt`. This is integer multiplication by 2
+`$rt`.  This is integer multiplication by 2
 
 <a id="srl"></a>
 ### Shift Right Logical (`srl $rt, $rs, val`)
@@ -213,14 +221,14 @@ places on the left with 0, saving the result into `$rt`
 ### Shift Right Arithmetic (`sra $rt, $rs, val`)
 
 Perform an arithmetic right shift of `$rs` by `val` places, filling the vacated
-places with 0 if the leading bit was 0, and 1 if the leading place was one. This
-is integer division by 2
+places with 0 if the leading bit was 0, and 1 if the leading place was one.
+This is integer division by 2
 
 ## Control Flow
 
-Many of these instructions multiply their arguments by 4. This is because each
+Many of these instructions multiply their arguments by 4.  This is because each
 instruction is exactly 4 bytes long, and so the last two bits of an address will
-always be zero. By having the argument being the offset or address / 4, you can
+always be zero.  By having the argument being the offset or address / 4, you can
 get 4 times as much reach with any of these instructions
 
 <a id="beq"></a>
@@ -285,8 +293,8 @@ pseudo-instructions work since it's impossible to have a 32 bit immediate value
 
 <a id="noop"></a>
 ### No Operation (`noop`)
-Do nothing. This might not seem like a useful instruction to have in an
+Do nothing.  This might not seem like a useful instruction to have in an
 instruction set archiecture, but it can really come in handy when you need to
 fill a space with something and you want to make sure that nothing could
-possibly happen if you end up there. It certainly doesn't come up much, but it's
-very handy to have around when it does.
+possibly happen if you end up there.  It certainly doesn't come up much, but
+it's very handy to have around when it does.

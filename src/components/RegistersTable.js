@@ -67,7 +67,7 @@ class RegistersTable extends Component {
     }
 
     return (
-      <div className="lesson-debugging__registers d-inline-block">
+      <div className="lesson-debugging__registers d-inline-block" id="registersTable">
         <Table hover condensed>
           <thead>
             <tr>

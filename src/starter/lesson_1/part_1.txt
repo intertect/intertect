@@ -2,11 +2,22 @@ function ToUint32(x) {
   return x >>> 0;
 }
 
+function SignExtend16(x) {
+  x = ToUint32(x);
+
+  if (x >>> 15 > 0) {
+    x |= 0xFFFF0000;
+  }
+
+  return x;
+}
+
 function processMIPS(instruction, registers, memory) {
   var rd, rs, rt;
   var result;
   switch(instruction[0]) {
     case 'addu':
+      // TODO: Something is wrong here. Find it and fix it!
       rd = nameToRegisterMap[instruction[1]];
       rs = nameToRegisterMap[instruction[2]];
       rt = nameToRegisterMap[instruction[3]];

@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import { Button,
   Dropdown, DropdownItem, DropdownToggle, DropdownMenu,
-  Popover, PopoverHeader, PopoverBody,
   Modal, ModalHeader, ModalBody, ModalFooter,
   Navbar, NavItem, NavbarNav, NavbarBrand } from 'mdbreact';
 import PropTypes from 'prop-types';
@@ -9,6 +8,7 @@ import PropTypes from 'prop-types';
 import ReactMarkdown from 'react-markdown';
 import SlidingPane from 'react-sliding-pane';
 
+import UITour from './UITour.js'
 import Implement from './Implement.js'
 import Debugging from './Debugging.js'
 import PreviousLessons from './PreviousLessons.js'
@@ -100,15 +100,17 @@ class LessonPage extends Component {
       referencePipeline: [],
 
       // memory becomes relevant after lesson 1.5
-      showMemory: (this.props.lesson != 1 || this.props.lessonPartNum > 5),
+      showMemory: true, // (this.props.lesson != 1 || this.props.lessonPartNum > 5),
       showRegisters: true,
-      unviewedStepExplanation: true,
 
       theme: "solarized_dark",
 
       programRunning: false,
 
-      testProgram: lessonPart
+      testProgram: lessonPart,
+
+      completedTour: false,
+      isTourOpen: false
     }
 
     this.onChange = this.onChange.bind(this);
@@ -121,6 +123,7 @@ class LessonPage extends Component {
     this.appendUserProgram = this.appendUserProgram.bind(this);
     this.loadLesson = this.loadLesson.bind(this)
     this.loadTest = this.loadTest.bind(this)
+    this.closeTour = this.closeTour.bind(this)
   }
 
   onChange(newValue) {
@@ -165,6 +168,13 @@ class LessonPage extends Component {
   toggleIntroPanel() {
     this.setState({
       isIntroPaneOpen: !this.state.isIntroPaneOpen
+    });
+  }
+
+  closeTour() {
+    this.setState({
+      completedTour: true,
+      isTourOpen: false
     });
   }
 
@@ -483,35 +493,6 @@ class LessonPage extends Component {
         </span>);
     }
 
-    var pulsatingInterest =
-      <div className="pulsating-dot__ripple">
-        <span></span>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>;
-
-    var stepExplanation;
-    if (this.state.unviewedStepExplanation) {
-      stepExplanation =
-        <Popover placement="right" component="a" popoverBody={pulsatingInterest}>
-          <PopoverHeader></PopoverHeader>
-          <PopoverBody>This is how you{"'"}ll be running your code!
-            <ul>
-              <li><b>Run</b>: Execute the entire assembly program with your implementation</li>
-              <li><b>Step</b>: Execute just the highlighted line with your implementation</li>
-              <li><b>Reset</b>: Reset all the register/memory values and bring the execution back to the beginning</li>
-            </ul>
-            <Button outline style={{width:"100%"}}
-              onClick={() => this.setState({ unviewedStepExplanation : false })}>
-              <i className="fa fa-stop" aria-hidden="true"></i>Close Help
-            </Button>
-          </PopoverBody>
-        </Popover>;
-    } else {
-      stepExplanation = <div></div>;
-    }
-
     var currentInstruction;
     this.state.lesson > 1 ?
       currentInstruction = <Button outline>
@@ -545,7 +526,10 @@ class LessonPage extends Component {
             isOpen={ this.state.isIntroPaneOpen }
             width='50%'
             onRequestClose={ () => {
-              this.setState({ isIntroPaneOpen: false });
+              this.setState({
+                isIntroPaneOpen: false,
+                isTourOpen: true
+              });
             }}>
           <ReactMarkdown source={this.state.lessonContent} escapeHtml={false} />
         </SlidingPane>
@@ -607,15 +591,13 @@ class LessonPage extends Component {
           </div>
 
           <div className="lesson__body-right col-6 d-flex flex-column p-0">
-            <div className="lesson__testing p-4 d-flex flex-column">
-              {stepExplanation}
-
+            <div className="lesson__testing p-4 d-flex flex-column" id="testing">
               <div className="lesson-testing__content-1 d-flex">
                 <div className="d-flex flex-column col p-0">
                   <div className="d-flex justify-content-between pl-2 pb-2">
                     <h3 className="h3-responsive">Testing</h3>
                     {currentInstruction}
-                    <Dropdown className="align-self-center">
+                    <Dropdown className="align-self-center" id="testSelect">
                       <DropdownToggle caret outline className="lesson-testing__program p-0 m-0" color="deep-purple">
                         {this.state.testProgram}
                       </DropdownToggle>
@@ -629,16 +611,16 @@ class LessonPage extends Component {
                   </div>
                 </div>
                 <div className="lesson-testing__buttons col p-0 pl-3">
-                  <Button outline className="p-2 m-0 mb-4" color="success"
+                  <Button outline className="p-2 m-0 mb-4" id="run" color="success"
                       onClick={() => this.setState({running: true})}>
                     <i className="fa fa-play" aria-hidden="true"></i> Run
                   </Button>
-                  <Button outline className="p-2 m-0 mb-4" color="default"
+                  <Button outline className="p-2 m-0 mb-4" id="step" color="default"
                       // TODO: Factor this out into a method so it can be called not just from here. Running a program is really just calling step() repeatedly
                       onClick={() => this.step()}>
                     <i className="fa fa-forward" aria-hidden="true"></i> Step
                   </Button>
-                  <Button outline className="p-2 m-0 mb-4" color="warning"
+                  <Button outline className="p-2 m-0 mb-4" id="reset" color="warning"
                       onClick={() => this.loadLesson(this.state.lesson, this.state.lessonPartNum, false)}>
                     <i className="fa fa-refresh" aria-hidden="true"></i> Reset
                   </Button>
@@ -646,7 +628,7 @@ class LessonPage extends Component {
               </div>
 
               <div className="lesson-testing__content-2 d-flex justify-content-center px-2 pt-3 pb-0">
-                <Dropdown className="lesson-testing__button mr-3">
+                <Dropdown className="lesson-testing__button mr-3" id="chooseTheme">
                   <DropdownToggle caret outline className="lesson-testing__button lesson-testing__button-theme p-2 m-0"
                       color="default">
                     {this.state.theme.replace(/_/g," ")}
@@ -663,12 +645,12 @@ class LessonPage extends Component {
                   </DropdownMenu>
                 </Dropdown>
                 <Button outline className="lesson-testing__button lesson-testing__button-save p-2 m-0 mr-3"
-                    color="deep-purple"
+                    color="deep-purple" id="saveCode"
                     onClick={() => this.saveProgram(this.state.lesson, this.state.lessonPart, this.state.starterProgram)}>
                   <i className="fa fa-save" aria-hidden="true"></i> Save Code
                 </Button>
                 <Button outline className="lesson-testing__button lesson-testing__button-restart p-2 m-0"
-                    color="danger"
+                    color="danger" id="startOver"
                     onClick={() => this.setState({ confirmRestart : true })}>
                   <i className="fa fa-warning" aria-hidden="true"></i> Start Over
                 </Button>
@@ -685,6 +667,11 @@ class LessonPage extends Component {
             </div>
           </div>
         </div>
+
+        <UITour
+          completedTour={this.state.completedTour}
+          isTourOpen={this.state.isTourOpen}
+          closeTour={this.closeTour} />
 
         <Modal isOpen={this.state.lessonCorrect && this.state.lessonComplete}
           frame position="bottom">

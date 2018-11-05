@@ -1,6 +1,3 @@
-    case 'addi':
-      // TODO
-      break;
     case 'addiu':
       // TODO
       break;

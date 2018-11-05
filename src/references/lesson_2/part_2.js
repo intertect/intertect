@@ -223,6 +223,10 @@ export function solution(instruction, registers) {
         result = byte_1;
         registers.write(rt, result);
         break;
+      case 'lui':
+        result = imm << 16;
+        registers.write(rt, result);
+        break;
       default:
         break;
     }

@@ -27,7 +27,7 @@ class MemoryTable extends Component {
     }
 
     return (
-      <div className="lesson-debugging__memory d-inline-block">
+      <div className="lesson-debugging__memory d-inline-block" id="memoryTable">
         <Table hover condensed>
           <thead>
             <tr>

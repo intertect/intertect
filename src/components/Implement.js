@@ -7,8 +7,6 @@
 
 import React, {Component} from 'react';
 
-import { Button, Popover, PopoverHeader, PopoverBody } from 'mdbreact';
-
 import PropTypes from 'prop-types';
 import AceEditor from 'react-ace';
 
@@ -16,41 +14,14 @@ class Implement extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      unviewedImplementExplanation: true,
       theme: this.props.theme,
       studentProgram: this.props.studentProgram
     };
   }
 
   render() {
-    var pulsatingInterest =
-      <div className="pulsating-dot__ripple">
-        <span></span>
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>;
-
-    var implementExplanation;
-    if (this.state.unviewedImplementExplanation) {
-      implementExplanation =
-        <Popover placement="right" component="a" popoverBody={pulsatingInterest}>
-          <PopoverHeader></PopoverHeader>
-          <PopoverBody>This is where you{"'"}ll be implementing your code for the lesson! We{"'"}ve provided
-          you with a template to get started.
-            <Button outline style={{width:"100%"}}
-              onClick={() => this.setState({ unviewedImplementExplanation : false })}>
-              <i className="fa fa-stop" aria-hidden="true"></i> Close Help
-            </Button>
-          </PopoverBody>
-        </Popover>
-    } else {
-      implementExplanation = <div></div>
-    }
-
     return (
-      <div className="lesson__implement">
-        {implementExplanation}
+      <div className="lesson__implement" id="implement">
         <AceEditor
           className="lesson-implement__editor d-flex"
           mode="javascript"
