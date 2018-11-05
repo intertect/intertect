@@ -1,8 +1,5 @@
 # The MIPS Instruction Set
 
-## Arithmetic
-
-
 <a id="addu"></a>
 ### Add Unsigned (`addu $rd, $rs, $rt`)
 
@@ -33,9 +30,6 @@ $rt, $rs, val`, you can just take the two's-compliment of val and add it! This
 saves space on the chip so it was common in older architectures. You can also do
 the same with `subu $rd, $rs, $rt` using the `$at` register for calculating the
 two's-compliment at runtime.
-
-## Logic
-
 <a id="and"></a>
 ### And (`and $rd, $rs, $rt`) 
 
@@ -104,7 +98,6 @@ Many of these instructions multiply their arguments by 4. This is because each
 instruction is exactly 4 bytes long, and so the last two bits of an address will
 always be zero. By having the argument being the offset or address / 4, you can
 get 4 times as much reach with any of these instructions
-
 <a id="beq"></a>
 ### Branch On Equal (`beq $rt, $rs, val`) 
 
@@ -134,8 +127,6 @@ and save the address of the next instruction into `$ra`
 Jump to the address stored in `$rs` shifted left two places (multiplied by 4)
 
 
-## Memory / Registers
-
 <a id="lbu"></a>
 ### Load Byte Unsigned (`lbu`) 
 
@@ -151,8 +142,6 @@ Jump to the address stored in `$rs` shifted left two places (multiplied by 4)
 <a id="li"></a>
 ### Load Immediate (`li`) 
 
-Note: This could be interesting not to demonstrate, but rather to show how
-pseudo-instructions work since it's impossible to have a 32 bit immediate value
 
 <a id="sb"></a>
 ### Store Byte (`sb`) 

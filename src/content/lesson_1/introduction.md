@@ -75,9 +75,6 @@ Link instructions. For these lessons we will treat registers 2-27 as exactly
 the same, and all other registers as their conventions dictate.
 
 # The MIPS Instruction Set
-
-## Arithmetic
-
 ### Add Unsigned (`addu $rd, $rs, $rt`)
 Take the unsigned integer values from `$rs` and `$rt`, perform an unsigned add
 on them, and save the result into `$rd`
@@ -100,8 +97,6 @@ are two reasons you don't see them here. It's because if in assembly you write
 This saves space on the chip so it was common in older architectures. You can
 also do the same with `subu $rd, $rs, $rt` using the `$at` register for
 calculating the two's-compliment at runtime.
-
-## Logic
 
 ### And (`and $rd, $rs, $rt`)
 Perform a bitwise logical AND between `$rs` and `$rt`, saving the result into
@@ -171,16 +166,11 @@ and save the address of the next instruction into `$ra`
 Jump to the address stored in `$rs` shifted left two places (multiplied by 4)
 
 
-## Memory / Registers
-
 ### Load Byte Unsigned (`lbu`)
 ### Load Halfword Unsigned (`lhu`)
 ### Load Word (`lw`)
 ### Load Upper Immediate (`lui`)
 ### Load Immediate (`li`)
-Note: This could be interesting not to demonstrate, but rather to show how
-pseudo-instructions work since it's impossible to have a 32 bit immediate value
-
 ### Store Byte (`sb`)
 ### Store Halfword (`sh`)
 ### Store Word (`sw`)

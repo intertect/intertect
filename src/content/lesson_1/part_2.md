@@ -100,9 +100,6 @@ you'll be introduced to these instruction formats in much more detail.
 ---
 # The MIPS Instruction Set
 
-## Arithmetic
-
-
 <a id="addu"></a>
 ### Add Unsigned (`addu $rd, $rs, $rt`)
 
@@ -126,15 +123,6 @@ instruction), perform an unsigned add on them, and write the value to `$rt`.
 
 Take the unsigned integer values from `$rs` and `$rt`, perform an unsigned
 subtraction (`$rs - $rt`) on them, and save the result into `$rd`
-
-You might be wondering where the immediate subtraction operations are.  There
-are two reasons you don't see them here.  It's because if in assembly you write
-`subi $rt, $rs, val`, you can just take the two's-compliment of val and add it!
-This saves space on the chip so it was common in older architectures.  You can
-also do the same with `subu $rd, $rs, $rt` using the `$at` register for
-calculating the two's-compliment when the program is assembled.
-
-## Logic
 
 <a id="and"></a>
 ### And (`and $rd, $rs, $rt`)
@@ -198,13 +186,6 @@ Perform an arithmetic right shift of `$rs` by `val` places, filling the vacated
 places with 0 if the leading bit was 0, and 1 if the leading place was one.
 This is integer division by 2
 
-## Control Flow
-
-Many of these instructions multiply their arguments by 4.  This is because each
-instruction is exactly 4 bytes long, and so the last two bits of an address will
-always be zero.  By having the argument being the offset or address / 4, you can
-get 4 times as much reach with any of these instructions
-
 <a id="beq"></a>
 ### Branch On Equal (`beq $rt, $rs, val`)
 
@@ -234,8 +215,6 @@ and save the address of the next instruction into `$ra`
 Jump to the address stored in `$rs` shifted left two places (multiplied by 4)
 
 
-## Memory / Registers
-
 <a id="lbu"></a>
 ### Load Byte Unsigned (`lbu`)
 
@@ -250,9 +229,6 @@ Jump to the address stored in `$rs` shifted left two places (multiplied by 4)
 
 <a id="li"></a>
 ### Load Immediate (`li`)
-
-Note: This could be interesting not to demonstrate, but rather to show how
-pseudo-instructions work since it's impossible to have a 32 bit immediate value
 
 <a id="sb"></a>
 ### Store Byte (`sb`)
