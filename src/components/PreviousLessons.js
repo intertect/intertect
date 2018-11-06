@@ -7,8 +7,7 @@
 
 import React, {Component} from 'react';
 
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter,
-  ListGroup, ListGroupItem } from 'mdbreact';
+import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'mdbreact';
 import PropTypes from 'prop-types';
 
 import { lessonParts } from '../utils/lessonItems.js';
@@ -22,50 +21,36 @@ class PreviousLessons extends Component {
     var completedLessons = [];
     var lessons = Array.range(1, 5)
     lessons.map((lesson) => {
-      var numPartsForLesson = lesson <= this.props.completedLessons ? lessonParts[this.props.completedLessons] : this.props.completedParts;
+      var numPartsForLesson = lesson <= this.props.completedLessons ? lessonParts[lesson] : this.props.completedParts;
       var parts = Array.range(1, numPartsForLesson + 1)
       if (lesson <= this.props.completedLessons + 1) {
-        completedLessons.push(<ListGroupItem active>Lesson {lesson}</ListGroupItem>);
+        completedLessons.push(<DropdownItem header>
+          Lesson {lesson}
+        </DropdownItem>);
         parts.map((part) => {
           if (part > lessonParts[lesson]) {
             return;
           }
           completedLessons.push(
-            <ListGroupItem>
-              <div className="row align-middle">
-                <div className="col-sm-3">Part {part}</div>
-                <div className="col-sm-9">
-                  <Button outline onClick={() => {
-                    this.props.toggleShowPreviousLessons();
-                    this.props.toggleIntroPanel();
-                    this.props.loadLesson(lesson, part, true);
-                    }} style={{width:"100%"}}>
-                    Redo
-                  </Button>
-                </div>
-              </div>
-            </ListGroupItem>)
+            <DropdownItem onClick={() => {
+              this.props.toggleShowPreviousLessons();
+              this.props.toggleIntroPanel();
+              this.props.loadLesson(lesson, part, true);
+              }} style={{whiteSpace: "normal"}}>
+              Part { part }
+            </DropdownItem>)
           });
         }
       }
     )
 
     return (
-      <Modal isOpen={this.props.revealCompletedLevels} toggle={() => this.props.toggleCompletedLevels()} centered>
-        <ModalHeader>Completed Levels</ModalHeader>
-        <ModalBody>
-          <ListGroup> {completedLessons} </ListGroup>
-        </ModalBody>
-        <ModalFooter>
-          <div className="row">
-            <div className="col-sm-12">
-              <Button outline onClick={() => this.props.toggleShowPreviousLessons()} style={{width:"100%"}}>
-                Close
-              </Button>
-            </div>
-          </div>
-        </ModalFooter>
-      </Modal>
+      <Dropdown>
+        <DropdownToggle nav caret className="landing-navbar__animated-link">Lessons</DropdownToggle>
+        <DropdownMenu className="landing-navbar__dropdown-menu">
+          {completedLessons}
+        </DropdownMenu>
+      </Dropdown>
     );
   }
 }

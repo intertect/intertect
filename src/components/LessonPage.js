@@ -540,28 +540,15 @@ class LessonPage extends Component {
 
           <NavbarNav right className="flex-row">
             <NavItem className="landing-navbar__item mr-3">
-              <Dropdown>
-                <DropdownToggle nav caret className="landing-navbar__animated-link">Lessons</DropdownToggle>
-                <DropdownMenu className="landing-navbar__dropdown-menu">
-                  <DropdownItem href="#">
-                    1: MIPS Assembly
-                  </DropdownItem>
-                  <DropdownItem href="#">
-                    2: MIPS Binary
-                  </DropdownItem>
-                  <DropdownItem href="#">
-                    3: Pipelining
-                  </DropdownItem>
-                  <DropdownItem href="#">
-                    4: Parallel Pipelining
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-            </NavItem>
-            <NavItem className="landing-navbar__item mr-3">
-              <a className="nav-link" href="#" onClick={() => this.setState({ revealCompletedLevels : true })}>
-                Previous Levels
-              </a>
+              <PreviousLessons
+                completedLessons={this.state.completedLessons}
+                completedParts={this.state.completedParts}
+                revealCompletedLevels={this.state.revealCompletedLevels}
+
+                loadLesson={this.loadLesson}
+                toggleCompletedLevels={this.toggleCompletedLevels}
+                toggleShowPreviousLessons={this.toggleShowPreviousLessons}
+                toggleIntroPanel={this.toggleIntroPanel} />
             </NavItem>
             <NavItem className="landing-navbar__item mr-3">
               <div className="position-relative">
@@ -570,16 +557,6 @@ class LessonPage extends Component {
             </NavItem>
           </NavbarNav>
         </Navbar>
-
-        <PreviousLessons
-          completedLessons={this.state.completedLessons}
-          completedParts={this.state.completedParts}
-          revealCompletedLevels={this.state.revealCompletedLevels}
-
-          loadLesson={this.loadLesson}
-          toggleCompletedLevels={this.toggleCompletedLevels}
-          toggleShowPreviousLessons={this.toggleShowPreviousLessons}
-          toggleIntroPanel={this.toggleIntroPanel} />
 
         <div className="d-flex lesson__body">
           <div className="lesson__body-left col-6 p-4">

@@ -381,3 +381,29 @@ export const lessonPipelineStudent = {
   "lesson_3/part_4": ["IF","ID","EX","MEM",],
   "lesson_3/part_5": ["IF","ID","EX","MEM","WB"],
 }
+
+// lesson titles for navigation
+export const lessonTitles = {
+  "lesson_1" : "MIPS Assembly",
+  "lesson_1/part_1" : "Starting Slowly",
+  "lesson_1/part_2" : "Heading Off On Your Own",
+  "lesson_1/part_3" : "Bitwise Instructions",
+  "lesson_1/part_4" : "Immediate Instructions",
+  "lesson_1/part_5" : "Jump Around!",
+  "lesson_1/part_6" : "Memory!",
+
+  "lesson_2" : "MIPS Binary",
+  "lesson_2/part_1" : "Binary Representations",
+  "lesson_2/part_2" : "Branch Delay Slot",
+
+  "lesson_3" : "Pipelining",
+  "lesson_3/part_1" : "Fetch (IF)",
+  "lesson_3/part_2" : "Decode (ID)",
+  "lesson_3/part_3" : "Execute (EX)",
+  "lesson_3/part_4" : "Memory (MEM)",
+  "lesson_3/part_5" : "Write Back (WB)",
+
+  "lesson_4" : "Parallel Pipelining",
+  "lesson_4/part_1" : "Parallelizing",
+  "lesson_4/part_2" : "MIPS Hazards"
+}

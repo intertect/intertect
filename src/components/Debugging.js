@@ -6,7 +6,7 @@
 /* eslint-disable import/no-named-as-default */
 
 import React, {Component} from 'react';
-import { Button, Collapse } from 'mdbreact';
+import { Button } from 'mdbreact';
 
 import PropTypes from 'prop-types';
 import MemoryTable from './MemoryTable.js'
