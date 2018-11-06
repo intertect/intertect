@@ -21,19 +21,22 @@ class PreviousLessons extends Component {
     var completedLessons = [];
     var lessons = Array.range(1, 5)
     lessons.map((lesson) => {
-      var numPartsForLesson = lesson <= this.props.completedLessons ? lessonParts[lesson] : this.props.completedParts;
-      var parts = Array.range(1, numPartsForLesson + 1)
-      if (lesson <= this.props.completedLessons + 1) {
+      if (lesson <= this.props.completedLessons) {
         completedLessons.push(<DropdownItem header>
           Lesson {lesson}
         </DropdownItem>);
+
+        var numPartsForLesson = lesson < this.props.completedLessons ?
+          lessonParts[lesson] : this.props.completedParts;
+        var parts = Array.range(1, numPartsForLesson + 1)
+        console.log(numPartsForLesson + 1)
+        console.log(parts)
         parts.map((part) => {
           if (part > lessonParts[lesson]) {
             return;
           }
           completedLessons.push(
             <DropdownItem onClick={() => {
-              this.props.toggleShowPreviousLessons();
               this.props.toggleIntroPanel();
               this.props.loadLesson(lesson, part, true);
               }} style={{whiteSpace: "normal"}}>
@@ -58,7 +61,6 @@ class PreviousLessons extends Component {
 PreviousLessons.propTypes = {
   completedLessons: PropTypes.number,
   completedParts: PropTypes.number,
-  toggleShowPreviousLessons: PropTypes.func,
   toggleIntroPanel: PropTypes.func,
   loadLesson: PropTypes.func,
   revealCompletedLevels: PropTypes.func,

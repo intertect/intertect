@@ -36,12 +36,23 @@ class LessonPage extends Component {
   constructor(props) {
     super(props);
 
-    if (localStorage.getItem('completedParts') > lessonParts[this.props.completedLessons]) {
-      localStorage.setItem('completedParts', lessonParts[this.props.completedLessons]);
+    if (localStorage.getItem('completedParts') == null) {
+      localStorage.setItem('completedParts', 1);
     }
-    var completedParts = localStorage.getItem('completedParts');
 
-    var lessonPart = `lesson_${this.props.lesson}/part_${this.props.lessonPartNum}`;
+    if (localStorage.getItem('completedLessons') == null) {
+      localStorage.setItem('completedLessons', 1);
+    }
+
+    // Validate localStorage
+    if (localStorage.getItem('completedLessons') > 4) {
+      localStorage.setItem('completedLessons', 4);
+    }
+
+    var completedLessons = parseInt(localStorage.getItem('completedLessons'));
+    var completedParts = parseInt(localStorage.getItem('completedParts'));
+
+    var lessonPart = `lesson_${completedLessons}/part_${completedParts}`;
     var letters = Object.values(lessonContent[lessonPart]);
 
     var studentRegisters = new Registers();
@@ -54,7 +65,7 @@ class LessonPage extends Component {
     var referenceMemory = new Memory();
 
     // we want to load the binary program into memory after lesson 3
-    if (this.props.lesson > 2) {
+    if (completedLessons > 2) {
       for (var i = 0; i < lessonBinaryCode[lessonPart].length; i++) {
         studentMemory.write(i, lessonBinaryCode[lessonPart][i]);
         referenceMemory.write(i, lessonBinaryCode[lessonPart][i]);
@@ -70,11 +81,11 @@ class LessonPage extends Component {
       programCounter: 0,
       running: false,
 
-      lesson: this.props.lesson,
-      lessonPartNum: this.props.lessonPartNum,
+      lesson: completedLessons,
+      lessonPartNum: completedParts,
 
-      completedLessons: this.props.completedLessons,
-      completedParts: completedParts || 2,
+      completedLessons: completedLessons,
+      completedParts: completedParts,
 
       lessonComplete: false,
       lessonCorrect: true,
@@ -100,8 +111,6 @@ class LessonPage extends Component {
       referencePipeline: [],
 
       // // memory becomes relevant after lesson 1.5
-      // showMemory: true, // (this.props.lesson != 1 || this.props.lessonPartNum > 5),
-      // showRegisters: true,
       theme: "solarized_dark",
 
       programRunning: false,
@@ -269,13 +278,13 @@ class LessonPage extends Component {
 
     var lessonPart = `lesson_${lesson}/part_${lessonPartNum}`;
     if (lessonPartNum > this.state.completedParts) {
-      this.setState({ completedParts : lessonPartNum - 1 })
-      localStorage.setItem('completedParts', lessonPartNum - 1);
+      this.setState({ completedParts : lessonPartNum })
+      localStorage.setItem('completedParts', lessonPartNum);
     }
 
     if (lesson > this.state.completedLessons) {
-      this.setState({ completedLessons : lesson - 1 })
-      localStorage.setItem('completedLessons', lesson - 1);
+      this.setState({ completedLessons : lesson })
+      localStorage.setItem('completedLessons', lesson);
     }
 
     var starterProgram;
@@ -547,7 +556,6 @@ class LessonPage extends Component {
 
                 loadLesson={this.loadLesson}
                 toggleCompletedLevels={this.toggleCompletedLevels}
-                toggleShowPreviousLessons={this.toggleShowPreviousLessons}
                 toggleIntroPanel={this.toggleIntroPanel} />
             </NavItem>
             <NavItem className="landing-navbar__item mr-3">
