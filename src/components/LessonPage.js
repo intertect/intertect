@@ -586,17 +586,16 @@ class LessonPage extends Component {
             <div className="lesson__testing p-4 d-flex flex-column" id="testing">
               <div className="lesson-testing__content-1 d-flex">
                 <div className="d-flex flex-column col p-0">
-                  <div className="d-flex justify-content-between pl-2 pb-2">
-                    <h3 className="h3-responsive">Testing</h3>
-                    {currentInstruction}
+                  <div className="d-flex justify-content-between pb-2">
                     <Dropdown className="align-self-center" id="testSelect">
-                      <DropdownToggle caret outline className="lesson-testing__program p-2 m-0" color="deep-purple">
+                      <DropdownToggle caret outline className="lesson-testing__program p-2 m-0" color="deep-purple" size="lg">
                         {this.state.testProgram}
                       </DropdownToggle>
                       <DropdownMenu>
                         {testProgramDropdown}
                       </DropdownMenu>
                     </Dropdown>
+                    {currentInstruction}
                   </div>
                   <div className="lesson-testing__shell-div">
                     <ul className="lesson-testing__shell p-2 mb-0">{ assemblyList }</ul>
@@ -696,7 +695,7 @@ class LessonPage extends Component {
         <Modal isOpen={!this.state.lessonCorrect && this.state.lessonComplete}
           frame position="bottom">
 
-          <ModalHeader>Oops, let{"'"}s try again!</ModalHeader>
+          <ModalHeader>Oops, let&apos;s try again!</ModalHeader>
           <ModalBody className="text-center">
             <div className="row">
               <div className="col-sm-6">
