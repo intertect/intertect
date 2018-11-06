@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { NavbarBrand, Navbar, NavbarNav, NavItem, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'mdbreact';
+import { NavbarBrand, Navbar } from 'mdbreact';
 import PropTypes from 'prop-types';
 
 import yash from '../images/yash.png';
@@ -94,6 +94,7 @@ class LandingPage extends Component {
 }
 
 LandingPage.propTypes = {
+  newUser: PropTypes.bool,
   selectHandler: PropTypes.func
 }
 

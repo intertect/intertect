@@ -29,8 +29,6 @@ class PreviousLessons extends Component {
         var numPartsForLesson = lesson < this.props.completedLessons ?
           lessonParts[lesson] : this.props.completedParts;
         var parts = Array.range(1, numPartsForLesson + 1)
-        console.log(numPartsForLesson + 1)
-        console.log(parts)
         parts.map((part) => {
           if (part > lessonParts[lesson]) {
             return;

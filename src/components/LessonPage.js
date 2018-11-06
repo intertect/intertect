@@ -44,6 +44,10 @@ class LessonPage extends Component {
       localStorage.setItem('completedLessons', 1);
     }
 
+    if (localStorage.getItem('starterProgram') == null) {
+      localStorage.setItem('starterProgram', "{}")
+    }
+
     // Validate localStorage
     if (localStorage.getItem('completedLessons') > 4) {
       localStorage.setItem('completedLessons', 4);
@@ -51,9 +55,13 @@ class LessonPage extends Component {
 
     var completedLessons = parseInt(localStorage.getItem('completedLessons'));
     var completedParts = parseInt(localStorage.getItem('completedParts'));
+    var starterProgram = JSON.parse(localStorage.getItem('starterProgram'));
 
     var lessonPart = `lesson_${completedLessons}/part_${completedParts}`;
-    var letters = Object.values(lessonContent[lessonPart]);
+    var studentProgram = starterProgram[lessonPart] != undefined ?
+      starterProgram[lessonPart] : lessonStarterCode[lessonPart];
+
+    var letters = Object.values(lessonContent[lessonPart])
 
     var studentRegisters = new Registers();
     var referenceRegisters = new Registers();
@@ -91,9 +99,9 @@ class LessonPage extends Component {
       lessonCorrect: true,
 
       // program the student starts this particular lesson with
-      starterProgram: JSON.parse(localStorage.getItem('starterProgram')) || {},
+      starterProgram: starterProgram,
 
-      studentProgram: lessonStarterCode[lessonPart],
+      studentProgram: studentProgram,
       lessonContent : letters[letters.length - 1],
       assemblyProgram : lessonAssembly[lessonPart].split("\n"),
       binaryProgram : lessonBinaryCode[lessonPart],
