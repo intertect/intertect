@@ -1,40 +1,76 @@
-# Part 1: Fetch (IF)
-Welcome to the third lesson on computer architecture!  This lesson is going to
-be concentrating on pipelining.  You've already understood a lot about how
-processors work at this point!  You now know how instructions are relayed to the
-processor and how it transforms these seemingly random string of bits into
-actions that we see.  That being said, processors have become more and more
-complex since they were originally invented.  One of the main innovations that
-led the processor to its current state is something called "pipelining."
+# Part 1: Instruction Fetch (IF)
+Welcome to the third lesson!  You've now graduated from the basics to the
+meatier topics in computer architecture.  Now that you've got the fundamentals
+under your belt, you're ready to start taking on some more complex ideas.  Strap
+in and get ready!  We're about to tackle processor pipelining.
 
-Like the key principle of modularity in software engineering, the functionality
-of processors is separated into silos that talk to one another.  Pipelining is
-one of the key elements that allows processors to work on different tasks
-simultaneously, which is the focus in Lesson 4.  Here, we'll be effectively
-separating the processor you've currently developed into well separated logical
-units, specifically:
+## Processor Pipelining
+Processor pipelining is a key optimization found in nearly all processors today
+(even many microcontrollers!) In short, instead of executing one instruction at
+a time, once per clock-cycle, the processor breaks up each instruction into a
+series of sub-tasks that can be executed simultaneously, leading to higher
+utilization of the processor.
 
-- **Fetch (IF)**: Grabs the instruction being pointed at by the `pc` (program
-  counter).
-- **Decode (ID)**: Instruction is parsed and control lines set appropriately.
-  However, if there is a branch or jump instruction, it is executed here and the
-  PC updated.
-- **Execute (EX)**: Performs the operation from the decode if it is *not* a
-  branch/jump, which was executed in the previous ID stage, or having to do with
-  memory, which will be executed in the following MEM stage.
-- **Memory (MEM)**: Executes operations dealing with memory, i.e. loads/stores.
-  Also conditionally saves results of the EX stage to memory *if appropriate*
-  for the instruction that was executed.  Hands off all other results to the
-  final stage to save to registers.
-- **Write Back (WB)**: Saves any results that were not stored to memory into
-  registers *if appropriate* for the instruction.
+### Doing Some Laundry
+The common analogy is to doing laundry.  Imagine you have 5 loads of laundry to
+do (first imagine you have enough clothing to have that be necessary).  There
+are three tasks for you to do: Washing, drying, and folding.  Further, imagine
+that each load of laundry is one indivisible task, so that the load is washed,
+dried, and folded as a unit.
 
-So, while there will be no increase in your processor's capability after this
-lesson, we'll have a highly "refactored" implementation of its functionality,
-which will allow for greater clarity and (more importantly) significant
-subsequent speedup.
+Let's look at one possible way of performing the task of doing laundry.  You
+take the first load, put it in the washer, wait for it to complete, dry the
+clothes, fold the clothes, and then start over with the second load.  This is
+obviously quite inefficient!  Every component of the system has terrible
+utilization.  You would obviously want to have one load in the wash, one in the
+dryer, and one being folded at all times.  This is exactly the same as with a
+processor. There are many stages to instruction execution, and if only one
+instruction is being executed at a time, then there are many parts of the
+processor that aren't being properly utilized.
 
-# Latches
+### Throughput vs. Latency
+An interesting property of pipelining is that it **increases** both latency and
+throughput.  Throughput is the number of instructions executed per unit time
+(usually a second), while latency is the time it takes from the start of
+execution of an instruction to the time it has finished.  This is a common
+trade-off that you'll see in all areas of computer science.  In the case of
+pipelining, it's obvious why we would get higher throughput since there is more
+utilization on the processor.  However, it might not be as clear why latency
+would go up.
+
+There are a few reasons for this, but the primary reason is that since all the
+pipeline stages are controlled by the same clock, the speed of that clock will
+be fundamentally limited by the latency of the slowest pipeline stage.  Using
+the laundry analogy again, if your washer takes 45 minutes, but the dryer takes
+60, your washer is going to be unused while waiting for the next load of laundry
+to leave the dryer.
+
+Back to throughput though, after adding a pipeline, we will have drastically
+sped up the pipeline.  Once we've reached steady state (since it will take a few
+clock cycles to fill up the pipeline), we'll be executing approximately 1
+instruction per clock-cycle (IPC), but the clock cycles will be multiple times
+shorter since they each have less functionality.  As you can see, pipelining is
+a huge win for performance.
+
+## Pipeline Stages
+
+We've talked a lot about pipelines, but what are the actual stages?  The MIPS
+architecture uses the common RISC pipeline:
+
+- **Instruction Fetch (IF)**: Fetches from memory the instruction being pointed
+  at by the program counter (PC).
+- **Instruction Decode (ID)**: Instruction is parsed and control lines set
+  appropriately.  Values from registers are read from the register file during
+  this stage and saved for future calculations.  However, if it is a branch or
+  jump instruction, it is executed here and the PC updated.
+- **Execute (EX)**: Performs arithmetic operations on the operands if the
+  instruction was not a branch or jump.  If the instruction was a load or store
+  address to read/write is calculated here.
+- **Memory (MEM)**: Reads from, and writes to, memory are performed here using
+  the addresses calculated in the EX stage.
+- **Writeback (WB)**: Saves (writes back) results to registers **if appropriate**.
+
+## Latches
 **Important**: Do NOT skip this section, otherwise implementing this lesson and
 all future ones will be impossible!
 
@@ -98,7 +134,7 @@ names/types for these cases:
   stage of the pipeline saving should occur
   - `position`: Which register to be written to (if `location` is `"registers"`)
 
-# Your Task
+## Your Task
 The first part of the pipeline is fetching the instruction.  It's typically
 denoted just as IF, which stands for "instruction fetch." As we've seen in the
 past, the `pc` dictate what in the program is being executed.  Unlike past
@@ -117,40 +153,6 @@ don't have to worry about adjusting that!
 function to convert your return after any bit manipulation you do!
 - Instructions are to be read from high bit to low (i.e. big-endian)
 - The current instruction is pointed to by `pc`
-
-## Why Pipeline
-As we briefly alluded to above, separating the execution of an instruction into
-pipeline stages is primarily useful in allowing different instructions to be
-executed "simultaneously." After all, the way we currently have the processor
-set up, a single instruction must execute in its entirety before the following
-one is even started.  Specifically, that instruction must be fetched from
-memory, decoded to its type, executed, and written *all* before the next one is
-even considered.  However, assuming consecutive instructions don't depend on one
-another (we'll get back to this later), they can go through the different stages
-of the pipeline without fear of resulting in an error in the execution of the
-other if the pipeline stages are developed as to be independent of one another.
-In this diagram:
-
-[](https://upload.wikimedia.org/wikipedia/commons/c/cb/Pipeline%2C_4_stage.svg)
-
-We see that one of the instructions can be going through a "decode" stage while
-the next instruction that is to be executed can be fetched and the previous
-executed.  This means pipelining greatly improves throughput of the system.  The
-typical metric for measuring processor throughput is its CPI, or cycles per
-instruction.  A clock cycle effectively captures one step through the pipeline,
-i.e.  the time it would take to move from fetch to decode or decode to execute.
-
-Prior to pipelining, a single instruction would typically take 3-4 cycles to
-complete.  After pipelining, this is *still* the case!  Remember, pipelining is
-**not** increasing the speed of the execution of a single instruction.  That is,
-if we had two processors, one pipelined and one not, that were being tested
-against a single instruction, they would perform identically.  However, in those
-same 3-4 cycles, a pipelined processor will ideally execute 3-4 instructions,
-since at *each* clock cycle, there will be an instruction that is being written
-back, i.e. an instruction being completed, whereas this is only the case on the
-fourth cycle for a non-pipelined CPU.  So, while the individual instruction
-speed remains the same with a pipelined processor, the CPI drops to nearly 1,
-since we now have roughly an instruction being completed at each clock tick.
 
 ## Hazards
 While the ideal pipelined CPI is 1, there are some circumstances where this will
