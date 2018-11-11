@@ -32,3 +32,15 @@ The branch delay slot is simply an optimization.  We'll cover it more in the
 next lesson, but simply put, branches and jumps force the processor to wait so
 having an instruction that is always executed allows the processor to do
 something in what would otherwise be dead time.
+
+## Your Task
+Implement the branch delay slot!  You have to keep track of whether or not
+there's an instruction in the branch delay slot as well as the location to jump
+to after the branch delay instruction has been executed.
+
+The flow is something like this:
+1. Encounter a branch or jump at instruction N.
+2. Calculate and save the destination address, but don't jump there yet.
+3. Perform instruction N+1 as normal.
+4. Before finishing instruction N+1, set the program counter to the address you
+   previously calculated.
