@@ -20,19 +20,27 @@ class RegistersTable extends Component {
 
     var registerTable = [];
     var register;
-    for (var i = 0; i < this.props.studentRegisters.usedRegisters.length; i++) {
+    console.log(this.props.referenceRegisters.usedRegisters)
+    for (var i = 0; i < this.props.referenceRegisters.usedRegisters.length; i++) {
       var studentRegister = this.props.studentRegisters.usedRegisters[i];
       var referenceRegister = this.props.referenceRegisters.usedRegisters[i];
 
-      var studentValue = `0x${ToUint32(this.props.studentRegisters.read(studentRegister)).toString(16).toUpperCase()}`;
+      var studentValue = `0x${ToUint32(this.props.studentRegisters.read(referenceRegister)).toString(16).toUpperCase()}`;
       var referenceValue = `0x${ToUint32(this.props.referenceRegisters.read(referenceRegister)).toString(16).toUpperCase()}`;
 
       var tooltipContent, colorClass;
 
+      console.log(studentRegister)
       if (studentRegister != referenceRegister) {
         colorClass = "lesson-debugging__wrong-color";
-        tooltipContent = `Oops! You wrote to ${registerToNameMap[studentRegister]}
-          instead of ${registerToNameMap[referenceRegister]}`
+        if (studentRegister === undefined) {
+          tooltipContent = `Sorry, you wrote to a non-existent register! Check to make
+            you used the binary representation of register names (using nameToRegisterMap).
+            You may have also not yet implemented this instruction.`
+        } else {
+          tooltipContent = `Oops! You wrote to ${registerToNameMap[studentRegister]}
+            instead of ${registerToNameMap[referenceRegister]}`
+        }
       } else if (studentValue == referenceValue) {
         colorClass = "lesson-debugging__right-color";
         tooltipContent = "Great job! This is correct.";
@@ -42,7 +50,7 @@ class RegistersTable extends Component {
       }
 
       registerTable.push(<tr className={colorClass}>
-        <td>{registerToNameMap[studentRegister]}</td>
+        <td>{registerToNameMap[referenceRegister]}</td>
         <td>
           <Tooltip
             placement="top"
@@ -56,7 +64,7 @@ class RegistersTable extends Component {
     var registers = Object.keys(nameToRegisterMap);
     for (i = 0; i < registers.length; i++) {
       register = registers[i];
-      if (this.props.studentRegisters.usedRegisters.indexOf(nameToRegisterMap[register]) != -1) {
+      if (this.props.referenceRegisters.usedRegisters.indexOf(nameToRegisterMap[register]) != -1) {
         continue;
       }
 

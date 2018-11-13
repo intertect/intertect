@@ -34,6 +34,11 @@ function IF(latches, registers, memory) {
 }
 
 function ID(latches, registers, memory) {
+  if (latches.if_id === undefined) {
+    latches.id_ex = undefined;
+    return;
+  }
+
   var binary = latches.if_id;
   var opcode = binary >>> 26;
 
@@ -142,6 +147,11 @@ function ID(latches, registers, memory) {
 }
 
 function EX(latches, registers, memory) {
+  if (latches.id_ex === undefined) {
+    latches.ex_mem = undefined;
+    return;
+  }
+
   var instruction = latches.id_ex;
 
   // All R (register) instructions start with 0s
@@ -245,6 +255,11 @@ function EX(latches, registers, memory) {
 }
 
 function MEM(latches, registers, memory) {
+  if (latches.ex_mem === undefined) {
+    latches.mem_wb = undefined;
+    return;
+  }
+
   var instruction = latches.ex_mem["instruction"];
   var memory_address = latches.ex_mem["memory_address"];
 
@@ -355,6 +370,10 @@ function MEM(latches, registers, memory) {
 }
 
 function WB(latches, registers, memory) {
+  if (latches.mem_wb === undefined) {
+    return;
+  }
+
   if (latches.mem_wb["location"] == "registers") {
     registers.write(latches.mem_wb["position"], latches.mem_wb["result"])
   }

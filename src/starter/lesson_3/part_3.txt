@@ -86,6 +86,8 @@ function ID(latches, registers, memory) {
 }
 
 function EX(latches, registers, memory) {
+  // TODO: Remember to account for the case ID passes on undefined to EX
+
   var instruction = latches.id_ex;
 
   // All R (register) instructions start with 0s
