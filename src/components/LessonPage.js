@@ -41,7 +41,7 @@ class LessonPage extends Component {
     }
 
     if (localStorage.getItem('completedLessons') == null) {
-      localStorage.setItem('completedLessons', 1);
+      localStorage.setItem('completedLessons', 5);
     }
 
     if (localStorage.getItem('starterProgram') == null) {
