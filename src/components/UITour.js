@@ -90,7 +90,7 @@ class UITour extends Component {
         selector: '#memoryTable',
         content: `Similar to the registers table, the memory table holds values for any memory
         address you stored into. Note that memory doesn't become relevant for a couple more lessons,
-        so feel free to minimize this table to declutter your space in the meantime!`,
+        so this will remain empty until then!`,
       },
     ]
 

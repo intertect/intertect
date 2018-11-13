@@ -48,6 +48,10 @@ class LessonPage extends Component {
       localStorage.setItem('starterProgram', "{}")
     }
 
+    // ensures the tour of UI is only shown once for a given user
+    var completedTour = localStorage.getItem('completedTour') == null ?
+      false : true;
+
     // Validate localStorage
     if (localStorage.getItem('completedLessons') > 4) {
       localStorage.setItem('completedLessons', 4);
@@ -125,7 +129,7 @@ class LessonPage extends Component {
 
       testProgram: lessonPart,
 
-      completedTour: false,
+      completedTour: completedTour,
       isTourOpen: false
     }
 
@@ -188,6 +192,7 @@ class LessonPage extends Component {
   }
 
   closeTour() {
+    localStorage.setItem('completedTour', "true");
     this.setState({
       completedTour: true,
       isTourOpen: false
@@ -568,7 +573,11 @@ class LessonPage extends Component {
             </NavItem>
             <NavItem className="landing-navbar__item mr-3">
               <div className="position-relative">
-                <a className={"nav-link landing-navbar__animated-link " + (this.state.isIntroPaneOpen ? 'isOpen' : 'isNotOpen')} href="#" onClick={() => this.setState({ isIntroPaneOpen : !this.state.isIntroPaneOpen })}>Instructions</a>
+                <a className={"nav-link landing-navbar__animated-link " + (this.state.isIntroPaneOpen ? 'isOpen' : 'isNotOpen')} href="#" onClick={() =>
+                  this.setState({
+                    isIntroPaneOpen : !this.state.isIntroPaneOpen,
+                    isTourOpen: !this.state.isTourOpen
+                  })}> Instructions </a>
               </div>
             </NavItem>
           </NavbarNav>
