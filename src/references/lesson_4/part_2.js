@@ -235,6 +235,9 @@ function EX(latches, registers, memory) {
       case 'or':
         result = ToUint32(rs_val | rt_val);
         break;
+      case 'nor':
+        result = ToUint32(!(registers.read(rs) | registers.read(rt)));
+        break;
       case 'xor':
         result = ToUint32(rs_val ^ rt_val);
         break;

@@ -50,6 +50,10 @@ export function solution(instruction, registers, memory) {
         result = ToUint32(registers.read(rs) | registers.read(rt));
         registers.write(rd, result);
         break;
+      case 'nor':
+        result = ToUint32(!(registers.read(rs) | registers.read(rt)));
+        registers.write(rd, result);
+        break;
       case 'xor':
         result = ToUint32(registers.read(rs) ^ registers.read(rt));
         registers.write(rd, result);

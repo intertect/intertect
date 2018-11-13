@@ -27,12 +27,13 @@ used in hex numbers are always capitalized!
 # Your Task
 You task in this part is to implement the following instructions:
 
-1. [`or`](#or)
-2. [`nor`](#nor)
-3. [`xor`](#xor)
-4. [`sll`](#sll)
-5. [`srl`](#srl)
-6. [`sra`](#sra)
+1. [`and`](#and)
+2. [`or`](#or)
+3. [`nor`](#nor)
+4. [`xor`](#xor)
+5. [`sll`](#sll)
+6. [`srl`](#srl)
+7. [`sra`](#sra)
 
 These perform the bitwise AND, OR, NOR, and XOR boolean operations as well as 
 left logical shift, right logical shift, and right arithmetic shift.  If you're not 
@@ -45,7 +46,7 @@ If you aren't familiar with logical operations, check out the Wikipedia page on
 good introduction.  As you'll see, logical connectives deal with two truth
 values at a time, but our registers are 32 bits long.  These are therefore
 implemented by pairing the bits in the two registers (hence why they are called
-bitwise operators).
+*bitwise* operators).
 
 As a quick example, taking the bitwise AND of `0b0110` and `0b0011` gives
 `0b0010`.  We'll write the two operands vertically to make this more clear.  The

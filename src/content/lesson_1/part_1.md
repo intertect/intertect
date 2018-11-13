@@ -9,7 +9,7 @@ future lessons, you'll be implementing functionality on your own (with only
 written instructions like these).
 
 # Your Task
-We think there's a bug in our implementation.  You're task is to find and fix
+We think there's a bug in our implementation.  Your task is to find and fix
 it.
 
 For better or worse, in this lesson you won't be implementing much.  We want to
@@ -21,10 +21,10 @@ The [`addu`](#addu) instruction is one of the most straightforward instructions
 in this architecture.  It takes its second two operands, adds them, and writes
 the result into the first operand.  You can click on any instance of the
 [`addu`](#addu) instruction in this instructions panel to be taken to the
-glossary about it.
+glossary entry about it.
 
 ## What's in a Name?
-Why is this instruction called [`addu`](#addu) and not `add`?  I'll let you in
+Why is this instruction called [`addu`](#addu) and not just `add`?  I'll let you in
 on a little secret: There *is* an `add` instruction, but we're not making you
 implement it.  [`addu`](#addu) stands for Add Unsigned.  However, signed (using
 two's-complement) and unsigned additions and subtractions are completely
