@@ -68,31 +68,36 @@ architecture uses the common RISC pipeline:
   address to read/write is calculated here.
 - **Memory (MEM)**: Reads from, and writes to, memory are performed here using
   the addresses calculated in the EX stage.
-- **Writeback (WB)**: Saves (writes back) results to registers **if appropriate**.
+- **Writeback (WB)**: Saves (writes back) results to registers **if
+  appropriate**.
 
 ## Latches
-**Important**: Do NOT skip this section, otherwise implementing this lesson and
+**Important**: Do not skip this section, otherwise implementing this lesson and
 all future ones will be impossible!
 
 Naturally, as we divide the pipeline into separate blocks, we need a way to
 communicate between the blocks.  The way a processor achieves this is through
-what are called "latches." Latches effectively act as boxes for dumping
+what are called "latches."  Latches effectively act as boxes for dumping
 information between parts of the pipeline: at the beginning of a clock cycle,
 each pipeline stage will look at the latch connecting it to the previous one to
 pull input from there and execute on it.  For example, during one clock cycle,
 IF will fetch an instruction and save it in the IF/ID latch.  During the next
 cycle, ID will pull from this latch and perform the decode before saving its
-result in the ID/EX latch and so on.  While this is implemented in hardware in
-reality, we're emulating it as objects here.
+result in the ID/EX latch and so on.  If you're curious, they're called latches
+because in hardware they're implemented using logical latches (also known as
+flip-flops).
+
+Since you're implementing just one stage of the pipeline at a time, you'll be
+using our implementations for the rest of them.  Because of that, you'll
+unfortunately have to conform to our latch naming conventions.
 
 - We **expect** all instructions to be decoded with the appropriate names.  If
 any latch is set to `undefined`, we assume the pipeline stage reading from this
 latch is to be skipped.  Object latch saves must match **exactly** these
 names/types for these cases:
-
 - `latches.if_id` (IF/ID latch): Must be the `unsigned 32-bit` binary
-  instruction!  Remember once again to call `ToUint32(x)` on whatever binary
-  result you get before storing it in the latch
+  instruction.  Remember once again to call `ToUint32(x)` on whatever binary
+  result you get before storing it in the latch.
 - `latches.id_ex` (ID/EX latch): Construct an object that has the following
   fields/values:
   - R instruction:
@@ -111,13 +116,13 @@ names/types for these cases:
     - `imm`: Value for immediate to be used
 - `latches.ex_mem` (EX/MEM latch): This is perhaps the most complicated latch,
   since execute only performs a subset of the instructions and must wrap up all
-  others for MEM to continue
+  others for MEM to continue.
   - `instruction`: Instruction that was decoded during ID stage.  This is simply
   passed along in the cases where the decoded instruction is to be executed
-  during MEM
+  during MEM.
   - `memory_address`: For load/store instructions, the final address is
   determined in the EX stage and stored before it is executed in the MEM stage.
-  This is where the info is stored
+  This is where the info is stored.
   - `result`: If an instruction was executed, this is where the result is stored
   - `location`: Likewise, if execution was performed, this specifies whether the
   result is to be saved in memory or registers.  As a result, the value of this
@@ -135,9 +140,8 @@ names/types for these cases:
   - `position`: Which register to be written to (if `location` is `"registers"`)
 
 ## Your Task
-The first part of the pipeline is fetching the instruction.  It's typically
-denoted just as IF, which stands for "instruction fetch." As we've seen in the
-past, the `pc` dictate what in the program is being executed.  Unlike past
+The first part of the pipeline is IF, or Instruction Fetch.  As we've seen in
+the past, the `pc` dictate what in the program is being executed.  Unlike past
 lessons, however, the program is now stored in memory.  So, in this lesson,
 you'll have to figure out a way to pull the values from memory and return the
 binary instruction.  We will be implementing the pipeline **one step at a
@@ -153,12 +157,3 @@ don't have to worry about adjusting that!
 function to convert your return after any bit manipulation you do!
 - Instructions are to be read from high bit to low (i.e. big-endian)
 - The current instruction is pointed to by `pc`
-
-## Hazards
-While the ideal pipelined CPI is 1, there are some circumstances where this will
-not be the case.  Specifically, when consecutive instructions depend on one
-another in some way, i.e.  executing a jump instruction may result in the
-following instruction being skipped entirely.  This is the focus of Lesson 4, so
-we'll be putting this issue on the back burner temporarily, with the
-understanding that it is resolved via communication between the pipeline stages,
-much in the way data is handed off between them.
