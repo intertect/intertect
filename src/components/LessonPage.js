@@ -18,16 +18,6 @@ import {lessonParts, lessonContent, lessonRegisterInits, lessonAssembly,
   lessonStarterCode, lessonReferenceSolutions, lessonBinaryCode,
   lessonPipelineStudent, availableTests, lessonTests} from '../utils/lessonItems.js';
 
-import 'brace/mode/javascript';
-import 'brace/theme/chrome';
-import 'brace/theme/dracula';
-import 'brace/theme/eclipse';
-import 'brace/theme/github';
-import 'brace/theme/monokai';
-import 'brace/theme/solarized_dark';
-import 'brace/theme/solarized_light';
-import 'brace/theme/twilight';
-
 function ToUint32(x) {
   return x >>> 0;
 }
@@ -387,7 +377,6 @@ class LessonPage extends Component {
     var instruction;
     if (this.state.lesson == 1) {
       var line_num = this.pcToLineNumber(programCounter);
-      // console.log(line_num)
       if (line_num == -1) {
         return undefined;
       }
@@ -626,6 +615,8 @@ class LessonPage extends Component {
                   </Button>
                 </div>
               </div>
+
+              <div id="log" className="lesson-testing__content-2 justify-content-center px-2 pt-3 pb-0"></div>
 
               <div className="lesson-testing__content-2 d-flex justify-content-center px-2 pt-3 pb-0">
                 <Dropdown className="lesson-testing__button mr-3" id="chooseTheme">

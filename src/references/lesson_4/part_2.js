@@ -392,7 +392,6 @@ function MEM(latches, registers, memory) {
 
         location = "registers";
         position = rt;
-        console.log(result)
         break;
       case 'lb':
         byte_1 = memory.read(memory_address);

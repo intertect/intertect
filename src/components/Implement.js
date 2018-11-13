@@ -10,6 +10,16 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import AceEditor from 'react-ace';
 
+import 'brace/mode/javascript';
+import 'brace/theme/chrome';
+import 'brace/theme/dracula';
+import 'brace/theme/eclipse';
+import 'brace/theme/github';
+import 'brace/theme/monokai';
+import 'brace/theme/solarized_dark';
+import 'brace/theme/solarized_light';
+import 'brace/theme/twilight';
+
 class Implement extends Component {
   constructor(props) {
     super(props);

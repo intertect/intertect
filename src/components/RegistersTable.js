@@ -20,7 +20,6 @@ class RegistersTable extends Component {
 
     var registerTable = [];
     var register;
-    console.log(this.props.referenceRegisters.usedRegisters)
     for (var i = 0; i < this.props.referenceRegisters.usedRegisters.length; i++) {
       var studentRegister = this.props.studentRegisters.usedRegisters[i];
       var referenceRegister = this.props.referenceRegisters.usedRegisters[i];
@@ -30,7 +29,6 @@ class RegistersTable extends Component {
 
       var tooltipContent, colorClass;
 
-      console.log(studentRegister)
       if (studentRegister != referenceRegister) {
         colorClass = "lesson-debugging__wrong-color";
         if (studentRegister === undefined) {
