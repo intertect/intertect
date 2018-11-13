@@ -1,15 +1,17 @@
-# Part 5: Write Back (WB)
-We've made it to the end of pipelining!  Unlike the previous stage of the
-pipeline, there is no conditional execution of instructions here: we simply want
-to store the results of our execution stage at this point (if necessary)!  This
-should be straightforward, so we'll just let you get to it.
+# Part 5: Writeback (WB)
+We've made it to the end of pipelining!  This stage is perhaps the simplest of
+them all, especially now that you've got four under your belt.  In the writeback
+stage, you'll just be writing a value from some previous pipeline stage into the
+destination register you've been passing through latches this whole time.
 
 # Your Task
 Given the information you passed along from the MEM stages, determine where to
 write the results, if at all.  Some notes to keep in mind:
 
 - Remember that the writes you did for memory were over values stored as an
-array, whereas the register writeback will only have a single value to be stored
+  array, whereas the register writeback will only have a single value to be stored
+- If you had a memory read as the last instruction, you still have to write the
+  result back.
 
 # Latch API Reference
 This is left here as a reference to refer to:
