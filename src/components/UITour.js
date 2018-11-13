@@ -36,7 +36,7 @@ class UITour extends Component {
       },
 
       {
-        selector: '#restartLevel',
+        selector: '#startOver',
         content: `To restart the level with a clean program, click here. This will erase all the
         progress you've made so far in the level, so make sure there's nothing you want to keep
         that hasn't been copied elsewhere.`,

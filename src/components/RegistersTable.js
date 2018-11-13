@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import { Card, CardHeader, CardTitle, CardBody, Tooltip, Table  } from 'mdbreact';
+import { Tooltip, Table  } from 'mdbreact';
 import PropTypes from 'prop-types';
 
 import {Registers, nameToRegisterMap, registerToNameMap} from '../utils/util.js';
-
-import '../styles/intro.css';
 
 function ToUint32(x) {
   return x >>> 0;
@@ -29,29 +27,27 @@ class RegistersTable extends Component {
       var studentValue = `0x${ToUint32(this.props.studentRegisters.read(studentRegister)).toString(16).toUpperCase()}`;
       var referenceValue = `0x${ToUint32(this.props.referenceRegisters.read(referenceRegister)).toString(16).toUpperCase()}`;
 
-      var color, tooltipContent;
+      var tooltipContent, colorClass;
 
       if (studentRegister != referenceRegister) {
-        color = "#ff4444";
+        colorClass = "lesson-debugging__wrong-color";
         tooltipContent = `Oops! You wrote to ${registerToNameMap[studentRegister]}
           instead of ${registerToNameMap[referenceRegister]}`
+      } else if (studentValue == referenceValue) {
+        colorClass = "lesson-debugging__right-color";
+        tooltipContent = "Great job! This is correct.";
       } else {
-        if (studentValue == referenceValue) {
-          color = "#00C851";
-          tooltipContent = "Great job! This is correct.";
-        } else {
-          color = "#ff4444";
-          tooltipContent = `Sorry, try again! We expected: ${referenceValue}`;
-        }
+        colorClass = "lesson-debugging__wrong-color";
+        tooltipContent = `Sorry, try again! We expected: ${referenceValue}`;
       }
 
-      registerTable.push(<tr style={{textAlign: 'center', background: color}} className="source-code">
+      registerTable.push(<tr className={colorClass}>
         <td>{registerToNameMap[studentRegister]}</td>
         <td>
           <Tooltip
             placement="top"
             tooltipContent={tooltipContent}>
-              <a style={{textDecoration: "underline", color: "white"}}>{studentValue}</a>
+              <a className="lesson-debugging__tooltip">{studentValue}</a>
           </Tooltip>
         </td>
       </tr>);
@@ -64,31 +60,24 @@ class RegistersTable extends Component {
         continue;
       }
 
-      registerTable.push(<tr style={{textAlign: 'center'}} className="source-code">
+      registerTable.push(<tr>
           <td>{register}</td>
           <td>0x{this.props.studentRegisters.read(nameToRegisterMap[register]).toString(16).toUpperCase()}</td>
         </tr>);
     }
 
     return (
-      <Card style={{ marginTop: '1rem', width:"100%"}} className="text-center" id="registersTable">
-        <CardHeader color="default-color">
-          <CardTitle componentclassName="h1">
-            Registers
-          </CardTitle>
-        </CardHeader>
-        <CardBody>
-          <Table hover condensed>
-            <thead>
-              <tr>
-                <th style={{textAlign: 'center'}}>Register</th>
-                <th style={{textAlign: 'center'}}>Value</th>
-              </tr>
-            </thead>
-            <tbody> { registerTable } </tbody>
-          </Table>
-        </CardBody>
-      </Card>
+      <div className="lesson-debugging__registers d-inline-block" id="registersTable">
+        <Table hover condensed>
+          <thead>
+            <tr>
+              <th>Register</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody> { registerTable } </tbody>
+        </Table>
+      </div>
     );
   }
 }

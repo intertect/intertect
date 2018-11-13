@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
-import { NavbarBrand, Navbar, NavbarNav, NavItem, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'mdbreact';
+import { NavbarBrand, Navbar } from 'mdbreact';
 import PropTypes from 'prop-types';
-
-import '../styles/shared.css';
-import '../styles/landing.css';
 
 import yash from '../images/yash.png';
 import peter from '../images/peter.png';
@@ -20,34 +17,13 @@ class LandingPage extends Component {
   }
 
   render() {
+    var launch = this.props.newUser ? "GET STARTED" : "CONTINUE";
     return (
       <div className="landing">
         <Navbar color="default-color" className="landing__navbar">
           <NavbarBrand className="landing-navbar__brand mx-3" href="/">
             Intertect
           </NavbarBrand>
-
-          <NavbarNav right>
-            <NavItem className="landing-navbar__item">
-              <Dropdown className="landing-navbar__animated-link mx-3">
-                <DropdownToggle nav caret>Lessons</DropdownToggle>
-                <DropdownMenu className="landing-navbar__dropdown-menu">
-                  <DropdownItem href="#" onClick={() => this.props.selectHandler(1)}>
-                    1: MIPS Assembly
-                  </DropdownItem>
-                  <DropdownItem href="#" onClick={() => this.props.selectHandler(2)}>
-                    2: MIPS Binary
-                  </DropdownItem>
-                  <DropdownItem href="#" onClick={() => this.props.selectHandler(3)}>
-                    3: Pipelining
-                  </DropdownItem>
-                  <DropdownItem href="#" onClick={() => this.props.selectHandler(4)}>
-                    4: Parallel Pipelining
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-            </NavItem>
-          </NavbarNav>
         </Navbar>
 
         <div className="landing__section landing__section-1">
@@ -56,7 +32,7 @@ class LandingPage extends Component {
           </h1>
           <div className="landing-section__desk">
             <img src={desk} className="img-fluid"/>
-            <h5><a href="#" onClick={() => this.props.selectHandler(1)}>GET STARTED</a></h5>
+            <h5><a href="#" onClick={() => this.props.selectHandler()}>{launch}</a></h5>
           </div>
         </div>
 
@@ -118,9 +94,8 @@ class LandingPage extends Component {
 }
 
 LandingPage.propTypes = {
-  completedLessons: PropTypes.number,
-  selectHandler: PropTypes.func,
-  toggleLoadedLesson: PropTypes.func
+  newUser: PropTypes.bool,
+  selectHandler: PropTypes.func
 }
 
 export default LandingPage;

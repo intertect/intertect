@@ -10,28 +10,19 @@ import React, {Component} from 'react';
 import LandingPage from './LandingPage.js'
 import LessonPage from './LessonPage.js'
 
-import '../styles/intro.css';
+import '../styles/shared.css';
+import '../styles/landing.css';
+import '../styles/lesson.css';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
 import 'font-awesome/css/font-awesome.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'mdbreact/dist/css/mdb.css';
 
-class Terminal extends Component {
+class App extends Component {
   constructor(props) {
     super(props);
-
-    // Validate localStorage
-    localStorage.clear()
-    if (localStorage.getItem('completedLessons') > 4) {
-      localStorage.setItem('completedLessons', 4);
-    }
-
-    var completedLessons = localStorage.getItem('completedLessons');
     this.state = {
-      loadedLesson: false,
-      completedLessons: completedLessons || 3,
-      lesson: null,
-      lessonPart: null
+      loadedLesson: false
     };
 
     this.selectHandler = this.selectHandler.bind(this);
@@ -44,29 +35,25 @@ class Terminal extends Component {
     });
   }
 
-  selectHandler(lesson) {
+  selectHandler() {
     this.setState({
-      loadedLesson : true,
-      lesson: lesson,
-      lessonPart: 1
+      loadedLesson : true
     })
   }
 
   render() {
+    var newUser = localStorage.getItem('completedLessons') == null;
     return (
       this.state.loadedLesson ?
 
       <LessonPage
-        completedLessons={this.state.completedLessons}
-        lesson={this.state.lesson}
-        lessonPartNum={this.state.lessonPart}
         toggleLoadedLesson={this.toggleLoadedLesson} />
       :
       <LandingPage
-        completedLessons={this.state.completedLessons}
-        selectHandler={this.selectHandler} />
+        selectHandler={this.selectHandler}
+        newUser={newUser} />
     );
   }
 }
 
-export default Terminal;
+export default App;

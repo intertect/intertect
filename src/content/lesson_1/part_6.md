@@ -10,47 +10,7 @@ instructions is to read data from memory or write data back to memory.  This
 section will be straightforward since once you've gotten one of the operations,
 the rest of them are quite similar.
 
-## Addressing
-In order to read/write a given number of bytes from/to memory, you're going to
-have to know which addresses to read.  The simplest read/write is of a byte (8
-bits).  The address to read is simply the address given in the instruction.  For
-half-words (two bytes) and words (four bytes), you will need to read the address
-given in memory as well as the next 2 or 4 bytes respectively.  Sounds simple
-enough, right?  Thankfully it is, but endianness can make this more complicated.
-
-## Endianness
-When a computer writes bytes into memory, it has to decide what order it wants
-to write them in.  For example, if you have the word `0xDEADBEEF`, should the
-bytes be written as:
-
-| address | 0x0 | 0x1 | 0x2 | 0x3 |
-|---------|------|------|------|------|
-| value | 0xDE | 0xAD | 0xBE | 0xEF |
-
-Or perhaps like:
-
-| address | 0x0 | 0x1 | 0x2 | 0x3 |
-|---------|------|------|------|------|
-| value | 0xEF | 0xBE | 0xAD | 0xDE |
-
-The first one is called "Big-Endian" while the second one is called
-"Little-Endian". "Big-Endian" means the bytes are written such that the most
-significant byte is in the lowest address, while "Little-Endian" means the bytes
-are written such that the most significant byte is in the largest address.
-There is logic to both of these, and one is not inherently better than the
-other.
-
-If you're curious, these names come from *Gulliver's Travels* where there was an
-island where one tribe cracked eggs on the big end and the other cracked them on
-the small end.  They went to war over this.
-
-MIPS can be either big- or little-endian and is either set by the processor
-itself or customized by the operator, but once it has booted, the endianness
-cannot change.  We have decided to use big-endian for these lessons because we
-think it's mildly easier to learn.  If you want to learn more, the Wikipedia
-page on [Endianness](https://en.wikipedia.org/wiki/Endianness) is fantastic.
-
-## Code Structure
+# Code Structure
 The way loads are stores are written is somewhat different from other
 instructions.  Instead of coming last, the immediate operand comes before the
 second register value, which is surrounded in parentheses.  The way to read a
@@ -69,7 +29,9 @@ the address to read from.
 
 Let us look at an example of a store.  We'll assume that we're storing the value
 `0xDEADBEEF` to address `0x10`.  We also assume that memory is initialized to 0
-to begin with.
+to begin with.  Note that, as we explain further below, we assume a big-endian
+architecture here. If you don't know what that means or want to learn more about 
+it, click [`here`](#endian)!
 
 The value in the register looks like this:
 
@@ -123,11 +85,64 @@ the calculated address.
 
 `sb` is the same but only stores 1.
 
+# Your Task
+You task in this part is to implement the following instructions:
+
+1. [`sb`](#sb)
+2. [`sh`](#sh)
+3. [`sw`](#sw)
+4. [`lb`](#lb)
+5. [`lh`](#lh)
+6. [`lw`](#lw)
+7. [`lui`](#lui)
+
+Storing and loading from memory is quite different from the operations we have 
+dealt with thus far, so read below to understand how exactly memory addressing works 
+in our case!
+
+## Addressing
+In order to read/write a given number of bytes from/to memory, you're going to
+have to know which addresses to read.  The simplest read/write is of a byte (8
+bits).  The address to read is simply the address given in the instruction.  For
+half-words (two bytes) and words (four bytes), you will need to read the address
+given in memory as well as the next 2 or 4 bytes respectively.  Sounds simple
+enough, right?  Thankfully it is, but endianness can make this more complicated.
+
+<a id="endian"></a>
+## Endianness
+When a computer writes bytes into memory, it has to decide what order it wants
+to write them in.  For example, if you have the word `0xDEADBEEF`, should the
+bytes be written as:
+
+| address | 0x0 | 0x1 | 0x2 | 0x3 |
+|---------|------|------|------|------|
+| value | 0xDE | 0xAD | 0xBE | 0xEF |
+
+Or perhaps like:
+
+| address | 0x0 | 0x1 | 0x2 | 0x3 |
+|---------|------|------|------|------|
+| value | 0xEF | 0xBE | 0xAD | 0xDE |
+
+The first one is called "Big-Endian" while the second one is called
+"Little-Endian". "Big-Endian" means the bytes are written such that the most
+significant byte is in the lowest address, while "Little-Endian" means the bytes
+are written such that the most significant byte is in the largest address.
+There is logic to both of these, and one is not inherently better than the
+other.
+
+If you're curious, these names come from *Gulliver's Travels* where there was an
+island where one tribe cracked eggs on the big end and the other cracked them on
+the small end.  They went to war over this.
+
+MIPS can be either big- or little-endian and is either set by the processor
+itself or customized by the operator, but once it has booted, the endianness
+cannot change.  We have decided to use big-endian for these lessons because we
+think it's mildly easier to learn.  If you want to learn more, the Wikipedia
+page on [Endianness](https://en.wikipedia.org/wiki/Endianness) is fantastic.
+
 ---
 # The MIPS Instruction Set
-
-## Arithmetic
-
 
 <a id="addu"></a>
 ### Add Unsigned (`addu $rd, $rs, $rt`)
@@ -152,15 +167,6 @@ instruction), perform an unsigned add on them, and write the value to `$rt`.
 
 Take the unsigned integer values from `$rs` and `$rt`, perform an unsigned
 subtraction (`$rs - $rt`) on them, and save the result into `$rd`
-
-You might be wondering where the immediate subtraction operations are.  There
-are two reasons you don't see them here.  It's because if in assembly you write
-`subi $rt, $rs, val`, you can just take the two's-compliment of val and add it!
-This saves space on the chip so it was common in older architectures.  You can
-also do the same with `subu $rd, $rs, $rt` using the `$at` register for
-calculating the two's-compliment when the program is assembled.
-
-## Logic
 
 <a id="and"></a>
 ### And (`and $rd, $rs, $rt`)
@@ -224,13 +230,6 @@ Perform an arithmetic right shift of `$rs` by `val` places, filling the vacated
 places with 0 if the leading bit was 0, and 1 if the leading place was one.
 This is integer division by 2
 
-## Control Flow
-
-Many of these instructions multiply their arguments by 4.  This is because each
-instruction is exactly 4 bytes long, and so the last two bits of an address will
-always be zero.  By having the argument being the offset or address / 4, you can
-get 4 times as much reach with any of these instructions
-
 <a id="beq"></a>
 ### Branch On Equal (`beq $rt, $rs, val`)
 
@@ -260,8 +259,6 @@ and save the address of the next instruction into `$ra`
 Jump to the address stored in `$rs` shifted left two places (multiplied by 4)
 
 
-## Memory / Registers
-
 <a id="lbu"></a>
 ### Load Byte Unsigned (`lbu`)
 
@@ -276,9 +273,6 @@ Jump to the address stored in `$rs` shifted left two places (multiplied by 4)
 
 <a id="li"></a>
 ### Load Immediate (`li`)
-
-Note: This could be interesting not to demonstrate, but rather to show how
-pseudo-instructions work since it's impossible to have a 32 bit immediate value
 
 <a id="sb"></a>
 ### Store Byte (`sb`)

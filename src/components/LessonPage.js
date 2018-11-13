@@ -1,9 +1,8 @@
 import React, {Component} from 'react';
-import { Button, Card, CardBody, CardTitle, CardHeader,
+import { Button,
+  Dropdown, DropdownItem, DropdownToggle, DropdownMenu,
   Modal, ModalHeader, ModalBody, ModalFooter,
-  Navbar, NavItem, NavbarNav, NavbarBrand,
-  Dropdown, DropdownItem, DropdownToggle,
-  DropdownMenu } from 'mdbreact';
+  Navbar, NavItem, NavbarNav, NavbarBrand } from 'mdbreact';
 import PropTypes from 'prop-types';
 
 import ReactMarkdown from 'react-markdown';
@@ -19,8 +18,15 @@ import {lessonParts, lessonContent, lessonRegisterInits, lessonAssembly,
   lessonStarterCode, lessonReferenceSolutions, lessonBinaryCode,
   lessonPipelineStudent, availableTests, lessonTests} from '../utils/lessonItems.js';
 
-import '../styles/intro.css';
-import '../styles/shared.css';
+import 'brace/mode/javascript';
+import 'brace/theme/chrome';
+import 'brace/theme/dracula';
+import 'brace/theme/eclipse';
+import 'brace/theme/github';
+import 'brace/theme/monokai';
+import 'brace/theme/solarized_dark';
+import 'brace/theme/solarized_light';
+import 'brace/theme/twilight';
 
 function ToUint32(x) {
   return x >>> 0;
@@ -30,13 +36,32 @@ class LessonPage extends Component {
   constructor(props) {
     super(props);
 
-    if (localStorage.getItem('completedParts') > lessonParts[this.props.completedLessons]) {
-      localStorage.setItem('completedParts', lessonParts[this.props.completedLessons]);
+    if (localStorage.getItem('completedParts') == null) {
+      localStorage.setItem('completedParts', 1);
     }
-    var completedParts = localStorage.getItem('completedParts');
 
-    var lessonPart = `lesson_${this.props.lesson}/part_${this.props.lessonPartNum}`;
-    var letters = Object.values(lessonContent[lessonPart]);
+    if (localStorage.getItem('completedLessons') == null) {
+      localStorage.setItem('completedLessons', 1);
+    }
+
+    if (localStorage.getItem('starterProgram') == null) {
+      localStorage.setItem('starterProgram', "{}")
+    }
+
+    // Validate localStorage
+    if (localStorage.getItem('completedLessons') > 4) {
+      localStorage.setItem('completedLessons', 4);
+    }
+
+    var completedLessons = parseInt(localStorage.getItem('completedLessons'));
+    var completedParts = parseInt(localStorage.getItem('completedParts'));
+    var starterProgram = JSON.parse(localStorage.getItem('starterProgram'));
+
+    var lessonPart = `lesson_${completedLessons}/part_${completedParts}`;
+    var studentProgram = starterProgram[lessonPart] != undefined ?
+      starterProgram[lessonPart] : lessonStarterCode[lessonPart];
+
+    var letters = Object.values(lessonContent[lessonPart])
 
     var studentRegisters = new Registers();
     var referenceRegisters = new Registers();
@@ -48,7 +73,7 @@ class LessonPage extends Component {
     var referenceMemory = new Memory();
 
     // we want to load the binary program into memory after lesson 3
-    if (this.props.lesson > 2) {
+    if (completedLessons > 2) {
       for (var i = 0; i < lessonBinaryCode[lessonPart].length; i++) {
         studentMemory.write(i, lessonBinaryCode[lessonPart][i]);
         referenceMemory.write(i, lessonBinaryCode[lessonPart][i]);
@@ -64,19 +89,19 @@ class LessonPage extends Component {
       programCounter: 0,
       running: false,
 
-      lesson: this.props.lesson,
-      lessonPartNum: this.props.lessonPartNum,
+      lesson: completedLessons,
+      lessonPartNum: completedParts,
 
-      completedLessons: this.props.completedLessons,
-      completedParts: completedParts || 2,
+      completedLessons: completedLessons,
+      completedParts: completedParts,
 
       lessonComplete: false,
       lessonCorrect: true,
 
       // program the student starts this particular lesson with
-      starterProgram: JSON.parse(localStorage.getItem('starterProgram')) || {},
+      starterProgram: starterProgram,
 
-      studentProgram: lessonStarterCode[lessonPart],
+      studentProgram: studentProgram,
       lessonContent : letters[letters.length - 1],
       assemblyProgram : lessonAssembly[lessonPart].split("\n"),
       binaryProgram : lessonBinaryCode[lessonPart],
@@ -93,9 +118,8 @@ class LessonPage extends Component {
       studentPipeline: [],
       referencePipeline: [],
 
-      // memory becomes relevant after lesson 1.5
-      showMemory: true, // (this.props.lesson != 1 || this.props.lessonPartNum > 5),
-      showRegisters: true,
+      // // memory becomes relevant after lesson 1.5
+      theme: "solarized_dark",
 
       programRunning: false,
 
@@ -262,13 +286,13 @@ class LessonPage extends Component {
 
     var lessonPart = `lesson_${lesson}/part_${lessonPartNum}`;
     if (lessonPartNum > this.state.completedParts) {
-      this.setState({ completedParts : lessonPartNum - 1 })
-      localStorage.setItem('completedParts', lessonPartNum - 1);
+      this.setState({ completedParts : lessonPartNum })
+      localStorage.setItem('completedParts', lessonPartNum);
     }
 
     if (lesson > this.state.completedLessons) {
-      this.setState({ completedLessons : lesson - 1 })
-      localStorage.setItem('completedLessons', lesson - 1);
+      this.setState({ completedLessons : lesson })
+      localStorage.setItem('completedLessons', lesson);
     }
 
     var starterProgram;
@@ -487,8 +511,8 @@ class LessonPage extends Component {
 
     var currentInstruction;
     this.state.lesson > 1 ?
-      currentInstruction = <Button outline style={{width:"100%"}}>
-        Current Instruction: {
+      currentInstruction = <Button outline>
+        {
           typeof(this.getNextInstruction()) === 'undefined' ? "Done!" : ToUint32(this.getNextInstruction()).toString(2)
         }
       </Button>
@@ -533,46 +557,110 @@ class LessonPage extends Component {
 
           <NavbarNav right className="flex-row">
             <NavItem className="landing-navbar__item mr-3">
-              <Dropdown>
-                <DropdownToggle nav caret className="landing-navbar__animated-link">Lessons</DropdownToggle>
-                <DropdownMenu className="landing-navbar__dropdown-menu">
-                  <DropdownItem href="#">
-                    1: MIPS Assembly
-                  </DropdownItem>
-                  <DropdownItem href="#">
-                    2: MIPS Binary
-                  </DropdownItem>
-                  <DropdownItem href="#">
-                    3: Pipelining
-                  </DropdownItem>
-                  <DropdownItem href="#">
-                    4: Parallel Pipelining
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-            </NavItem>
-            <NavItem className="landing-navbar__item mr-3">
-              <a className="nav-link" href="#" onClick={() => this.setState({ revealCompletedLevels : true })}>
-                Previous Levels
-              </a>
+              <PreviousLessons
+                completedLessons={this.state.completedLessons}
+                completedParts={this.state.completedParts}
+                revealCompletedLevels={this.state.revealCompletedLevels}
+
+                loadLesson={this.loadLesson}
+                toggleCompletedLevels={this.toggleCompletedLevels}
+                toggleIntroPanel={this.toggleIntroPanel} />
             </NavItem>
             <NavItem className="landing-navbar__item mr-3">
               <div className="position-relative">
-                <a className="nav-link landing-navbar__animated-link" href="#" onClick={() => this.setState({ isIntroPaneOpen : true })}>Instructions</a>
+                <a className={"nav-link landing-navbar__animated-link " + (this.state.isIntroPaneOpen ? 'isOpen' : 'isNotOpen')} href="#" onClick={() => this.setState({ isIntroPaneOpen : !this.state.isIntroPaneOpen })}>Instructions</a>
               </div>
             </NavItem>
           </NavbarNav>
         </Navbar>
 
-        <PreviousLessons
-          completedLessons={this.state.completedLessons}
-          completedParts={this.state.completedParts}
-          revealCompletedLevels={this.state.revealCompletedLevels}
+        <div className="d-flex lesson__body">
+          <div className="lesson__body-left col-6 p-4">
+            <Implement
+              theme={this.state.theme}
+              onChange={this.onChange}
+              studentProgram={this.state.studentProgram} />
+          </div>
 
-          loadLesson={this.loadLesson}
-          toggleCompletedLevels={this.toggleCompletedLevels}
-          toggleShowPreviousLessons={this.toggleShowPreviousLessons}
-          toggleIntroPanel={this.toggleIntroPanel} />
+          <div className="lesson__body-right col-6 d-flex flex-column p-0">
+            <div className="lesson__testing p-4 d-flex flex-column" id="testing">
+              <div className="lesson-testing__content-1 d-flex">
+                <div className="d-flex flex-column col p-0">
+                  <div className="d-flex justify-content-between pb-2">
+                    <Dropdown className="align-self-center" id="testSelect">
+                      <DropdownToggle caret outline className="lesson-testing__program p-2 m-0" color="deep-purple" size="lg">
+                        {this.state.testProgram}
+                      </DropdownToggle>
+                      <DropdownMenu>
+                        {testProgramDropdown}
+                      </DropdownMenu>
+                    </Dropdown>
+                    {currentInstruction}
+                  </div>
+                  <div className="lesson-testing__shell-div">
+                    <ul className="lesson-testing__shell p-2 mb-0">{ assemblyList }</ul>
+                  </div>
+                </div>
+                <div className="lesson-testing__buttons col p-0 pl-3">
+                  <Button outline className="p-2 m-0 mb-4" id="run" color="success"
+                      onClick={() => this.setState({running: true})}>
+                    <i className="fa fa-play" aria-hidden="true"></i> Run
+                  </Button>
+                  <Button outline className="p-2 m-0 mb-4" id="step" color="default"
+                      // TODO: Factor this out into a method so it can be called not just from here. Running a program is really just calling step() repeatedly
+                      onClick={() => this.step()}>
+                    <i className="fa fa-forward" aria-hidden="true"></i> Step
+                  </Button>
+                  <Button outline className="p-2 m-0 mb-4" id="reset" color="warning"
+                      onClick={() => this.loadLesson(this.state.lesson, this.state.lessonPartNum, false)}>
+                    <i className="fa fa-refresh" aria-hidden="true"></i> Reset
+                  </Button>
+                </div>
+              </div>
+
+              <div className="lesson-testing__content-2 d-flex justify-content-center px-2 pt-3 pb-0">
+                <Dropdown className="lesson-testing__button mr-3" id="chooseTheme">
+                  <DropdownToggle caret outline className="lesson-testing__button lesson-testing__button-theme p-2 m-0"
+                      color="default">
+                    {this.state.theme.replace(/_/g," ")}
+                  </DropdownToggle>
+                  <DropdownMenu>
+                    <DropdownItem onClick={() => this.setState({ theme : "chrome" })} eventKey="chrome" className={this.state.theme == "chrome" ? "active" : "inactive"}>chrome</DropdownItem>
+                    <DropdownItem onClick={() => this.setState({ theme : "dracula" })} eventKey="dracula" className={this.state.theme == "dracula" ? "active" : "inactive"}>dracula</DropdownItem>
+                    <DropdownItem onClick={() => this.setState({ theme : "eclipse" })} eventKey="eclipse" className={this.state.theme == "eclipse" ? "active" : "inactive"}>eclipse</DropdownItem>
+                    <DropdownItem onClick={() => this.setState({ theme : "github" })} eventKey="github" className={this.state.theme == "github" ? "active" : "inactive"}>github</DropdownItem>
+                    <DropdownItem onClick={() => this.setState({ theme : "monokai" })} eventKey="monokai" className={this.state.theme == "monokai" ? "active" : "inactive"}>monokai</DropdownItem>
+                    <DropdownItem onClick={() => this.setState({ theme : "solarized_dark" })} eventKey="solarized_dark" className={this.state.theme == "solarized_dark" ? "active" : "inactive"}>solarized (dark)</DropdownItem>
+                    <DropdownItem onClick={() => this.setState({ theme : "solarized_light" })} eventKey="solarized_light" className={this.state.theme == "solarized_light" ? "active" : "inactive"}>solarized (light)</DropdownItem>
+                    <DropdownItem onClick={() => this.setState({ theme : "twilight" })} eventKey="twilight" className={this.state.theme == "twilight" ? "active" : "inactive"}>twilight</DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+                <Button outline className="lesson-testing__button lesson-testing__button-save p-2 m-0 mr-3"
+                    color="deep-purple" id="saveCode"
+                    onClick={() => this.saveProgram(this.state.lesson, this.state.lessonPart, this.state.starterProgram)}>
+                  <i className="fa fa-save" aria-hidden="true"></i> Save Code
+                </Button>
+                <Button outline className="lesson-testing__button lesson-testing__button-restart p-2 m-0"
+                    color="danger" id="startOver"
+                    onClick={() => this.setState({ confirmRestart : true })}>
+                  <i className="fa fa-warning" aria-hidden="true"></i> Start Over
+                </Button>
+              </div>
+            </div>
+
+            <div className="lesson__debugging p-4">
+              <Debugging
+                studentRegisters={this.state.studentRegisters}
+                referenceRegisters={this.state.referenceRegisters}
+                studentMemory={this.state.studentMemory} />
+            </div>
+          </div>
+        </div>
+
+        <UITour
+          completedTour={this.state.completedTour}
+          isTourOpen={this.state.isTourOpen}
+          closeTour={this.closeTour} />
 
         <Modal isOpen={this.state.lessonCorrect && this.state.lessonComplete}
           frame position="bottom">
@@ -607,7 +695,7 @@ class LessonPage extends Component {
         <Modal isOpen={!this.state.lessonCorrect && this.state.lessonComplete}
           frame position="bottom">
 
-          <ModalHeader>Oops, let{"'"}s try again!</ModalHeader>
+          <ModalHeader>Oops, let&apos;s try again!</ModalHeader>
           <ModalBody className="text-center">
             <div className="row">
               <div className="col-sm-6">
@@ -652,78 +740,6 @@ class LessonPage extends Component {
             </div>
           </ModalFooter>
         </Modal>
-
-        <div className="row">
-          <Implement
-            theme={"solarized_dark"}
-            onChange={this.onChange}
-            studentProgram={this.state.studentProgram} />
-
-          <div className="col-sm-6">
-            <Card style={{ marginTop: '1rem', width:"100%"}} id="testing">
-              <CardHeader color="default-color" className="text-center">
-                <CardTitle componentclassName="h4">
-                  Testing
-                </CardTitle>
-              </CardHeader>
-              <CardBody>
-                <div className="col-sm-12">
-                  <div className="col-sm-12">
-                    {currentInstruction}
-                    <ul className="shell-body" style={{width:"100%"}}>{ assemblyList }</ul>
-
-                    <Dropdown id="testSelect">
-                      <DropdownToggle caret outline color="default" style={{width:"100%"}}>
-                        {this.state.testProgram}
-                      </DropdownToggle>
-                      <DropdownMenu style={{width:"100%"}}>
-                        {testProgramDropdown}
-                      </DropdownMenu>
-                    </Dropdown>
-                  </div>
-                  <div className="col-sm-12">
-                    <Button outline color="success" style={{width:"100%"}}
-                      onClick={() => {
-                        this.setState({running: true})
-                      }}
-                      id="run">
-                      <i className="fa fa-play" aria-hidden="true"></i> Run
-                    </Button>
-                  </div>
-                  <div className="col-sm-12">
-                    <Button outline color="default" style={{width:"100%"}}
-                      // TODO: Factor this out into a method so it can be called not just from here. Running a program is really just calling step() repeatedly
-                      onClick={() => {
-                        this.step()
-                      }}
-                      id="step">
-                        <i className="fa fa-forward" aria-hidden="true"></i> Step
-                    </Button>
-                  </div>
-                  <div className="col-sm-12">
-                    <Button outline color="warning" style={{width:"100%"}}
-                      onClick={() => { this.loadLesson(this.state.lesson, this.state.lessonPartNum, false) }}
-                      id="reset">
-                      <i className="fa fa-refresh" aria-hidden="true"></i> Reset
-                    </Button>
-                  </div>
-                </div>
-              </CardBody>
-            </Card>
-
-            <Debugging
-              showRegisters={this.state.showRegisters}
-              studentRegisters={this.state.studentRegisters}
-              referenceRegisters={this.state.referenceRegisters}
-              showMemory={this.state.showMemory}
-              studentMemory={this.state.studentMemory} />
-          </div>
-        </div>
-
-        <UITour
-          completedTour={this.state.completedTour}
-          isTourOpen={this.state.isTourOpen}
-          closeTour={this.closeTour} />
       </div>
     )
   }
