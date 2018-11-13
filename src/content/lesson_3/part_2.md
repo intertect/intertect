@@ -1,13 +1,19 @@
 # Part 2: Decode (ID)
-Now that we have an understanding of how processor pipelining works, we'll move
-on to implementing the second stage: instruction decode!  Similar to fetch,
-decode is typically represented by its two letter stand-in: ID.  The decode
-stage takes the binary instruction and extracts out the information that is
-wrapped up in it, i.e. what instruction it is and its corresponding arguments.
-In other words, it determines whether the instruction is an R, J, or I type
-instruction and extracts the corresponding arguments from the binary accordingly
-(i.e. `$rt`, `$rs`, `$rd` and such for R instructions).  In addition to this,
-however, all jump and branch instructions are performed in here.
+Now that we've covered the basic of processor pipelining and the Instruction
+Fetch stage, we'll move on to implementing the second stage: Instruction Decode
+(ID)!  The instruction decode stage takes the binary instruction as read from
+memory and uses it to configure the rest of the execution.  A real processor
+uses the output from the decode stage to read register from the register file,
+as well as set control lines to determine how the rest of the execution will
+work.  Those control lines are stored in the latches and propagated forwards
+until they are needed.
+
+Despite sounding simple, there are a fair number of things that happen during
+the ID stage:
+
+1. The operation of the instruction is determined
+2. The registers are read from the register file
+3. Branches and Jumps are executed
 
 # Your Task
 This code will be nearly identical to what you were doing in the cases of the
@@ -20,13 +26,13 @@ Some pointers to keep in mind:
 - Jump and branch (i.e. `j`, `jal`, `jr`, and `beq`) are executed in this stage.
 Aside from executing them, you will want to set the ID/EX latch to be
 `undefined` to indicate that there is nothing to be done for this instruction at
-further stages in the pipeline
+further stages in the pipeline.
 - While it *is* technically possible to separate the decode into each
 instruction as you did in the previous implementation, it is much more true to
 form to separate it by the type of instruction (R, I, or J).
-- Once again, you're likely saving values in the IF/ID latch as **numbers**.
-Again, be careful and use the **logical shift operation** ```>>>``` instead of
-the ``>>`` **arithmetic** shift operator
+- Once again, you're likely saving values in the IF/ID latch as **numbers**.  Be
+careful and use the **logical** shift operation ```>>>``` instead of the ``>>``
+**arithmetic** shift operator.
 
 # Latch API Reference
 This is left here as a reference to refer to:
