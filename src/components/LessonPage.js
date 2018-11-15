@@ -75,7 +75,7 @@ class LessonPage extends Component {
     }
 
     this.state = {
-      isIntroPaneOpen: true,
+      isIntroPaneOpen: false,
       revealCompletedLevels: false,
       confirmRestart: false,
       showAbout: false,
@@ -120,7 +120,7 @@ class LessonPage extends Component {
       testProgram: lessonPart,
 
       completedTour: completedTour,
-      isTourOpen: false
+      isTourOpen: true
     }
 
     this.onChange = this.onChange.bind(this);
@@ -185,7 +185,8 @@ class LessonPage extends Component {
     localStorage.setItem('completedTour', "true");
     this.setState({
       completedTour: true,
-      isTourOpen: false
+      isTourOpen: false,
+      isIntroPaneOpen: true
     });
   }
 
@@ -515,17 +516,19 @@ class LessonPage extends Component {
 
     return (
       <div className="lesson">
-        <SlidingPane
-            isOpen={ this.state.isIntroPaneOpen }
-            width='50%'
-            onRequestClose={ () => {
-              this.setState({
-                isIntroPaneOpen: false,
-                isTourOpen: true
-              });
-            }}>
-          <ReactMarkdown source={this.state.lessonContent} escapeHtml={false} />
-        </SlidingPane>
+        <div id="slidingPane">
+          <SlidingPane
+              isOpen={ this.state.isIntroPaneOpen }
+              width='50%'
+              onRequestClose={ () => {
+                this.setState({
+                  isIntroPaneOpen: false,
+                  isTourOpen: true
+                });
+              }}>
+            <ReactMarkdown source={this.state.lessonContent} escapeHtml={false} />
+          </SlidingPane>
+        </div>
 
         <Navbar color="default-color" className="landing__navbar">
           <NavbarBrand className="landing-navbar__brand mx-3" href="#" onClick={() => this.props.toggleLoadedLesson()}>

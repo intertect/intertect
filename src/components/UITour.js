@@ -92,6 +92,11 @@ class UITour extends Component {
         address you stored into. Note that memory doesn't become relevant for a couple more lessons,
         so this will remain empty until then!`,
       },
+      {
+        selector: '',
+        content: `That's it: now you're ready to learn about computer architecture! Close this tour of the
+        UI to see the instructions panel, which will provide all the material you'll need to get going!`
+      }
     ]
 
     return (
