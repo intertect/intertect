@@ -65,7 +65,7 @@ class LandingPage extends Component {
                 <div className="p-4">
                   <img src={yash} className="landing-section-content__creator img-fluid"/>
                   <h5 className="landing-section-creator__bio">
-                    Yash is a software developer at Oculus VR (Facebook), who&apos;s interested in computer vision, machine learning, and VR.
+                    Yash is a software developer at Oculus VR (Facebook), who&apos;s interested in computer vision and VR.
                   </h5>
                 </div>
               </div>

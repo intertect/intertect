@@ -30,12 +30,6 @@ class UITour extends Component {
         Feel free to choose as you please (although Solarized Dark is the best).`,
       },
       {
-        selector: '#saveCode',
-        content: `If you want to take a break and resume later on, click
-        here to save your progress!`,
-      },
-
-      {
         selector: '#startOver',
         content: `To restart the level with a clean program, click here. This will erase all the
         progress you've made so far in the level, so make sure there's nothing you want to keep
@@ -108,7 +102,8 @@ class UITour extends Component {
       {
         selector: '',
         content: `That's it: now you're ready to learn about computer architecture! Close this tour of the
-        UI to see the instructions panel, which will provide all the material you'll need to get going!`
+        UI to see the instructions panel, which will provide all the material you'll need to get going! Also,
+        if you were wondering, we will be saving your code, so feel free to exit and resume at any time!`
       }
     ]
 
