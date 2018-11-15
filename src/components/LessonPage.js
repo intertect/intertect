@@ -212,10 +212,6 @@ class LessonPage extends Component {
     }
   }
 
-  chooseTest() {
-
-  }
-
   loadCode(lesson, lessonPartNum, starterProgram) {
     var lessonPart = `lesson_${lesson}/part_${lessonPartNum}`;
 
@@ -290,28 +286,15 @@ class LessonPage extends Component {
       localStorage.setItem('completedLessons', lesson);
     }
 
-    var starterProgram;
+    var studentProgram;
     if (this.state.starterProgram[lessonPart] == null) {
-      // lesson parts are made incrementally to keep student code in tact
-      var insertionPoint = this.state.studentProgram.indexOf("default:");
-      var studentProgram =
-        this.state.studentProgram.substr(0,insertionPoint) +
-        `${lessonStarterCode[lessonPart]}\n` +
-        this.state.studentProgram.substr(insertionPoint,);
-
-      starterProgram = Object.assign({}, this.state.starterProgram);
-      starterProgram[lessonPart] = studentProgram;
-      this.setState({
-        starterProgram: starterProgram,
-      })
-
-      localStorage.setItem('starterProgram', JSON.stringify(starterProgram));
+      studentProgram = lessonStarterCode[lessonPart];
     } else {
-      starterProgram = this.state.starterProgram;
+      studentProgram = this.state.starterProgram[lessonPart];
     }
 
     if (resetCode) {
-      this.setState({ studentProgram : starterProgram[lessonPart] });
+      this.setState({ studentProgram : studentProgram });
     }
 
     this.loadTest(lesson, lessonPartNum, lessonAssembly[lessonPart],
