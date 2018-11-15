@@ -51,8 +51,6 @@ class LessonPage extends Component {
     var completedParts = parseInt(localStorage.getItem('completedParts'));
     var starterProgram = JSON.parse(localStorage.getItem('starterProgram'));
 
-    console.log(starterProgram)
-
     var lessonPart = `lesson_${completedLessons}/part_${completedParts}`;
     var studentProgram = starterProgram[lessonPart] != undefined ?
       starterProgram[lessonPart] : lessonStarterCode[lessonPart];

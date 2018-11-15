@@ -36,7 +36,7 @@ class Implement extends Component {
           name="UNIQUE_ID"
           editorProps={{$blockScrolling: true}}
           value={this.props.studentProgram}
-          tabSize="2"
+          tabSize={2}
         />
       </div>
     );
