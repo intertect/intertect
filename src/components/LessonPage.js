@@ -293,13 +293,14 @@ class LessonPage extends Component {
     }
 
     var studentProgram;
+    console.log(lessonStarterCode[lessonPart])
     if (this.state.starterProgram[lessonPart] == null || resetCode) {
       studentProgram = lessonStarterCode[lessonPart];
     } else {
       studentProgram = this.state.starterProgram[lessonPart];
     }
 
-    if (resetCode) {
+    if (updateCode) {
       this.setState({ studentProgram : studentProgram });
     }
 
