@@ -51,6 +51,8 @@ class LessonPage extends Component {
     var completedParts = parseInt(localStorage.getItem('completedParts'));
     var starterProgram = JSON.parse(localStorage.getItem('starterProgram'));
 
+    console.log(starterProgram)
+
     var lessonPart = `lesson_${completedLessons}/part_${completedParts}`;
     var studentProgram = starterProgram[lessonPart] != undefined ?
       starterProgram[lessonPart] : lessonStarterCode[lessonPart];
@@ -264,7 +266,10 @@ class LessonPage extends Component {
     })
   }
 
-  loadLesson(lesson, lessonPartNum, resetCode) {
+  // resetCode is an optional param *only* used when updateCode is true, which
+  // specifically refers to whether the code should be updated to the cached value
+  // or fully reset from the starting template
+  loadLesson(lesson, lessonPartNum, updateCode, resetCode=false) {
     if (lessonPartNum > lessonParts[lesson]) {
       lessonPartNum = 1;
       lesson += 1;
@@ -288,7 +293,7 @@ class LessonPage extends Component {
     }
 
     var studentProgram;
-    if (this.state.starterProgram[lessonPart] == null) {
+    if (this.state.starterProgram[lessonPart] == null || resetCode) {
       studentProgram = lessonStarterCode[lessonPart];
     } else {
       studentProgram = this.state.starterProgram[lessonPart];
@@ -623,7 +628,7 @@ class LessonPage extends Component {
                 </Dropdown>
                 <Button outline className="lesson-testing__button lesson-testing__button-save p-2 m-0 mr-3"
                     color="deep-purple" id="saveCode"
-                    onClick={() => this.saveProgram(this.state.lesson, this.state.lessonPart, this.state.starterProgram)}>
+                    onClick={() => this.saveProgram(this.state.lesson, this.state.lessonPartNum, this.state.starterProgram)}>
                   <i className="fa fa-save" aria-hidden="true"></i> Save Code
                 </Button>
                 <Button outline className="lesson-testing__button lesson-testing__button-restart p-2 m-0"
@@ -718,7 +723,7 @@ class LessonPage extends Component {
                 <Button outline color="danger" style={{width:"100%"}}
                   onClick={() => {
                     this.setState({confirmRestart : false })
-                    this.loadLesson(this.state.lesson, this.state.lessonPartNum, true);
+                    this.loadLesson(this.state.lesson, this.state.lessonPartNum, true, true);
                   }}>
                   Continue
                 </Button>
