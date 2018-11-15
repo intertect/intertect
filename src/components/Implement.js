@@ -23,10 +23,6 @@ import 'brace/theme/twilight';
 class Implement extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      theme: this.props.theme,
-      studentProgram: this.props.studentProgram
-    };
   }
 
   render() {
@@ -35,7 +31,7 @@ class Implement extends Component {
         <AceEditor
           className="lesson-implement__editor d-flex"
           mode="javascript"
-          theme={this.state.theme}
+          theme={this.props.theme}
           onChange={this.props.onChange}
           name="UNIQUE_ID"
           editorProps={{$blockScrolling: true}}

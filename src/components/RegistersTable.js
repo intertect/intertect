@@ -11,8 +11,6 @@ function ToUint32(x) {
 class RegistersTable extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-    }
   }
 
   render() {
