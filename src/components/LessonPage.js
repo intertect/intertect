@@ -440,7 +440,7 @@ class LessonPage extends Component {
         try {
           // eslint-disable-next-line
           processMIPS(instruction, this.state.studentRegisters, this.state.studentMemory);
-        } catch(e) { /* student renamed function -- no execution */  }
+        } catch(e) { /* ignore this case */ }
         solution(instruction, this.state.referenceRegisters, this.state.referenceMemory);
       }
     } else if (this.state.lesson == 4) {
@@ -481,6 +481,19 @@ class LessonPage extends Component {
   }
 
   render() {
+    // eslint-disable-next-line
+    console.log = function (message) {
+      var logger = document.getElementById('log');
+      logger.innerHTML += `<li>${message}</li>`;
+    }
+
+    window.onerror = function(message) {
+      if (message != "Script error.") {
+        // eslint-disable-next-line
+        console.log(message);
+      }
+    }
+
     var assemblyList = [];
     var lineNum = this.pcToLineNumber(this.state.programCounter);
     for (var i = 0; i < this.state.assemblyProgram.length-1; i++) {
