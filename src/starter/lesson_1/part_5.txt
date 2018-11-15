@@ -1,3 +1,9 @@
+/**
+* Lesson 1, Part 5: Jump Around!
+*
+* Goal: Implement the J instructions
+*/
+
 var labelToLine = {
   "label1" : 0,
   "label3" : 4,

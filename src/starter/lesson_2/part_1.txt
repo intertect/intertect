@@ -1,3 +1,10 @@
+/**
+* Lesson 2, Part 1: Binary Representations
+*
+* Goal: Convert the instruction operation handling from a synthetic assembly
+* parse to the conventional MIPS binary format
+*/
+
 function ToUint32(x) {
   return x >>> 0;
 }

@@ -1,4 +1,4 @@
-# Part 2: Decode (ID)
+# Part 2: Instruction Decode (ID)
 Now that we've covered the basic of processor pipelining and the Instruction
 Fetch stage, we'll move on to implementing the second stage: Instruction Decode
 (ID)!  The instruction decode stage takes the binary instruction as read from

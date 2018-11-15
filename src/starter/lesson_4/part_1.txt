@@ -1,3 +1,9 @@
+/**
+* Lesson 4, Part 1: Parallelizing
+*
+* Goal: Refactor MIPS pipeline to execute commands in parallel
+*/
+
 function ToUint32(x) {
   return x >>> 0;
 }

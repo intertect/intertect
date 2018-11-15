@@ -1,3 +1,9 @@
+/**
+* Lesson 3, Part 5: Writeback (WB)
+*
+* Goal: Implement Writeback (WB) pipeline stage
+*/
+
 function ToUint32(x) {
   return x >>> 0;
 }
