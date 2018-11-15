@@ -293,7 +293,6 @@ class LessonPage extends Component {
     }
 
     var studentProgram;
-    console.log(lessonStarterCode[lessonPart])
     if (this.state.starterProgram[lessonPart] == null || resetCode) {
       studentProgram = lessonStarterCode[lessonPart];
     } else {
@@ -587,8 +586,12 @@ class LessonPage extends Component {
                     </Dropdown>
                     {currentInstruction}
                   </div>
-                  <div className="lesson-testing__shell-div">
+                  <div className="lesson-testing__shell-div" id="assemblyCode">
                     <ul className="lesson-testing__shell p-2 mb-0">{ assemblyList }</ul>
+                  </div>
+                  <br />
+                  <div className="lesson-testing__shell-div" id="console">
+                    <ul className="lesson-testing__shell p-2 mb-0" id="log"></ul>
                   </div>
                 </div>
                 <div className="lesson-testing__buttons col p-0 pl-3">
@@ -607,9 +610,6 @@ class LessonPage extends Component {
                   </Button>
                 </div>
               </div>
-
-              <div id="log" className="lesson-testing__content-2 justify-content-center px-2 pt-3 pb-0"></div>
-
               <div className="lesson-testing__content-2 d-flex justify-content-center px-2 pt-3 pb-0">
                 <Dropdown className="lesson-testing__button mr-3" id="chooseTheme">
                   <DropdownToggle caret outline className="lesson-testing__button lesson-testing__button-theme p-2 m-0"

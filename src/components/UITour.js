@@ -41,11 +41,24 @@ class UITour extends Component {
         progress you've made so far in the level, so make sure there's nothing you want to keep
         that hasn't been copied elsewhere.`,
       },
-      {
+      /* {
         selector: '#testing',
         content: `Once you think you've completed the lesson, either partially or in its entirety,
         it's time to test! No software development is complete without thorough testing, and that's
         certainly no different here.`
+      }, */
+      {
+        selector: '#assemblyCode',
+        content: `The test programs for each lesson is some compiled assembly code. For the first
+        lesson, the instructions you work with will come directly from the code displayed. For
+        later lessons, you will get these in binary, but the assembly is still shown to help you
+        understand why the outputs of the program should be what they are!`
+      },
+      {
+        selector: '#console',
+        content: `As with debugging any software, we expect you'll used plenty of print statements
+        while working through the lessons! All your console.logs and general syntax error handling
+        will be displayed in this window.`
       },
       {
         selector: '#testSelect',
@@ -78,7 +91,7 @@ class UITour extends Component {
         content: `When running the tests above, you'll see the "outputs" in this section. As you
         will learn, the outputs of processor instructions are always written to either memory or
         registers, which are displayed separately here.`,
-      },
+      }, /*
       {
         selector: '#registersTable',
         content: `As you run your program (with the Step or Run button in the test area), you will
@@ -91,7 +104,7 @@ class UITour extends Component {
         content: `Similar to the registers table, the memory table holds values for any memory
         address you stored into. Note that memory doesn't become relevant for a couple more lessons,
         so this will remain empty until then!`,
-      },
+      }, */
       {
         selector: '',
         content: `That's it: now you're ready to learn about computer architecture! Close this tour of the
