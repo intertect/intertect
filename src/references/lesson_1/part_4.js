@@ -2,7 +2,7 @@ function ToUint32(x) {
   return x >>> 0;
 }
 
-export function solution(instruction, registers, memory) {
+export function solution(instruction, registers, memory, globals) {
   var rd, rs, rt;
   var result;
   var imm;

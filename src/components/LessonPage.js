@@ -112,6 +112,9 @@ class LessonPage extends Component {
       studentPipeline: [],
       referencePipeline: [],
 
+      studentGlobals: {},
+      referenceGlobals: {},
+
       // // memory becomes relevant after lesson 1.5
       theme: "solarized_dark",
 
@@ -236,6 +239,9 @@ class LessonPage extends Component {
     var studentMemory = new Memory();
     var referenceMemory = new Memory();
 
+    var studentGlobals = {};
+    var referenceGlobals = {};
+
     studentRegisters.load(lessonRegisterInits[lessonPart]);
     referenceRegisters.load(lessonRegisterInits[lessonPart]);
 
@@ -262,6 +268,9 @@ class LessonPage extends Component {
 
       studentMemory : studentMemory,
       referenceMemory : referenceMemory,
+
+      studentGlobals : studentGlobals,
+      referenceGlobals : referenceGlobals
     })
   }
 
@@ -277,7 +286,6 @@ class LessonPage extends Component {
     // Reset the user program every time the lesson is loaded.  This
     // has the effect of reloading the user code only when they click
     // "reset"
-    this.appendUserProgram();
     this.setState({ programRunning: false });
 
     var lessonPart = `lesson_${lesson}/part_${lessonPartNum}`;
@@ -399,10 +407,13 @@ class LessonPage extends Component {
 
   // Step one instruction forward and execute
   step() {
-    if (!this.userProgramExists() || !this.state.programRunning) {
-      this.appendUserProgram();
+    if (!this.state.programRunning) {
       this.setState({programRunning: true});
     }
+
+    var script = document.createElement('script');
+    script.appendChild(document.createTextNode(this.state.studentProgram));
+    document.body.appendChild(script);
 
     var instruction = this.getNextInstruction();
     var pcRegister = nameToRegisterMap["$pc"];
@@ -440,9 +451,9 @@ class LessonPage extends Component {
       else {
         try {
           // eslint-disable-next-line
-          processMIPS(instruction, this.state.studentRegisters, this.state.studentMemory);
+          processMIPS(instruction, this.state.studentRegisters, this.state.studentMemory, this.state.studentGlobals);
         } catch(e) { /* ignore this case */ }
-        solution(instruction, this.state.referenceRegisters, this.state.referenceMemory);
+        solution(instruction, this.state.referenceRegisters, this.state.referenceMemory, this.state.referenceGlobals);
       }
     } else if (this.state.lesson == 4) {
       // eslint-disable-next-line
@@ -485,7 +496,12 @@ class LessonPage extends Component {
     // eslint-disable-next-line
     console.log = function (message) {
       var logger = document.getElementById('log');
-      logger.innerHTML += `<li>${message}</li>`;
+      if (typeof(message) == 'object') {
+          logger.innerHTML += "<li>" +
+            (JSON && JSON.stringify ? JSON.stringify(message) : message) + "</li>";
+      } else {
+          logger.innerHTML += `<li>${message}</li>`;
+      }
     }
 
     window.onerror = function(message) {

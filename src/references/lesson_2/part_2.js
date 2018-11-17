@@ -15,7 +15,7 @@ function SignExtend16(x) {
 var branch_delay = false;
 var branch_target;
 
-export function solution(instruction, registers, memory) {
+export function solution(instruction, registers, memory, globals) {
   instruction = ToUint32(instruction);
   var opcode = instruction >>> 26;
 

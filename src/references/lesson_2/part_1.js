@@ -12,7 +12,7 @@ function SignExtend16(x) {
   return x;
 }
 
-export function solution(instruction, registers, memory) {
+export function solution(instruction, registers, memory, globals) {
   instruction = ToUint32(instruction);
   var opcode = instruction >>> 26 & 0x3f;
 

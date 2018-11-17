@@ -18,7 +18,7 @@ function SignExtend16(x) {
   return x;
 }
 
-function processMIPS(instruction, registers, memory) {
+function processMIPS(instruction, registers, memory, globals) {
   instruction = ToUint32(instruction);
   var opcode = instruction >>> 26 & 0x3f;
 
