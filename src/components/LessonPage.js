@@ -602,8 +602,8 @@ class LessonPage extends Component {
                     <ul className="lesson-testing__shell p-2 mb-0">{ assemblyList }</ul>
                   </div>
                   <br />
-                  <div className="lesson-testing__shell-div" id="console">
-                    <ul className="lesson-testing__shell p-2 mb-0" id="log"></ul>
+                  <div className="lesson-log__shell-div" id="console">
+                    <ul className="lesson-log__shell p-2 mb-0" id="log"></ul>
                   </div>
                 </div>
                 <div className="lesson-testing__buttons col p-0 pl-3">

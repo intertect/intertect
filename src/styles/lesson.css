@@ -59,6 +59,20 @@
       }
     }
 
+    .lesson-log__shell-div {
+      background-color: #FFFFFF;
+      height: 100%;
+      overflow: scroll;
+
+      .lesson-log__shell {
+        list-style: none;
+        color: #000000;
+        font: 0.8em 'Andale Mono', Consolas, 'Courier New';
+        line-height: 1.6em;
+        height: 100%;
+      }
+    }
+
     .lesson-testing__buttons {
       max-width: 100px;
       padding-top: 2.5rem !important;
