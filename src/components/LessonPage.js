@@ -655,6 +655,11 @@ class LessonPage extends Component {
                     <DropdownItem onClick={() => this.setState({ theme : "twilight" })} eventKey="twilight" className={this.state.theme == "twilight" ? "active" : "inactive"}>twilight</DropdownItem>
                   </DropdownMenu>
                 </Dropdown>
+                <Button outline className="lesson-testing__button lesson-testing__button-save p-2 m-0 mr-3"
+                    color="deep-purple"
+                    onClick={() => document.getElementById('log').innerHTML = ""}>
+                  <i className="fa fa-save" aria-hidden="true"></i> Clear Console
+                </Button>
                 <Button outline className="lesson-testing__button lesson-testing__button-restart p-2 m-0"
                     color="danger" id="startOver"
                     onClick={() => this.setState({ confirmRestart : true })}>
