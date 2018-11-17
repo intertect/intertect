@@ -9,6 +9,10 @@ future lessons, you'll be implementing functionality on your own (with only
 written instructions like these).
 
 # Code Structure
+**Important**: Do not skip reading this section in general. It will make implementing
+the current and future lessons much more difficult than it need be (and sometimes
+completely impossible if you have to adhere to an API we have set up for you)!
+
 Since this is the first part, understanding the exact details of how the code works
 is not completely necessary. The "Code Structure" section of the instructions is 
 where we generally explain how we've laid out the code, and any new APIs we're

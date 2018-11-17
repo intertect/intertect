@@ -4,6 +4,10 @@ chunk of the processor's work.  This is the stage of the pipeline where the ALU
 gets involved and starts to actually perform the computations that power the
 computer.
 
+# Code Structure
+There are no significant changes between this and the previous part. Refer to
+the Latch API below to see what is expected in your output of EX.
+
 # Your Task
 Luckily, you've already implemented most of the logic for this stage of the
 processor in the first couple lessons!  The main difference is that you will no

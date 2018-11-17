@@ -4,6 +4,9 @@ them all, especially now that you've got four under your belt.  In the writeback
 stage, you'll just be writing a value from some previous pipeline stage into the
 destination register you've been passing through latches this whole time.
 
+# Code Structure
+There are no significant changes between this and the previous part.
+
 # Your Task
 Given the information you passed along from the MEM stages, determine where to
 write the results, if at all.  Some notes to keep in mind:

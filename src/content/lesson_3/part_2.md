@@ -15,6 +15,10 @@ the ID stage:
 2. The registers are read from the register file
 3. Branches and Jumps are executed
 
+# Code Structure
+There are no significant changes between this and the previous part. Refer to
+the Latch API below to see what is expected in your output of ID.
+
 # Your Task
 This code will be nearly identical to what you were doing in the cases of the
 switch statement in the initial implementation.  Specifically, rather than
