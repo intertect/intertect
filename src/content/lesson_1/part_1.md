@@ -8,6 +8,14 @@ like our code, feel free to delete all of it and do this however you want.  In
 future lessons, you'll be implementing functionality on your own (with only
 written instructions like these).
 
+# Code Structure
+Since this is the first part, understanding the exact details of how the code works
+is not completely necessary. The "Code Structure" section of the instructions is 
+where we generally explain how we've laid out the code, and any new APIs we're
+exposing to you. We will explain the code more in-depth in the following part,
+since you'll be modifying it more extensively there. But, the change(s) you'll make
+in this part should be pretty micro in scope.
+
 # Your Task
 We think there's a bug in our implementation.  Your task is to find and fix
 it.

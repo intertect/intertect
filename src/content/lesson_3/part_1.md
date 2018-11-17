@@ -139,7 +139,7 @@ names/types for these cases:
   stage of the pipeline saving should occur
   - `position`: Which register to be written to (if `location` is `"registers"`)
 
-## Your Task
+# Your Task
 The first part of the pipeline is IF, or Instruction Fetch.  As we've seen in
 the past, the `pc` dictate what in the program is being executed.  Unlike past
 lessons, however, the program is now stored in memory.  So, in this lesson,

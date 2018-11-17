@@ -11,18 +11,10 @@ even need any of the other arithmetic instructions!  All you need is
 [`nor`](#nor) or `nand` and you can make all of them.  Really slowly, of
 course.)
 
-# Note on Notation
-
-For this lesson part and many of those to come, we'll be encountering a lot of
-binary, in the context of both function arguments and (eventually) instructions
-themselves.  As a result, we'll be referencing them quite often in our
-instructions panel.  To prevent confusion, we use the standard numeric notation,
-where the prefix `0x` represents a hex value and `0b` a binary value.  The hex
-is pretty obvious to see. *Be careful* with binary though: it is very easy to
-glance at a number such as `0b1100` and misinterpret that as being the hex
-number `0B1100`, which we would typically notate as `0x0B1100`.  To distinguish
-these two (outside the use of the prefix), simply keep in mind that the letters
-used in hex numbers are always capitalized!
+# Code Structure
+The structure in this part is identical to the previous part. There are no
+additional APIs you'll have to interface with in this part as compared to the previous
+ones.
 
 # Your Task
 You task in this part is to implement the following instructions:
@@ -39,6 +31,19 @@ These perform the bitwise AND, OR, NOR, and XOR boolean operations as well as
 left logical shift, right logical shift, and right arithmetic shift.  If you're not 
 sure what all of that meant, keep reading.  Otherwise, you can go right ahead and start
 implementing.
+
+## Notation
+
+For this lesson part and many of those to come, we'll be encountering a lot of
+binary, in the context of both function arguments and (eventually) instructions
+themselves.  As a result, we'll be referencing them quite often in our
+instructions panel.  To prevent confusion, we use the standard numeric notation,
+where the prefix `0x` represents a hex value and `0b` a binary value.  The hex
+is pretty obvious to see. *Be careful* with binary though: it is very easy to
+glance at a number such as `0b1100` and misinterpret that as being the hex
+number `0B1100`, which we would typically notate as `0x0B1100`.  To distinguish
+these two (outside the use of the prefix), simply keep in mind that the letters
+used in hex numbers are always capitalized!
 
 ## Introduction To Bitwise Operations
 If you aren't familiar with logical operations, check out the Wikipedia page on

@@ -4,7 +4,7 @@ In this lesson, you'll be implementing the [`subu`](#subu) instruction.  Each of
 the parts in Lesson 1 will be adding to your code from previous ones, so by the
 end, you'll have a complete MIPS emulator.
 
-# Code structure
+# Code Structure
 Now that we've gotten through all that preliminary information, it's time for
 you to understand the structure of the code that you will be writing.  The code
 that we give you as a starting point is just a suggestion, and there are of
@@ -50,6 +50,18 @@ means you will have to look registers up in `nameToRegisterMap` before storing.
 The memory abstraction is just like the register abstraction.  It provides the
 two methods `memory.read(location)` and `memory.write(location.value)`.  You
 won't use memory until a later part, but now you know why it's there!
+
+## Globals
+The globals variable is an *Object* that is used for storing global values. If you
+have worked with data structures or databases, this effectively acts as a key-value
+storage system. You should *not* have to use this outside of a subsequent lesson, 
+where we remind you of the interface for this. However, if you wish to use it, simply
+read/write to it as a standard JS object with:
+
+- `read`: To read a field `property`, simply do `globals[property]`
+- `write`: To write to a field `property`, simply use `globals[property] = value`
+- `contains`: To check whether `property` has been set in this globals space,
+use: `globals.hasOwnProperty(property)`
 
 # Your Task
 You task in this part is to implement the following instruction:
