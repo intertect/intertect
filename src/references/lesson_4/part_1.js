@@ -12,7 +12,7 @@ function SignExtend16(x) {
   return x;
 }
 
-function IF(latches, registers, memory, globals) {
+function IF(latches, registers, memory) {
   var location = registers.read(nameToRegisterMap["$pc"]);
 
   var byte_1 = memory.read(location);
@@ -33,21 +33,10 @@ function IF(latches, registers, memory, globals) {
   }
 }
 
-function ID(latches, registers, memory, globals) {
+function ID(latches, registers, memory) {
   if (latches.if_id === undefined) {
     latches.id_ex = undefined;
     return;
-  }
-
-  if (!globals.hasOwnProperty("branch_delay")) {
-    globals["branch_delay"] = false;
-  }
-
-  var pc = nameToRegisterMap["$pc"];
-  if (globals["branch_delay"]) {
-    globals["branch_delay"] = false;
-    registers.write(pc, globals["branch_target"]);
-    latches.id_ex = undefined;
   }
 
   var binary = latches.if_id;
@@ -71,10 +60,10 @@ function ID(latches, registers, memory, globals) {
 
     switch(op_str) {
       case 'jr':
+        pc = nameToRegisterMap["$pc"];
+        position = pc;
         result = ToUint32(registers.read(rs));
-
-        globals["branch_delay"] = true;
-        globals["branch_target"] = result;
+        registers.write(position, result)
         break;
       default:
         instruction = {
@@ -96,6 +85,7 @@ function ID(latches, registers, memory, globals) {
     position = nameToRegisterMap["$pc"];
     switch(op_str) {
       case 'j':
+        pc = nameToRegisterMap["$pc"];
         // Lop off the two top bits
         target &= 0x3FFFFFFF;
 
@@ -103,10 +93,11 @@ function ID(latches, registers, memory, globals) {
         // Keep only the top two bits
         pc_val &= 0xC0000000;
 
-        globals["branch_delay"] = true;
-        globals["branch_target"] = result;
+        result = pc_val | target;
+        registers.write(position, result)
         break;
       case 'jal':
+        pc = nameToRegisterMap["$pc"];
         ra = nameToRegisterMap["$ra"];
         // Lop off the two top bits
         target &= 0x3FFFFFFF;
@@ -115,8 +106,7 @@ function ID(latches, registers, memory, globals) {
 
         result = (pc_val & 0xC0000000) | target;
 
-        globals["branch_delay"] = true;
-        globals["branch_target"] = result;
+        registers.write(position, result)
         registers.write(ra, pc_val + 8);
         break;
       default:
@@ -134,12 +124,12 @@ function ID(latches, registers, memory, globals) {
     switch(op_str) {
       case 'beq':
         if (registers.read(rs) == registers.read(rt)) {
+          pc = nameToRegisterMap["$pc"];
           var target = imm << 2;
 
+          position = pc;
           result = ToUint32(registers.read(pc) + target + 4);
-
-          globals["branch_delay"] = true;
-          globals["branch_target"] = result;
+          registers.write(position, result)
         }
         break;
       default:
@@ -156,7 +146,7 @@ function ID(latches, registers, memory, globals) {
   latches.id_ex = instruction;
 }
 
-function EX(latches, registers, memory, globals) {
+function EX(latches, registers, memory) {
   if (latches.id_ex === undefined) {
     latches.ex_mem = undefined;
     return;
@@ -264,7 +254,7 @@ function EX(latches, registers, memory, globals) {
   }
 }
 
-function MEM(latches, registers, memory, globals) {
+function MEM(latches, registers, memory) {
   if (latches.ex_mem === undefined) {
     latches.mem_wb = undefined;
     return;
@@ -378,7 +368,7 @@ function MEM(latches, registers, memory, globals) {
   }
 }
 
-function WB(latches, registers, memory, globals) {
+function WB(latches, registers, memory) {
   if (latches.mem_wb === undefined) {
     return;
   }
@@ -388,21 +378,21 @@ function WB(latches, registers, memory, globals) {
   }
 }
 
-export function solution(latches, registers, memory, globals) {
-  WB(latches, registers, memory, globals);
+export function solution(latches, registers, memory) {
+  WB(latches, registers, memory);
   latches.mem_wb = undefined;
 
-  MEM(latches, registers, memory, globals);
+  MEM(latches, registers, memory);
   latches.ex_mem = undefined;
 
-  EX(latches, registers, memory, globals);
+  EX(latches, registers, memory);
   latches.id_ex = undefined;
 
-  ID(latches, registers, memory, globals);
+  ID(latches, registers, memory);
   latches.if_id = undefined;
 
   if (!latches.term_if) {
-    IF(latches, registers, memory, globals);
+    IF(latches, registers, memory);
   }
 }
 
