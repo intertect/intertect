@@ -18,9 +18,15 @@ are identical.
 the appropriate case for execution.
 
 Since how the interpretation of R, J, and I format instructions vary but are
-relatively uniform within each category, we strongly recommend you separate out
-the implementations by the instruction format and parse prior to computing
-each case.
+relatively uniform within each category, we have prestructured all the code to
+reflect this. Each part has variables that you now either have to simply extract
+from the binary *or* compute. All your implementations for the instructions
+themselves will remain the same **except** jump/branch instructions, i.e. `j`,
+`jal`, and `beq`: now that we are no longer parsing the assembly directly,
+the instructions are provided as numeric offset rather than labels. This means you
+will have to directly compute the `$pc` value, for which you should refer back to
+the MIPS instructions glossary. Note that you don't need to change `jr`, since this
+did not rely on the `labelToLine` lookup as the others did!
 
 # Your Task
 This lesson will revolve around translating your code from the previous lesson

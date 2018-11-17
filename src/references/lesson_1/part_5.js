@@ -128,7 +128,6 @@ export function solution(instruction, registers, memory, globals) {
 
       if (registers.read(rs) == registers.read(rt)) {
         pc = nameToRegisterMap["$pc"];
-        // result = ToUint32(registers.read(pc)) + offset;
         result = labelToLine[instruction[3]]
         registers.write(pc, result);
       }
@@ -136,13 +135,6 @@ export function solution(instruction, registers, memory, globals) {
       break;
     case 'j':
       pc = nameToRegisterMap["$pc"];
-      /* target = ToUint32(instruction[1]) << 2;
-
-      pc_val = ToUint32(registers.read(pc));
-      // Keep only the top two bits
-      pc_val &= 0xC0000000;
-
-      result = pc_val | target; */
       result = labelToLine[instruction[1]]
 
       registers.write(pc, result);
@@ -153,11 +145,6 @@ export function solution(instruction, registers, memory, globals) {
 
       pc_val = ToUint32(registers.read(pc)) + 4;
       registers.write(ra, pc_val);
-
-      // Keep only the top two bits
-      /* target = ToUint32(instruction[1]) << 2;
-      pc_val &= 0xC0000000;
-      result = pc_val | target; */
       result = labelToLine[instruction[1]]
       registers.write(pc, result);
       break;

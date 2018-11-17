@@ -34,6 +34,12 @@ having an instruction that is always executed allows the processor to do
 something in what would otherwise be dead time.
 
 # Code Structure
+As we mentioned in the first lesson part, the you should never have had to use the 
+`globals` variable *until now*. The state of the branch delay is a global state that
+must be tracked. To do so, we expect you to store and read states in the `globals`
+variable, described again below. Note that, outside of some small modifications to
+how values are stored in the jump/branch instructions, no modifications will be
+required in your case implementations.
 
 ## Globals
 The globals variable is an *Object* that is used for storing global values. If you

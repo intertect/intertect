@@ -23,7 +23,7 @@ function processMIPS(instruction, registers, memory, globals) {
   instruction = ToUint32(instruction);
 
   // TODO: Compute opcode
-  var opcode = instruction >>> 26 & 0x3f;
+  var opcode = undefined
 
   var rs, rt, rd;
   var op_str;
@@ -104,30 +104,10 @@ function processMIPS(instruction, registers, memory, globals) {
 
     switch(op_str) {
       case 'j':
-        pc = nameToRegisterMap["$pc"];
-        // Lop off the two top bits
-        target &= 0x3FFFFFFF;
-
-        pc_val = ToUint32(registers.read(pc));
-        // Keep only the top two bits
-        pc_val &= 0xC0000000;
-
-        result = pc_val | target;
-
-        registers.write(pc, result);
+        // TODO: Implement this instruction using binary
         break;
       case 'jal':
-        pc = nameToRegisterMap["$pc"];
-        ra = nameToRegisterMap["$ra"];
-        // Lop off the two top bits
-        target &= 0x3FFFFFFF;
-
-        pc_val = ToUint32(registers.read(pc));
-
-        result = (pc_val & 0xC0000000) | target;
-
-        registers.write(pc, result);
-        registers.write(ra, pc_val + 8);
+        // TODO: Implement this instruction using binary
         break;
       default:
         break;
@@ -168,13 +148,7 @@ function processMIPS(instruction, registers, memory, globals) {
         registers.write(rt, result);
         break;
       case 'beq':
-        if (registers.read(rs) == registers.read(rt)) {
-          pc = nameToRegisterMap["$pc"];
-          target = imm << 2;
-
-          result = ToUint32(registers.read(pc) + target + 4);
-          registers.write(pc, result);
-        }
+        // TODO: Implement this instruction using binary
         break;
       case 'sw':
         value = ToUint32(registers.read(rt));
