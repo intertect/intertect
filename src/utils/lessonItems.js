@@ -352,7 +352,7 @@ export const lessonReferenceSolutions = {
 
 // tests that are available for the lessons
 export const lessonTests = {
-  "lesson_1/part_1": ["lesson_1/part_1","test"],
+  "lesson_1/part_1": ["lesson_1/part_1"],
   "lesson_1/part_2": ["lesson_1/part_2"],
   "lesson_1/part_3": ["lesson_1/part_3"],
   "lesson_1/part_4": ["lesson_1/part_4"],
