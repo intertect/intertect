@@ -27,7 +27,7 @@ class LessonPage extends Component {
     super(props);
 
     if (localStorage.getItem('completedLessons') == null) {
-      localStorage.setItem('completedLessons', 4);
+      localStorage.setItem('completedLessons', 1);
     }
 
     if (localStorage.getItem('completedParts') == null) {
