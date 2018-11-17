@@ -65,7 +65,6 @@ export function disassembleMips(decimalOperations) {
 
   var opcode = binaryOperation.slice(0,6);
 
-  // all R (register) instructions start with 0s
   var opname, formatter;
   var rs, rt, i;
 

@@ -22,7 +22,6 @@ function processMIPS(instruction, registers, memory, globals) {
   instruction = ToUint32(instruction);
   var opcode = instruction >>> 26 & 0x3f;
 
-  // All R (register) instructions start with 0s
   var rs, rt, rd;
   var op_str;
 
@@ -32,6 +31,7 @@ function processMIPS(instruction, registers, memory, globals) {
   // TODO: Properly handle the cases where branch delay is true
 
   if (opcode == 0x0) {
+    // R format: 000000ss sssttttt dddddaaa aaffffff
     rs = instruction >>> 21 & 0x1f
     rt = instruction >>> 16 & 0x1f
     rd = instruction >>> 11 & 0x1f

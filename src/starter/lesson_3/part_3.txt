@@ -54,7 +54,6 @@ function ID(latches, registers, memory, globals) {
   var binary = latches.if_id;
   var opcode = binary >>> 26;
 
-  // All R (register) binarys start with 0s
   var rs, rt, rd;
   var op_str;
 
@@ -62,6 +61,7 @@ function ID(latches, registers, memory, globals) {
   var instruction;
 
   if (opcode == 0x0) {
+    // R format: 000000ss sssttttt dddddaaa aaffffff
     rs = binary >>> 21 & 0x1f
     rt = binary >>> 16 & 0x1f
     rd = binary >>> 11 & 0x1f
@@ -162,7 +162,6 @@ function EX(latches, registers, memory, globals) {
 
   var instruction = latches.id_ex;
 
-  // All R (register) instructions start with 0s
   var rs, rt, rd;
   var op_str = instruction["op_str"];
 

@@ -20,7 +20,6 @@ export function solution(instruction, registers, memory, globals) {
   instruction = ToUint32(instruction);
   var opcode = instruction >>> 26;
 
-  // All R (register) instructions start with 0s
   var rs, rt, rd;
   var op_str;
 

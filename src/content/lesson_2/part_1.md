@@ -4,18 +4,23 @@ Welcome to the second lesson.  Great work on completing lesson 1!  In this
 lesson, we'll take one step down the stack of abstraction by moving from
 assembly language to the binary representation that the processor deals with.
 
-## Binary vs. Assembly
-Modern processors only understand one thing: binary.  A simple circuit can be
-either on or off, and processors are built up of billions of these simple
-elements.  This has one major ramification in your program: assembly language
-means absolutely nothing to processors.  The processor has no concept of the
-string "addu $t5, $t0, $t0".  Rather, it would understand the binary sequence
-"00000001001010000111100000100011."  This, in fact, is how instructions are
-passed around under the hood. (And that binary string is how the processor
-represents that previous `addu` instruction).  While it may at first look like a
-jumbled mess, you'll soon see that it's entirely straightforward!  Remember that
-no matter how complex they are, processors are fundamentally made of simple
-components.
+# Code Structure
+Since we will no longer be parsing the instruction for you, you will need to
+"decode" the instruction yourself and figure out what the operation behind the
+binary is. To do this, we have provided you with two maps that you will need
+to call into:
+
+- `functMap`: For R-Format instructions (as you can see in the reference table
+below), the operations are differentiated by the `funct`, since all the `opcodes`
+are identical.
+- `opcodeMap`: For J/I-Format instructions, the operation is determined by the
+`opcode`, so you will directly look up the opcode in this table to switch into
+the appropriate case for execution.
+
+Since how the interpretation of R, J, and I format instructions vary but are
+relatively uniform within each category, we strongly recommend you separate out
+the implementations by the instruction format and parse prior to computing
+each case.
 
 # Your Task
 This lesson will revolve around translating your code from the previous lesson
@@ -42,6 +47,19 @@ to complete the implementation.  Some points to keep in mind:
   instruction and the code you wrote for the previous lesson.  Again, feel free
   to not use them if you think you can do it more cleanly yourself.  There isn't
   one right way to do this!
+
+## Binary vs. Assembly
+Modern processors only understand one thing: binary.  A simple circuit can be
+either on or off, and processors are built up of billions of these simple
+elements.  This has one major ramification in your program: assembly language
+means absolutely nothing to processors.  The processor has no concept of the
+string "addu $t5, $t0, $t0".  Rather, it would understand the binary sequence
+"00000001001010000111100000100011."  This, in fact, is how instructions are
+passed around under the hood. (And that binary string is how the processor
+represents that previous `addu` instruction).  While it may at first look like a
+jumbled mess, you'll soon see that it's entirely straightforward!  Remember that
+no matter how complex they are, processors are fundamentally made of simple
+components.
 
 ---
 <a id="binary"></a>

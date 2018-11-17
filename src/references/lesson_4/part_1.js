@@ -42,7 +42,6 @@ function ID(latches, registers, memory) {
   var binary = latches.if_id;
   var opcode = binary >>> 26;
 
-  // All R (register) binarys start with 0s
   var rs, rt, rd;
   var op_str;
 
@@ -154,7 +153,6 @@ function EX(latches, registers, memory) {
 
   var instruction = latches.id_ex;
 
-  // All R (register) instructions start with 0s
   var rs, rt, rd;
   var op_str = instruction["op_str"];
 
@@ -269,7 +267,6 @@ function MEM(latches, registers, memory) {
 
   var mem_ops = ['sw', 'sh', 'sb', 'lw', 'lh', 'lb'];
 
-  // All R (register) instructions start with 0s
   var rs, rt, rd;
   var op_str = instruction["op_str"];
 
