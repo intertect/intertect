@@ -88,7 +88,6 @@ export function solution(instruction, registers, memory, globals) {
 
     op_str = opcode == 0x2 ? "j" : "jal";
 
-    // TODO
     switch(op_str) {
       case 'j':
         pc = nameToRegisterMap["$pc"];

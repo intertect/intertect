@@ -29,6 +29,8 @@ function processMIPS(instruction, registers, memory, globals) {
   var pc, pc_val, result;
   var ra;
 
+  // TODO: Properly handle the cases where branch delay is true
+
   if (opcode == 0x0) {
     rs = instruction >>> 21 & 0x1f
     rt = instruction >>> 16 & 0x1f
@@ -76,6 +78,8 @@ function processMIPS(instruction, registers, memory, globals) {
         result = ToUint32(registers.read(rs) >> registers.read(rt));
         registers.write(rd, result);
         break;
+
+      // TODO: Modify jr to use branch delay
       case 'jr':
         pc = nameToRegisterMap["$pc"];
 
@@ -94,7 +98,7 @@ function processMIPS(instruction, registers, memory, globals) {
 
     op_str = opcode == 0x2 ? "j" : "jal";
 
-    // TODO
+    // TODO: Modify j/jal to use branch delay
     switch(op_str) {
       case 'j':
         pc = nameToRegisterMap["$pc"];
@@ -157,6 +161,7 @@ function processMIPS(instruction, registers, memory, globals) {
         result = ToUint32(registers.read(rs) ^ imm);
         registers.write(rt, result);
         break;
+      // TODO: Modify beq to use branch delay
       case 'beq':
         if (registers.read(rs) == registers.read(rt)) {
           pc = nameToRegisterMap["$pc"];

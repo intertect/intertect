@@ -26,12 +26,12 @@ class LessonPage extends Component {
   constructor(props) {
     super(props);
 
-    if (localStorage.getItem('completedParts') == null) {
-      localStorage.setItem('completedParts', 1);
+    if (localStorage.getItem('completedLessons') == null) {
+      localStorage.setItem('completedLessons', 4);
     }
 
-    if (localStorage.getItem('completedLessons') == null) {
-      localStorage.setItem('completedLessons', 1);
+    if (localStorage.getItem('completedParts') == null) {
+      localStorage.setItem('completedParts', 1);
     }
 
     if (localStorage.getItem('starterProgram') == null) {
