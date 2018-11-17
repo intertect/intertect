@@ -9,6 +9,17 @@ function ToUint32(x) {
   return x >>> 0;
 }
 
+function SignExtend16(x) {
+  x = ToUint32(x);
+
+  if (x >>> 15 > 0) {
+    x |= 0xFFFF0000;
+  }
+
+  return x;
+}
+
+
 export function solution(instruction, registers, memory, globals) {
   var rd, rs, rt;
   var shamt;
