@@ -12,7 +12,7 @@ function SignExtend16(x) {
   return x;
 }
 
-function IF(latches, registers, memory) {
+function IF(latches, registers, memory, globals) {
   var location = registers.read(nameToRegisterMap["$pc"]);
 
   var byte_1 = memory.read(location);
@@ -38,7 +38,7 @@ function IF(latches, registers, memory) {
   }
 }
 
-function ID(latches, registers, memory) {
+function ID(latches, registers, memory, globals) {
   // happens in cases where the instruction was executed in ID stage
   if (latches.if_id === undefined) {
     latches.id_ex = undefined;
@@ -179,7 +179,7 @@ function ID(latches, registers, memory) {
   }
 }
 
-function EX(latches, registers, memory) {
+function EX(latches, registers, memory, globals) {
   // happens in cases where the instruction was executed in ID stage
   if (latches.id_ex === undefined) {
     latches.ex_mem = undefined;
@@ -307,7 +307,7 @@ function EX(latches, registers, memory) {
   }
 }
 
-function MEM(latches, registers, memory) {
+function MEM(latches, registers, memory, globals) {
   if (latches.ex_mem === undefined) {
     latches.mem_wb = undefined;
     return;
@@ -422,7 +422,7 @@ function MEM(latches, registers, memory) {
   }
 }
 
-function WB(latches, registers, memory) {
+function WB(latches, registers, memory, globals) {
   if (latches.mem_wb === undefined) {
     return;
   }
@@ -494,7 +494,7 @@ function intersectKeys(xDeps, yDeps) {
   return x.filter(value => -1 !== y.indexOf(value));
 }
 
-export function solution(latches, registers, memory) {
+export function solution(latches, registers, memory, globals) {
   var EA = ["addu","subu","and","or","nor","xor","sll","srl","sra","addiu","andi","ori","xori"]
   var MA = ["j","jal","jr","beq","lb","lh","lw","lui","sb","sh","sw"];
 
@@ -543,10 +543,10 @@ export function solution(latches, registers, memory) {
     exWbDependencies = intersectKeys(exDependencies["read"], wbDependencies["write"])
   }
 
-  WB(latches, registers, memory);
+  WB(latches, registers, memory, globals);
   latches.mem_wb = undefined;
 
-  MEM(latches, registers, memory);
+  MEM(latches, registers, memory, globals);
   latches.ex_mem = undefined;
 
   /* ====== For ER commands, data hazards are checked in MEM stages ======== */
@@ -559,7 +559,7 @@ export function solution(latches, registers, memory) {
       dependencyLocation = memDependencies["write"][dependency];
       latches.id_ex[dependencyLocation] = dependency;
 
-      EX(latches, registers, memory);
+      EX(latches, registers, memory, globals);
     } else {
       return; // if ER in EX and MA in MEM, we stall
     }
@@ -571,11 +571,11 @@ export function solution(latches, registers, memory) {
     dependencyLocation = wbDependencies["write"][dependency];
     latches.id_ex[dependencyLocation] = dependency;
 
-    EX(latches, registers, memory);
+    EX(latches, registers, memory, globals);
   }
 
   if (exMemDependencies.length == 0 && exWbDependencies.length == 0)  {
-    EX(latches, registers, memory);
+    EX(latches, registers, memory, globals);
     latches.id_ex = undefined;
   }
 
@@ -591,7 +591,7 @@ export function solution(latches, registers, memory) {
       dependencyLocation = memDependencies["write"][dependency];
       latches.if_id[dependencyLocation] = dependency;
 
-      ID(latches, registers, memory);
+      ID(latches, registers, memory, globals);
     } else {
       return; // if DR in ID and MA in MEM, we stall
     }
@@ -603,17 +603,17 @@ export function solution(latches, registers, memory) {
     dependencyLocation = wbDependencies["write"][dependency];
     latches.if_id[dependencyLocation] = dependency;
 
-    ID(latches, registers, memory);
+    ID(latches, registers, memory, globals);
   }
 
   if (idExDependencies.length == 0 && idMemDependencies.length == 0 &&
     idWbDependencies.length == 0)  {
-    ID(latches, registers, memory);
+    ID(latches, registers, memory, globals);
     latches.if_id = undefined;
   }
 
   if (!latches.term_if) {
-    IF(latches, registers, memory);
+    IF(latches, registers, memory, globals);
   }
 }
 

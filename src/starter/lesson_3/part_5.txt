@@ -18,7 +18,7 @@ function SignExtend16(x) {
   return x;
 }
 
-function IF(latches, registers, memory) {
+function IF(latches, registers, memory, globals) {
   var location = registers.read(nameToRegisterMap["$pc"]);
 
   var byte_1 = memory.read(location);
@@ -34,7 +34,7 @@ function IF(latches, registers, memory) {
   latches.if_id = ToUint32(binary);
 }
 
-function ID(latches, registers, memory) {
+function ID(latches, registers, memory, globals) {
   var binary = latches.if_id;
   var opcode = binary >>> 26;
 
@@ -91,7 +91,7 @@ function ID(latches, registers, memory) {
   latches.id_ex = instruction;
 }
 
-function EX(latches, registers, memory) {
+function EX(latches, registers, memory, globals) {
   var instruction = latches.id_ex;
 
   // All R (register) instructions start with 0s
@@ -228,7 +228,7 @@ function EX(latches, registers, memory) {
   }
 }
 
-function MEM(latches, registers, memory) {
+function MEM(latches, registers, memory, globals) {
   var instruction = latches.ex_mem["instruction"];
   var memory_address = latches.ex_mem["memory_address"];
 
@@ -362,18 +362,18 @@ function MEM(latches, registers, memory) {
   }
 }
 
-function WB(latches, registers, memory) {
+function WB(latches, registers, memory, globals) {
   // TODO: Fill this function
 }
 
 // this is just a mock of the behind the scenes: altering this function will NOT
 // change the outcome of running your code
-function processMIPS(latches, registers, memory) {
-  IF(latches, registers, memory);
-  ID(latches, registers, memory);
-  EX(latches, registers, memory);
-  MEM(latches, registers, memory);
-  WB(latches, registers, memory);
+function processMIPS(latches, registers, memory, globals) {
+  IF(latches, registers, memory, globals);
+  ID(latches, registers, memory, globals);
+  EX(latches, registers, memory, globals);
+  MEM(latches, registers, memory, globals);
+  WB(latches, registers, memory, globals);
 }
 
 var functMap = {
