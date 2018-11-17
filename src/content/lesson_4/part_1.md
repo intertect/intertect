@@ -6,9 +6,9 @@ mentioned, there could be complications when instructions depend upon one anothe
 but we're going to assume that that's not the case in this part of the lesson. In the
 following part, we'll introduce these cases, called "hazards."
 
-# Latch API Reference
-The API that was exposed in the previous lesson remains largely the same here. However, there
-is a new addition: 
+# Code Structure
+The Latch API that was exposed in the previous lesson remains largely the same here. 
+However, there is a new addition: 
 
 - `latches.term_if`: Boolean that sets whether to stop fetching instructions or not. If
 set to true, execution of the program stops. As explained below, whenever you encounter
