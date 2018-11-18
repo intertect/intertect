@@ -120,18 +120,22 @@
       border: 1px solid white;
     }
 
-    .lesson-debugging__tooltip:hover {
-      border: 1px solid #00695c;
-    }
-
     .lesson-debugging__wrong-color {
       background-color: #FF4444;
       color: white;
+
+      .lesson-debugging__tooltip:hover {
+        border: 1px solid #772226;
+      }
     }
 
     .lesson-debugging__right-color {
       background-color: #00C851;
       color: white;
+
+      .lesson-debugging__tooltip:hover {
+        border: 1px solid #00695c;
+      }
     }
 
     .btn {

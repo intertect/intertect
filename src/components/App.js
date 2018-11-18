@@ -53,7 +53,7 @@ class App extends Component {
   }
 
   sizeCheck() {
-    this.setState({ isLargeEnough: window.innerWidth > 900 });
+    this.setState({ isLargeEnough: window.innerWidth > 750 });
   }
 
   render() {
