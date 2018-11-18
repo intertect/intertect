@@ -686,55 +686,37 @@ class LessonPage extends Component {
           isTourOpen={this.state.isTourOpen}
           closeTour={this.closeTour} />
 
-        <Modal isOpen={this.state.lessonCorrect && this.state.lessonComplete}
-          frame position="bottom">
-
-          <ModalHeader>Great Work!</ModalHeader>
-          <ModalBody className="text-center">
-            <div className="row">
-              <div className="col-sm-6">
-                <Button outline style={{width:"100%"}}
-                    onClick={() => {
-                    this.setState({
-                      isIntroPaneOpen: true,
-                    });
-
-                    this.saveProgram(this.state.lesson,
-                      this.state.lessonPartNum, this.state.starterProgram)
-                    this.loadLesson(this.state.lesson, this.state.lessonPartNum + 1, true);
-                  }}> Next Lesson
-                </Button>
-              </div>
-
-              <div className="col-sm-6">
-                <Button outline color="danger" onClick={() =>
-                  this.loadLesson(this.state.lesson, this.state.lessonPartNum, false)} style={{width:"100%"}}>
-                  I Want To Stay Here
-                </Button>
-              </div>
+        <Modal isOpen={this.state.lessonCorrect && this.state.lessonComplete} frame position="bottom">
+          <ModalBody className="text-center d-flex justify-content-between">
+            <h4 className="align-self-center">Great Work!</h4>
+            <div>
+              <Button outline className="mx-3 px-2 py-3"
+                onClick={() => {
+                  this.setState({ isIntroPaneOpen: true });
+                  this.saveProgram(this.state.lesson, this.state.lessonPartNum, this.state.starterProgram)
+                  this.loadLesson(this.state.lesson, this.state.lessonPartNum + 1, true);
+                }}> 
+                Next Lesson
+              </Button>
+              <Button outline className="mx-3 px-2 py-3" color="secondary" onClick={() => 
+                this.loadLesson(this.state.lesson, this.state.lessonPartNum, false)}>
+                I Want to Stay Here
+              </Button>
             </div>
           </ModalBody>
         </Modal>
 
-        <Modal isOpen={!this.state.lessonCorrect && this.state.lessonComplete}
-          frame position="bottom">
-
-          <ModalHeader>Oops, let&apos;s try again!</ModalHeader>
-          <ModalBody className="text-center">
-            <div className="row">
-              <div className="col-sm-6">
-                <Button outline style={{width:"100%"}}
-                  onClick={() => this.loadLesson(this.state.lesson, this.state.lessonPartNum, false)}>
-                  <i className="fa fa-refresh" aria-hidden="true"></i> Reset
-                </Button>
-              </div>
-
-              <div className="col-sm-6">
-                <Button outline color="danger" style={{width:"100%"}}
-                    onClick={() => {this.setState({ confirmRestart : true })}}>
-                  <i className="fa fa-warning" aria-hidden="true"></i> Restart Level
-                </Button>
-              </div>
+        <Modal isOpen={!this.state.lessonCorrect && this.state.lessonComplete} frame position="bottom">
+          <ModalBody className="text-center d-flex justify-content-between">
+            <h4 className="align-self-center">Oops, let&apos;s try again!</h4>
+            <div>
+              <Button outline className="mx-3 px-2 py-3" 
+                onClick={() => this.loadLesson(this.state.lesson, this.state.lessonPartNum, false)}>
+                <i className="fa fa-refresh" aria-hidden="true"></i> Reset
+              </Button>
+              <Button outline className="mx-3 px-2 py-3" color="danger" onClick={() => {this.setState({ confirmRestart : true })}}>
+                <i className="fa fa-warning" aria-hidden="true"></i> Restart Level
+              </Button>
             </div>
           </ModalBody>
         </Modal>
@@ -743,25 +725,20 @@ class LessonPage extends Component {
           <ModalHeader>Restart Level</ModalHeader>
           <ModalBody>
             <b>Warning: </b> You will lose <b>all</b> your progress by hitting Continue. Please make sure
-            this is what you want before clicking Continue
+            this is what you want before clicking Continue.
           </ModalBody>
           <ModalFooter>
-            <div className="row">
-              <div className="col-sm-6">
-                <Button outline onClick={() => this.setState({confirmRestart : false})} style={{width:"100%"}}>
-                  Close
-                </Button>
-              </div>
-              <div className="col-sm-6">
-                <Button outline color="danger" style={{width:"100%"}}
-                  onClick={() => {
-                    this.setState({confirmRestart : false })
-                    this.loadLesson(this.state.lesson, this.state.lessonPartNum, true, true);
-                  }}>
-                  Continue
-                </Button>
-              </div>
-            </div>
+            <Button outline className="mx-3 px-2 py-3"
+              onClick={() => this.setState({confirmRestart : false})}>
+              Close
+            </Button>
+            <Button outline className="mx-3 px-2 py-3" color="danger"
+              onClick={() => {
+                this.setState({confirmRestart : false })
+                this.loadLesson(this.state.lesson, this.state.lessonPartNum, true, true);
+              }}>
+              Continue
+            </Button>
           </ModalFooter>
         </Modal>
       </div>
