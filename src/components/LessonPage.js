@@ -569,7 +569,7 @@ class LessonPage extends Component {
         </div>
 
         <Navbar color="default-color" className="landing__navbar">
-          <NavbarBrand className="landing-navbar__brand mx-3" href="#" onClick={() => this.props.toggleLoadedLesson()}>
+          <NavbarBrand className="landing-navbar__brand mx-3" href="/">
             Intertect
           </NavbarBrand>
 
@@ -686,8 +686,7 @@ class LessonPage extends Component {
           isTourOpen={this.state.isTourOpen}
           closeTour={this.closeTour} />
 
-        <Modal isOpen={this.state.lessonCorrect && this.state.lessonComplete} frame position="bottom"
-          shouldCloseOnOverlayClick={true}>
+        <Modal isOpen={this.state.lessonCorrect && this.state.lessonComplete} frame position="bottom">
           <ModalBody className="text-center d-flex justify-content-between">
             <h4 className="align-self-center">Great Work!</h4>
             <div>
