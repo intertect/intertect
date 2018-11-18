@@ -54,7 +54,7 @@
     .lesson-testing__shell-div {
       background-color: #002B36;
       height: 60%;
-      overflow: scroll;
+      overflow-y: scroll;
 
       .lesson-testing__shell {
         list-style: none;
@@ -72,7 +72,7 @@
     .lesson-log__shell-div {
       background-color: #FFFFFF;
       height: 40%;
-      overflow: scroll;
+      overflow-y: scroll;
       border: solid 2px #C9C2D2;
 
       .lesson-log__shell {
@@ -111,7 +111,7 @@
 
     .lesson-debugging__collapsible {
       max-height: calc(100% - 38px);
-      overflow: scroll;
+      overflow-y: scroll;
       height: 100%;
     }
 
