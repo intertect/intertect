@@ -30,9 +30,10 @@ class LandingPage extends Component {
           <h1 className="landing-section__title">
             Learn Computer Architecture
           </h1>
+          <i className="landing-section__arrow fa fa-angle-down fa-4x bounce mt-4" aria-hidden="true"></i>
           <div className="landing-section__desk">
             <img src={desk} className="img-fluid"/>
-            <h5><a href="#" onClick={() => this.props.selectHandler()}>{launch}</a></h5>
+            <h4><a href="#" onClick={() => this.props.selectHandler()}>{launch}</a></h4>
           </div>
         </div>
 

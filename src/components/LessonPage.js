@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Button,
+import { Button, Tooltip,
   Dropdown, DropdownItem, DropdownToggle, DropdownMenu,
   Modal, ModalHeader, ModalBody, ModalFooter,
   Navbar, NavItem, NavbarNav, NavbarBrand } from 'mdbreact';
@@ -497,12 +497,15 @@ class LessonPage extends Component {
     console.log = function (message) {
       var logger = document.getElementById('log');
       if (typeof(message) == 'object') {
-          logger.innerHTML += "<li>" +
+          logger.innerHTML += "<li><b>> </b>" +
             (JSON && JSON.stringify ? JSON.stringify(message) : message) + "</li>";
       } else {
-          logger.innerHTML += `<li>${message}</li>`;
+          logger.innerHTML += `<li><b>> </b>${message}</li>`;
       }
     }
+
+    const consoleIntroText = "/* Console Log appears here */";
+    var consoleIntro = <li className="lesson-log__shell-intro"><b>&gt; </b>{ consoleIntroText }</li>;
 
     window.onerror = function(message) {
       if (message != "Script error.") {
@@ -522,11 +525,13 @@ class LessonPage extends Component {
 
     var currentInstruction;
     this.state.lesson > 1 ?
-      currentInstruction = <Button outline>
-        {
-          typeof(this.getNextInstruction()) === 'undefined' ? "Done!" : ToUint32(this.getNextInstruction()).toString(2)
-        }
-      </Button>
+      currentInstruction = <Tooltip className="lesson__current-instruction p-1 m-0"
+        placement="top" 
+        tooltipContent="Current Instruction">
+          <a href="#">{
+            typeof(this.getNextInstruction()) === 'undefined' ? "Done!" : ToUint32(this.getNextInstruction()).toString(2)
+          }</a>
+      </Tooltip>
       : currentInstruction = <div></div>
 
     var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPartNum}`;
@@ -614,12 +619,11 @@ class LessonPage extends Component {
                     </Dropdown>
                     {currentInstruction}
                   </div>
-                  <div className="lesson-testing__shell-div" id="assemblyCode">
+                  <div className="lesson-testing__shell-div mb-2" id="assemblyCode">
                     <ul className="lesson-testing__shell p-2 mb-0">{ assemblyList }</ul>
                   </div>
-                  <br />
                   <div className="lesson-log__shell-div" id="console">
-                    <ul className="lesson-log__shell p-2 mb-0" id="log"></ul>
+                    <ul className="lesson-log__shell p-2 mb-0" id="log">{ consoleIntro }</ul>
                   </div>
                 </div>
                 <div className="lesson-testing__buttons col p-0 pl-3">
@@ -658,7 +662,7 @@ class LessonPage extends Component {
                 <Button outline className="lesson-testing__button lesson-testing__button-save p-2 m-0 mr-3"
                     color="deep-purple"
                     onClick={() => document.getElementById('log').innerHTML = ""}>
-                  <i className="fa fa-save" aria-hidden="true"></i> Clear Console
+                  <i className="fa fa-eraser" aria-hidden="true"></i> Clear Console
                 </Button>
                 <Button outline className="lesson-testing__button lesson-testing__button-restart p-2 m-0"
                     color="danger" id="startOver"

@@ -18,12 +18,18 @@
 
   .landing-section__desk {
     position: relative;
+    margin-top: -5rem;
 
     a {
-      color: #2BBBAD;
+      color: #512DA8;
     }
 
-    h5 {
+    a:hover {
+      color: white !important;
+      text-shadow: 1px 1px #512DA8;
+    }
+
+    h4 {
       position: absolute;
       top: 55%;
       left: 50%;
@@ -32,13 +38,13 @@
     }
 
     @media screen and (max-width: 500px) {
-      h5 {
+      h4 {
         font-size: 1rem;
       }
     }
 
     @media screen and (max-width: 400px) {
-      h5 {
+      h4 {
         font-size: 0.75rem;
       }
     }
