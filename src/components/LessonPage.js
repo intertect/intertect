@@ -686,7 +686,8 @@ class LessonPage extends Component {
           isTourOpen={this.state.isTourOpen}
           closeTour={this.closeTour} />
 
-        <Modal isOpen={this.state.lessonCorrect && this.state.lessonComplete} frame position="bottom">
+        <Modal isOpen={this.state.lessonCorrect && this.state.lessonComplete} frame position="bottom"
+          shouldCloseOnOverlayClick={true}>
           <ModalBody className="text-center d-flex justify-content-between">
             <h4 className="align-self-center">Great Work!</h4>
             <div>
@@ -728,11 +729,11 @@ class LessonPage extends Component {
             this is what you want before clicking Continue.
           </ModalBody>
           <ModalFooter>
-            <Button outline className="mx-3 px-2 py-3"
+            <Button outline className="mx-3 p-2"
               onClick={() => this.setState({confirmRestart : false})}>
               Close
             </Button>
-            <Button outline className="mx-3 px-2 py-3" color="danger"
+            <Button outline className="mx-3 p-2" color="danger"
               onClick={() => {
                 this.setState({confirmRestart : false })
                 this.loadLesson(this.state.lesson, this.state.lessonPartNum, true, true);

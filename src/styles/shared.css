@@ -22,6 +22,22 @@ a:hover {
   }
 }
 
+.small-screen-experience {
+  padding: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  text-align: center;
+
+  h1 {
+    color: #2BBBAD;
+    font-weight: bolder;
+  }
+}
+
 /* Navbar styling */
 .landing__navbar {
   box-shadow: none !important;
