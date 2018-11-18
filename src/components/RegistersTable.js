@@ -51,7 +51,7 @@ class RegistersTable extends Component {
           <Tooltip
             placement="top"
             tooltipContent={tooltipContent}>
-              <a className="lesson-debugging__tooltip">{studentValue}</a>
+              <a className="lesson-debugging__tooltip p-1">{studentValue}</a>
           </Tooltip>
         </td>
       </tr>);

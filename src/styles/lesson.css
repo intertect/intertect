@@ -116,8 +116,12 @@
     }
 
     .lesson-debugging__tooltip {
-      text-decoration: underline;
       color: white;
+      border: 1px solid white;
+    }
+
+    .lesson-debugging__tooltip:hover {
+      border: 1px solid #00695c;
     }
 
     .lesson-debugging__wrong-color {
