@@ -1,20 +1,87 @@
 # Part 1: Starting Slowly
 
-Welcome to the first lesson on computer architecture!  You've already read a
-boatload of introduction (unless you skipped it), so now it's time for us to get
-started by implementing the [`addu`](#addu) instruction.  We've already
-implemented this for you in order to give you a base to build on.  If you don't
-like our code, feel free to delete all of it and do this however you want.  In
-future lessons, you'll be implementing functionality on your own (with only
-written instructions like these).
+Welcome to the first lesson on computer architecture!  It's just the first part,
+but we don't want you reading for too long so we'll get right into things by
+implementing the [`addu`](#addu) instruction.  To give you a base to build on,
+we've already done most of the implementation for this part.  We've provided the
+basic structure of the code, and for for each lesson you'll just have to fill in
+the parts of the code for the new functionality.
 
-# Your Task
-We think there's a bug in our implementation.  You're task is to find and fix
-it.
+During this course, you will be implementing a handful of emulators for the MIPS
+I instruction set.  This was a Reduced Instruction Set Computer (RISC)
+architecture, which means that each of the instruction the computer executed is
+quite simple.  This is unlike the x86 processor that is probably in your
+computer right now, which has instructions that each perform many smaller
+sub-operations.
 
-For better or worse, in this lesson you won't be implementing much.  We want to
-make sure you're comfortable with the interface before we start throwing too
-much at you.
+## Your Task
+You task for this part is to familiarize yourself with the interface since
+you'll be using it a lot in the upcoming lessons.  Try running the code!
+
+It should now be abundantly clear that there is a bug in the code.  Your task is
+now to find the bug and fix it.
+
+## Lesson Structure
+The content for this course is divided up into lessons which each cover some
+self-contained topic, each one generally at a lower level of abstraction than
+the previous.  Each lesson is then divided up into individual parts to provide
+self-contained units of progression.  The topics of the lessons are as follows
+
+1. Assembly Interpreter
+2. Binary Interpreter
+3. Simple Pipeline
+4. Full-Featured Pipeline
+
+Don't worry if the terminology doesn't all make sense yet; we'll be doing our
+best to provide introductions to new topics as they come up.
+
+## Some Background
+It's possible that Computer Architecture might be a completely foreign subject
+to you.  We don't want to assume much about how much you've learned previously,
+so with each part, we will provide much of the necessary background for you.  We
+do assume that you know how to program in JavaScript or can at least learn it on
+your own.  We use a very small subset of the features, so there shouldn't be
+much to worry about.
+
+### The Computer Model
+At a high level, the Central Processing Unit (CPU), or processor for short, is
+just an agent that executes simple instructions according to a strict set of
+rules.  The instructions it deals with are things like: "read a byte from
+memory," "add these two numbers," or "compare these values."  Every program you
+run is fundamentally just a stream of these sorts of instructions, along with
+the corresponding data.  As a user or programmer, you can think of the processor
+as faithfully executing a stream of instructions one at time.  However, this is
+really only an illusion.
+
+The contract that the CPU has with the programmer is that it must **appear** to
+be the case that instructions are being executed in this manner.  The CPU is
+free to do anything it wants as long as this abstraction is maintained.  In this
+course, you will be learning how this illusion is performed, and about certain
+tricks that processors use to make programs go fast.
+
+
+### Assembly Language
+You won't have to know much about assembly language for this course, but we'll
+give a brief overview for the purposes of this first lesson, where you'll be
+implementing an assembly language interpreter for the MIPS I instruction set.
+
+Assembly language (usually just called assembly or assembler) is the
+lowest-level language that is still human-readable.  Each line of assembly
+corresponds to a single instruction that is executed by the machine.  This isn't
+entirely true, and there is still some abstraction between assembly and machine
+language, but it is good enough for our purposes.
+
+The JavaScript function you are filling out will be called once for each line of
+the assembly language program, just like a theoretical CPU would do.
+
+Assembly language instructions are generally written in the format of `operation
+operand, operand, operand` although the number of operands differs depending on
+the instruction.  When there is a value to be written, it ends up in the first
+operand, and the operation is usually applied to the last two.  If you look at
+the list of instructions below, you can see how all of the instructions are
+formatted and how they work.  Some of the information isn't going to be useful
+until Lesson 2, but for consistency, we'll list it here as well.
+
 
 ## The [`addu`](#addu) Instruction
 The [`addu`](#addu) instruction is one of the most straightforward instructions
