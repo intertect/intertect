@@ -12,11 +12,10 @@ function SignExtend16(x) {
   return x;
 }
 
-export function solution(instruction, registers, memory) {
+export function solution(instruction, registers, memory, globals) {
   instruction = ToUint32(instruction);
   var opcode = instruction >>> 26 & 0x3f;
 
-  // All R (register) instructions start with 0s
   var rs, rt, rd;
   var op_str;
 
@@ -48,6 +47,10 @@ export function solution(instruction, registers, memory) {
         break;
       case 'or':
         result = ToUint32(registers.read(rs) | registers.read(rt));
+        registers.write(rd, result);
+        break;
+      case 'nor':
+        result = ToUint32(!(registers.read(rs) | registers.read(rt)));
         registers.write(rd, result);
         break;
       case 'xor':
@@ -84,7 +87,6 @@ export function solution(instruction, registers, memory) {
 
     op_str = opcode == 0x2 ? "j" : "jal";
 
-    // TODO
     switch(op_str) {
       case 'j':
         pc = nameToRegisterMap["$pc"];

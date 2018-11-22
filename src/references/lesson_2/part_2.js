@@ -12,14 +12,14 @@ function SignExtend16(x) {
   return x;
 }
 
-var branch_delay = false;
-var branch_target;
+export function solution(instruction, registers, memory, globals) {
+  if (!globals.hasOwnProperty("branch_delay")) {
+    globals["branch_delay"] = false;
+  }
 
-export function solution(instruction, registers) {
   instruction = ToUint32(instruction);
   var opcode = instruction >>> 26;
 
-  // All R (register) instructions start with 0s
   var rs, rt, rd;
   var op_str;
 
@@ -27,10 +27,10 @@ export function solution(instruction, registers) {
   var ra;
 
   // Actually perform the branch delay
-  if (branch_delay) {
-    var pc = nameToRegisterMap["$pc"];
-    branch_delay = false;
-    registers.write(pc, branch_target);
+  var pc = nameToRegisterMap["$pc"];
+  if (globals["branch_delay"]) {
+    globals["branch_delay"] = false;
+    registers.write(pc, globals["branch_target"]);
   }
 
   if (opcode == 0x0) {
@@ -60,6 +60,10 @@ export function solution(instruction, registers) {
         result = ToUint32(registers.read(rs) | registers.read(rt));
         registers.write(rd, result);
         break;
+      case 'nor':
+        result = ToUint32(!(registers.read(rs) | registers.read(rt)));
+        registers.write(rd, result);
+        break;
       case 'xor':
         result = ToUint32(registers.read(rs) ^ registers.read(rt));
         registers.write(rd, result);
@@ -79,8 +83,8 @@ export function solution(instruction, registers) {
       case 'jr':
         result = ToUint32(registers.read(rs));
 
-        branch_delay = true;
-        branch_target = result;
+        globals["branch_delay"] = true;
+        globals["branch_target"] = result;
         break;
       default:
         break;
@@ -93,7 +97,6 @@ export function solution(instruction, registers) {
 
     op_str = opcode == 0x2 ? "j" : "jal";
 
-    // TODO
     switch(op_str) {
       case 'j':
         // Lop off the two top bits
@@ -105,8 +108,8 @@ export function solution(instruction, registers) {
 
         result = pc_val | target;
 
-        branch_delay = true;
-        branch_target = result;
+        globals["branch_delay"] = true;
+        globals["branch_target"] = result;
         break;
       case 'jal':
         ra = nameToRegisterMap["$ra"];
@@ -117,8 +120,8 @@ export function solution(instruction, registers) {
 
         result = (pc_val & 0xC0000000) | target;
 
-        branch_delay = true;
-        branch_target = result;
+        globals["branch_delay"] = true;
+        globals["branch_target"] = result;
         registers.write(ra, pc_val + 8);
         break;
       default:
@@ -162,8 +165,8 @@ export function solution(instruction, registers) {
 
           result = ToUint32(registers.read(pc) + target + 4);
 
-          branch_delay = true;
-          branch_target = result;
+          globals["branch_delay"] = true;
+          globals["branch_target"] = result;
         }
         break;
       case 'sw':

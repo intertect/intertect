@@ -187,9 +187,9 @@ In this case, we only have to look at the MEM and WB stages
 1. No data dependencies. Nothing to do
 2. Same last last time: The value is available
 
-## Condensed Rules
-
-Here is a different format for the rules if that helps
+# Your Task
+The final part of this project is implementing all the hazards explained above. 
+Here is a condensed view of the rules that we wish you to implement:
 
 | F  | D  | E  | M  | W  | Operation        |
 | -- | -- | -- | -- | -- | ---------------- |

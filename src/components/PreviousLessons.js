@@ -37,7 +37,7 @@ class PreviousLessons extends Component {
             <DropdownItem onClick={() => {
               this.props.toggleIntroPanel();
               this.props.loadLesson(lesson, part, true);
-              }} style={{whiteSpace: "normal"}}>
+              }}>
               Part { part }
             </DropdownItem>)
           });

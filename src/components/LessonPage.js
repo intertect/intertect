@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Button,
+import { Button, Tooltip,
   Dropdown, DropdownItem, DropdownToggle, DropdownMenu,
   Modal, ModalHeader, ModalBody, ModalFooter,
   Navbar, NavItem, NavbarNav, NavbarBrand } from 'mdbreact';
@@ -18,16 +18,6 @@ import {lessonParts, lessonContent, lessonRegisterInits, lessonAssembly,
   lessonStarterCode, lessonReferenceSolutions, lessonBinaryCode,
   lessonPipelineStudent, availableTests, lessonTests} from '../utils/lessonItems.js';
 
-import 'brace/mode/javascript';
-import 'brace/theme/chrome';
-import 'brace/theme/dracula';
-import 'brace/theme/eclipse';
-import 'brace/theme/github';
-import 'brace/theme/monokai';
-import 'brace/theme/solarized_dark';
-import 'brace/theme/solarized_light';
-import 'brace/theme/twilight';
-
 function ToUint32(x) {
   return x >>> 0;
 }
@@ -36,17 +26,21 @@ class LessonPage extends Component {
   constructor(props) {
     super(props);
 
-    if (localStorage.getItem('completedParts') == null) {
-      localStorage.setItem('completedParts', 1);
-    }
-
     if (localStorage.getItem('completedLessons') == null) {
       localStorage.setItem('completedLessons', 1);
+    }
+
+    if (localStorage.getItem('completedParts') == null) {
+      localStorage.setItem('completedParts', 1);
     }
 
     if (localStorage.getItem('starterProgram') == null) {
       localStorage.setItem('starterProgram', "{}")
     }
+
+    // ensures the tour of UI is only shown once for a given user
+    var completedTour = localStorage.getItem('completedTour') == null ?
+      false : true;
 
     // Validate localStorage
     if (localStorage.getItem('completedLessons') > 4) {
@@ -81,7 +75,7 @@ class LessonPage extends Component {
     }
 
     this.state = {
-      isIntroPaneOpen: true,
+      isIntroPaneOpen: false,
       revealCompletedLevels: false,
       confirmRestart: false,
       showAbout: false,
@@ -118,6 +112,9 @@ class LessonPage extends Component {
       studentPipeline: [],
       referencePipeline: [],
 
+      studentGlobals: {},
+      referenceGlobals: {},
+
       // // memory becomes relevant after lesson 1.5
       theme: "solarized_dark",
 
@@ -125,8 +122,8 @@ class LessonPage extends Component {
 
       testProgram: lessonPart,
 
-      completedTour: false,
-      isTourOpen: false
+      completedTour: completedTour,
+      isTourOpen: true
     }
 
     this.onChange = this.onChange.bind(this);
@@ -144,6 +141,7 @@ class LessonPage extends Component {
 
   onChange(newValue) {
     this.setState({ studentProgram: newValue});
+    this.saveProgram(this.state.lesson, this.state.lessonPartNum, this.state.starterProgram);
   }
 
   saveProgram(lesson, lessonPartNum, starterProgram) {
@@ -188,9 +186,11 @@ class LessonPage extends Component {
   }
 
   closeTour() {
+    localStorage.setItem('completedTour', "true");
     this.setState({
       completedTour: true,
-      isTourOpen: false
+      isTourOpen: false,
+      isIntroPaneOpen: true
     });
   }
 
@@ -217,10 +217,6 @@ class LessonPage extends Component {
     }
   }
 
-  chooseTest() {
-
-  }
-
   loadCode(lesson, lessonPartNum, starterProgram) {
     var lessonPart = `lesson_${lesson}/part_${lessonPartNum}`;
 
@@ -242,6 +238,9 @@ class LessonPage extends Component {
 
     var studentMemory = new Memory();
     var referenceMemory = new Memory();
+
+    var studentGlobals = {};
+    var referenceGlobals = {};
 
     studentRegisters.load(lessonRegisterInits[lessonPart]);
     referenceRegisters.load(lessonRegisterInits[lessonPart]);
@@ -269,10 +268,16 @@ class LessonPage extends Component {
 
       studentMemory : studentMemory,
       referenceMemory : referenceMemory,
+
+      studentGlobals : studentGlobals,
+      referenceGlobals : referenceGlobals
     })
   }
 
-  loadLesson(lesson, lessonPartNum, resetCode) {
+  // resetCode is an optional param *only* used when updateCode is true, which
+  // specifically refers to whether the code should be updated to the cached value
+  // or fully reset from the starting template
+  loadLesson(lesson, lessonPartNum, updateCode, resetCode=false) {
     if (lessonPartNum > lessonParts[lesson]) {
       lessonPartNum = 1;
       lesson += 1;
@@ -281,7 +286,6 @@ class LessonPage extends Component {
     // Reset the user program every time the lesson is loaded.  This
     // has the effect of reloading the user code only when they click
     // "reset"
-    this.appendUserProgram();
     this.setState({ programRunning: false });
 
     var lessonPart = `lesson_${lesson}/part_${lessonPartNum}`;
@@ -295,28 +299,15 @@ class LessonPage extends Component {
       localStorage.setItem('completedLessons', lesson);
     }
 
-    var starterProgram;
-    if (this.state.starterProgram[lessonPart] == null) {
-      // lesson parts are made incrementally to keep student code in tact
-      var insertionPoint = this.state.studentProgram.indexOf("default:");
-      var studentProgram =
-        this.state.studentProgram.substr(0,insertionPoint) +
-        `${lessonStarterCode[lessonPart]}\n` +
-        this.state.studentProgram.substr(insertionPoint,);
-
-      starterProgram = Object.assign({}, this.state.starterProgram);
-      starterProgram[lessonPart] = studentProgram;
-      this.setState({
-        starterProgram: starterProgram,
-      })
-
-      localStorage.setItem('starterProgram', JSON.stringify(starterProgram));
+    var studentProgram;
+    if (this.state.starterProgram[lessonPart] == null || resetCode) {
+      studentProgram = lessonStarterCode[lessonPart];
     } else {
-      starterProgram = this.state.starterProgram;
+      studentProgram = this.state.starterProgram[lessonPart];
     }
 
-    if (resetCode) {
-      this.setState({ studentProgram : starterProgram[lessonPart] });
+    if (updateCode) {
+      this.setState({ studentProgram : studentProgram });
     }
 
     this.loadTest(lesson, lessonPartNum, lessonAssembly[lessonPart],
@@ -382,7 +373,6 @@ class LessonPage extends Component {
     var instruction;
     if (this.state.lesson == 1) {
       var line_num = this.pcToLineNumber(programCounter);
-      // console.log(line_num)
       if (line_num == -1) {
         return undefined;
       }
@@ -417,10 +407,13 @@ class LessonPage extends Component {
 
   // Step one instruction forward and execute
   step() {
-    if (!this.userProgramExists() || !this.state.programRunning) {
-      this.appendUserProgram();
+    if (!this.state.programRunning) {
       this.setState({programRunning: true});
     }
+
+    var script = document.createElement('script');
+    script.appendChild(document.createTextNode(this.state.studentProgram));
+    document.body.appendChild(script);
 
     var instruction = this.getNextInstruction();
     var pcRegister = nameToRegisterMap["$pc"];
@@ -458,9 +451,9 @@ class LessonPage extends Component {
       else {
         try {
           // eslint-disable-next-line
-          processMIPS(instruction, this.state.studentRegisters, this.state.studentMemory);
-        } catch(e) { /* student renamed function -- no execution */  }
-        solution(instruction, this.state.referenceRegisters, this.state.referenceMemory);
+          processMIPS(instruction, this.state.studentRegisters, this.state.studentMemory, this.state.studentGlobals);
+        } catch(e) { /* ignore this case */ }
+        solution(instruction, this.state.referenceRegisters, this.state.referenceMemory, this.state.referenceGlobals);
       }
     } else if (this.state.lesson == 4) {
       // eslint-disable-next-line
@@ -500,6 +493,27 @@ class LessonPage extends Component {
   }
 
   render() {
+    // eslint-disable-next-line
+    console.log = function (message) {
+      var logger = document.getElementById('log');
+      if (typeof(message) == 'object') {
+          logger.innerHTML += "<li><b>> </b>" +
+            (JSON && JSON.stringify ? JSON.stringify(message) : message) + "</li>";
+      } else {
+          logger.innerHTML += `<li><b>> </b>${message}</li>`;
+      }
+    }
+
+    const consoleIntroText = "/* Console Log appears here */";
+    var consoleIntro = <li className="lesson-log__shell-intro"><b>&gt; </b>{ consoleIntroText }</li>;
+
+    window.onerror = function(message) {
+      if (message != "Script error.") {
+        // eslint-disable-next-line
+        console.log(message);
+      }
+    }
+
     var assemblyList = [];
     var lineNum = this.pcToLineNumber(this.state.programCounter);
     for (var i = 0; i < this.state.assemblyProgram.length-1; i++) {
@@ -511,11 +525,13 @@ class LessonPage extends Component {
 
     var currentInstruction;
     this.state.lesson > 1 ?
-      currentInstruction = <Button outline>
-        {
-          typeof(this.getNextInstruction()) === 'undefined' ? "Done!" : ToUint32(this.getNextInstruction()).toString(2)
-        }
-      </Button>
+      currentInstruction = <Tooltip className="lesson__current-instruction p-1 m-0"
+        placement="top" 
+        tooltipContent="Current Instruction">
+          <a href="#">{
+            typeof(this.getNextInstruction()) === 'undefined' ? "Done!" : ToUint32(this.getNextInstruction()).toString(2)
+          }</a>
+      </Tooltip>
       : currentInstruction = <div></div>
 
     var lessonPart = `lesson_${this.state.lesson}/part_${this.state.lessonPartNum}`;
@@ -538,20 +554,22 @@ class LessonPage extends Component {
 
     return (
       <div className="lesson">
-        <SlidingPane
-            isOpen={ this.state.isIntroPaneOpen }
-            width='50%'
-            onRequestClose={ () => {
-              this.setState({
-                isIntroPaneOpen: false,
-                isTourOpen: true
-              });
-            }}>
-          <ReactMarkdown source={this.state.lessonContent} escapeHtml={false} />
-        </SlidingPane>
+        <div id="slidingPane">
+          <SlidingPane
+              isOpen={ this.state.isIntroPaneOpen }
+              width='50%'
+              onRequestClose={ () => {
+                this.setState({
+                  isIntroPaneOpen: false,
+                  isTourOpen: true
+                });
+              }}>
+            <ReactMarkdown source={this.state.lessonContent} escapeHtml={false} />
+          </SlidingPane>
+        </div>
 
         <Navbar color="default-color" className="landing__navbar">
-          <NavbarBrand className="landing-navbar__brand mx-3" href="#" onClick={() => this.props.toggleLoadedLesson()}>
+          <NavbarBrand className="landing-navbar__brand mx-3" href="/">
             Intertect
           </NavbarBrand>
 
@@ -568,7 +586,11 @@ class LessonPage extends Component {
             </NavItem>
             <NavItem className="landing-navbar__item mr-3">
               <div className="position-relative">
-                <a className={"nav-link landing-navbar__animated-link " + (this.state.isIntroPaneOpen ? 'isOpen' : 'isNotOpen')} href="#" onClick={() => this.setState({ isIntroPaneOpen : !this.state.isIntroPaneOpen })}>Instructions</a>
+                <a className={"nav-link landing-navbar__animated-link " + (this.state.isIntroPaneOpen ? 'isOpen' : 'isNotOpen')} href="#" onClick={() =>
+                  this.setState({
+                    isIntroPaneOpen : !this.state.isIntroPaneOpen,
+                    isTourOpen: !this.state.isTourOpen
+                  })}> Instructions </a>
               </div>
             </NavItem>
           </NavbarNav>
@@ -597,8 +619,11 @@ class LessonPage extends Component {
                     </Dropdown>
                     {currentInstruction}
                   </div>
-                  <div className="lesson-testing__shell-div">
+                  <div className="lesson-testing__shell-div mb-2" id="assemblyCode">
                     <ul className="lesson-testing__shell p-2 mb-0">{ assemblyList }</ul>
+                  </div>
+                  <div className="lesson-log__shell-div" id="console">
+                    <ul className="lesson-log__shell p-2 mb-0" id="log">{ consoleIntro }</ul>
                   </div>
                 </div>
                 <div className="lesson-testing__buttons col p-0 pl-3">
@@ -617,7 +642,6 @@ class LessonPage extends Component {
                   </Button>
                 </div>
               </div>
-
               <div className="lesson-testing__content-2 d-flex justify-content-center px-2 pt-3 pb-0">
                 <Dropdown className="lesson-testing__button mr-3" id="chooseTheme">
                   <DropdownToggle caret outline className="lesson-testing__button lesson-testing__button-theme p-2 m-0"
@@ -636,9 +660,9 @@ class LessonPage extends Component {
                   </DropdownMenu>
                 </Dropdown>
                 <Button outline className="lesson-testing__button lesson-testing__button-save p-2 m-0 mr-3"
-                    color="deep-purple" id="saveCode"
-                    onClick={() => this.saveProgram(this.state.lesson, this.state.lessonPart, this.state.starterProgram)}>
-                  <i className="fa fa-save" aria-hidden="true"></i> Save Code
+                    color="deep-purple"
+                    onClick={() => document.getElementById('log').innerHTML = ""}>
+                  <i className="fa fa-eraser" aria-hidden="true"></i> Clear Console
                 </Button>
                 <Button outline className="lesson-testing__button lesson-testing__button-restart p-2 m-0"
                     color="danger" id="startOver"
@@ -662,55 +686,37 @@ class LessonPage extends Component {
           isTourOpen={this.state.isTourOpen}
           closeTour={this.closeTour} />
 
-        <Modal isOpen={this.state.lessonCorrect && this.state.lessonComplete}
-          frame position="bottom">
-
-          <ModalHeader>Great Work!</ModalHeader>
-          <ModalBody className="text-center">
-            <div className="row">
-              <div className="col-sm-6">
-                <Button outline style={{width:"100%"}}
-                    onClick={() => {
-                    this.setState({
-                      isIntroPaneOpen: true,
-                    });
-
-                    this.saveProgram(this.state.lesson,
-                      this.state.lessonPartNum, this.state.starterProgram)
-                    this.loadLesson(this.state.lesson, this.state.lessonPartNum + 1, true);
-                  }}> Next Lesson
-                </Button>
-              </div>
-
-              <div className="col-sm-6">
-                <Button outline color="danger" onClick={() =>
-                  this.loadLesson(this.state.lesson, this.state.lessonPartNum, false)} style={{width:"100%"}}>
-                  I Want To Stay Here
-                </Button>
-              </div>
+        <Modal isOpen={this.state.lessonCorrect && this.state.lessonComplete} frame position="bottom">
+          <ModalBody className="text-center d-flex justify-content-between">
+            <h4 className="align-self-center">Great Work!</h4>
+            <div>
+              <Button outline className="mx-3 px-2 py-3"
+                onClick={() => {
+                  this.setState({ isIntroPaneOpen: true });
+                  this.saveProgram(this.state.lesson, this.state.lessonPartNum, this.state.starterProgram)
+                  this.loadLesson(this.state.lesson, this.state.lessonPartNum + 1, true);
+                }}> 
+                Next Lesson
+              </Button>
+              <Button outline className="mx-3 px-2 py-3" color="secondary" onClick={() => 
+                this.loadLesson(this.state.lesson, this.state.lessonPartNum, false)}>
+                I Want to Stay Here
+              </Button>
             </div>
           </ModalBody>
         </Modal>
 
-        <Modal isOpen={!this.state.lessonCorrect && this.state.lessonComplete}
-          frame position="bottom">
-
-          <ModalHeader>Oops, let&apos;s try again!</ModalHeader>
-          <ModalBody className="text-center">
-            <div className="row">
-              <div className="col-sm-6">
-                <Button outline style={{width:"100%"}}
-                  onClick={() => this.loadLesson(this.state.lesson, this.state.lessonPartNum, false)}>
-                  <i className="fa fa-refresh" aria-hidden="true"></i> Reset
-                </Button>
-              </div>
-
-              <div className="col-sm-6">
-                <Button outline color="danger" style={{width:"100%"}}
-                    onClick={() => {this.setState({ confirmRestart : true })}}>
-                  <i className="fa fa-warning" aria-hidden="true"></i> Restart Level
-                </Button>
-              </div>
+        <Modal isOpen={!this.state.lessonCorrect && this.state.lessonComplete} frame position="bottom">
+          <ModalBody className="text-center d-flex justify-content-between">
+            <h4 className="align-self-center">Oops, let&apos;s try again!</h4>
+            <div>
+              <Button outline className="mx-3 px-2 py-3" 
+                onClick={() => this.loadLesson(this.state.lesson, this.state.lessonPartNum, false)}>
+                <i className="fa fa-refresh" aria-hidden="true"></i> Reset
+              </Button>
+              <Button outline className="mx-3 px-2 py-3" color="danger" onClick={() => {this.setState({ confirmRestart : true })}}>
+                <i className="fa fa-warning" aria-hidden="true"></i> Restart Level
+              </Button>
             </div>
           </ModalBody>
         </Modal>
@@ -719,25 +725,20 @@ class LessonPage extends Component {
           <ModalHeader>Restart Level</ModalHeader>
           <ModalBody>
             <b>Warning: </b> You will lose <b>all</b> your progress by hitting Continue. Please make sure
-            this is what you want before clicking Continue
+            this is what you want before clicking Continue.
           </ModalBody>
           <ModalFooter>
-            <div className="row">
-              <div className="col-sm-6">
-                <Button outline onClick={() => this.setState({confirmRestart : false})} style={{width:"100%"}}>
-                  Close
-                </Button>
-              </div>
-              <div className="col-sm-6">
-                <Button outline color="danger" style={{width:"100%"}}
-                  onClick={() => {
-                    this.setState({confirmRestart : false })
-                    this.loadLesson(this.state.lesson, this.state.lessonPartNum, true);
-                  }}>
-                  Continue
-                </Button>
-              </div>
-            </div>
+            <Button outline className="mx-3 p-2"
+              onClick={() => this.setState({confirmRestart : false})}>
+              Close
+            </Button>
+            <Button outline className="mx-3 p-2" color="danger"
+              onClick={() => {
+                this.setState({confirmRestart : false })
+                this.loadLesson(this.state.lesson, this.state.lessonPartNum, true, true);
+              }}>
+              Continue
+            </Button>
           </ModalFooter>
         </Modal>
       </div>

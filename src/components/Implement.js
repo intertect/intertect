@@ -10,13 +10,19 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import AceEditor from 'react-ace';
 
+import 'brace/mode/javascript';
+import 'brace/theme/chrome';
+import 'brace/theme/dracula';
+import 'brace/theme/eclipse';
+import 'brace/theme/github';
+import 'brace/theme/monokai';
+import 'brace/theme/solarized_dark';
+import 'brace/theme/solarized_light';
+import 'brace/theme/twilight';
+
 class Implement extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      theme: this.props.theme,
-      studentProgram: this.props.studentProgram
-    };
   }
 
   render() {
@@ -25,12 +31,12 @@ class Implement extends Component {
         <AceEditor
           className="lesson-implement__editor d-flex"
           mode="javascript"
-          theme={this.state.theme}
+          theme={this.props.theme}
           onChange={this.props.onChange}
           name="UNIQUE_ID"
           editorProps={{$blockScrolling: true}}
           value={this.props.studentProgram}
-          tabSize="2"
+          tabSize={2}
         />
       </div>
     );

@@ -7,8 +7,6 @@ import { Memory } from '../utils/util.js';
 class MemoryTable extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-    }
   }
 
   render() {

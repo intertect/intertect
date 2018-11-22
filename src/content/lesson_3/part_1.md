@@ -11,7 +11,7 @@ a time, once per clock-cycle, the processor breaks up each instruction into a
 series of sub-tasks that can be executed simultaneously, leading to higher
 utilization of the processor.
 
-### Doing Some Laundry
+## Doing Some Laundry
 The common analogy is to doing laundry.  Imagine you have 5 loads of laundry to
 do (first imagine you have enough clothing to have that be necessary).  There
 are three tasks for you to do: Washing, drying, and folding.  Further, imagine
@@ -28,7 +28,7 @@ processor. There are many stages to instruction execution, and if only one
 instruction is being executed at a time, then there are many parts of the
 processor that aren't being properly utilized.
 
-### Throughput vs. Latency
+## Throughput vs. Latency
 An interesting property of pipelining is that it **increases** both latency and
 throughput.  Throughput is the number of instructions executed per unit time
 (usually a second), while latency is the time it takes from the start of
@@ -71,10 +71,7 @@ architecture uses the common RISC pipeline:
 - **Writeback (WB)**: Saves (writes back) results to registers **if
   appropriate**.
 
-## Latches
-**Important**: Do not skip this section, otherwise implementing this lesson and
-all future ones will be impossible!
-
+# Code Structure
 Naturally, as we divide the pipeline into separate blocks, we need a way to
 communicate between the blocks.  The way a processor achieves this is through
 what are called "latches."  Latches effectively act as boxes for dumping
@@ -139,7 +136,7 @@ names/types for these cases:
   stage of the pipeline saving should occur
   - `position`: Which register to be written to (if `location` is `"registers"`)
 
-## Your Task
+# Your Task
 The first part of the pipeline is IF, or Instruction Fetch.  As we've seen in
 the past, the `pc` dictate what in the program is being executed.  Unlike past
 lessons, however, the program is now stored in memory.  So, in this lesson,

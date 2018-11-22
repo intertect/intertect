@@ -1,35 +1,251 @@
-functMap = {
-  0x20: "add",
+/**
+* Lesson 2, Part 1: Binary Representations
+*
+* Goal: Convert the instruction operation handling from a synthetic assembly
+* parse to the conventional MIPS binary format
+*/
+
+function ToUint32(x) {
+  return x >>> 0;
+}
+
+function SignExtend16(x) {
+  x = ToUint32(x);
+
+  if (x >>> 15 > 0) {
+    x |= 0xFFFF0000;
+  }
+
+  return x;
+}
+
+function processMIPS(instruction, registers, memory, globals) {
+  instruction = ToUint32(instruction);
+
+  // TODO: Compute opcode
+  var opcode = undefined
+
+  var rs, rt, rd;
+  var op_str;
+
+  var pc, pc_val, result;
+  var ra;
+
+  // TODO: Determine if instruction is R format
+  if (undefined) {
+    // R format: 000000ss sssttttt dddddaaa aaffffff
+
+    // TODO: Compute rs, rt, rd, shamt, funct, and op_str
+    rs = undefined
+    rt = undefined
+    rd = undefined
+    var shamt = undefined
+    var funct = undefined
+
+    op_str = undefined;
+
+    var result;
+    switch(op_str) {
+      case 'addu':
+        result = ToUint32(registers.read(rs) + registers.read(rt));
+        registers.write(rd, result);
+        break;
+      case 'subu':
+        result = ToUint32(registers.read(rs) - registers.read(rt));
+        registers.write(rd, result);
+        break;
+      case 'and':
+        result = ToUint32(registers.read(rs) & registers.read(rt));
+        registers.write(rd, result);
+        break;
+      case 'or':
+        result = ToUint32(registers.read(rs) | registers.read(rt));
+        registers.write(rd, result);
+        break;
+      case 'nor':
+        result = ToUint32(!(registers.read(rs) | registers.read(rt)));
+        registers.write(rd, result);
+        break;
+      case 'xor':
+        result = ToUint32(registers.read(rs) ^ registers.read(rt));
+        registers.write(rd, result);
+        break;
+      case 'sll':
+        result = ToUint32(registers.read(rs) << registers.read(rt));
+        registers.write(rd, result);
+        break;
+      case 'srl':
+        result = ToUint32(registers.read(rs) >>> registers.read(rt));
+        registers.write(rd, result);
+        break;
+      case 'sra':
+        result = ToUint32(registers.read(rs) >> registers.read(rt));
+        registers.write(rd, result);
+        break;
+      case 'jr':
+        pc = nameToRegisterMap["$pc"];
+
+        result = ToUint32(registers.read(rs));
+
+        registers.write(pc, result);
+        break;
+      default:
+        break;
+    }
+  }
+
+  // TODO: Determine if instruction is J format
+  else if (undefined) {
+    // J format: oooooott ttttttt tttttttt tttttttt
+
+    // TODO: Extract target and op_str
+    var target = undefined
+    op_str = undefined
+
+    switch(op_str) {
+      case 'j':
+        // TODO: Implement this instruction using binary
+        break;
+      case 'jal':
+        // TODO: Implement this instruction using binary
+        break;
+      default:
+        break;
+    }
+  }
+
+  // TODO: Determine if instruction is I format
+  else {
+    // I format: ooooooss sssttttt iiiiiiii iiiiiiii
+
+    // TODO: Extract rs, rt, imm, and calculate start_address
+    rs = undefined
+    rt = undefined
+    var imm = undefined
+    var start_address = undefined
+
+    // used in store/load instructions
+    var byte_1, byte_2, byte_3, byte_4;
+    var value;
+
+    op_str = opcodeMap[opcode];
+
+    switch(op_str) {
+      case 'addiu':
+        result = registers.read(rs) + SignExtend16(imm);
+        registers.write(rt, result);
+        break;
+      case 'andi':
+        result = ToUint32(registers.read(rs) & imm);
+        registers.write(rt, result);
+        break;
+      case 'ori':
+        result = ToUint32(registers.read(rs) | imm);
+        registers.write(rt, result);
+        break;
+      case 'xori':
+        result = ToUint32(registers.read(rs) ^ imm);
+        registers.write(rt, result);
+        break;
+      case 'beq':
+        // TODO: Implement this instruction using binary
+        break;
+      case 'sw':
+        value = ToUint32(registers.read(rt));
+
+        byte_1 = (value >>> 24) & 0xFF;
+        byte_2 = (value >>> 16) & 0xFF;
+        byte_3 = (value >>> 8) & 0xFF;
+        byte_4 = value & 0xFF;
+
+        memory.write(start_address, byte_1);
+        memory.write(start_address + 1, byte_2);
+        memory.write(start_address + 2, byte_3);
+        memory.write(start_address + 3, byte_4);
+
+        break;
+      case 'sh':
+        value = ToUint32(registers.read(rt));
+
+        byte_1 = (value >>> 8) & 0xFF;
+        byte_2 = value & 0xFF;
+
+        memory.write(start_address, byte_1);
+        memory.write(start_address + 1, byte_2);
+
+        break;
+      case 'sb':
+        value = ToUint32(registers.read(rt));
+        byte_1 = value & 0xFF;
+        memory.write(start_address, byte_1);
+
+        break;
+      case 'lw':
+        byte_1 = memory.read(start_address);
+        byte_2 = memory.read(start_address + 1);
+        byte_3 = memory.read(start_address + 2);
+        byte_4 = memory.read(start_address + 3);
+
+        result = byte_4;
+        result |= byte_3 << 8;
+        result |= byte_2 << 16;
+        result |= byte_1 << 24;
+
+        registers.write(rt, result);
+        break;
+      case 'lh':
+        byte_1 = memory.read(start_address);
+        byte_2 = memory.read(start_address + 1);
+
+        result = byte_2;
+        result |= byte_1 << 8;
+
+        registers.write(rt, result);
+        break;
+      case 'lb':
+        byte_1 = memory.read(start_address);
+        result = byte_1;
+        registers.write(rt, result);
+        break;
+      case 'lui':
+        result = imm << 16;
+        registers.write(rt, result);
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+var functMap = {
   0x21: "addu",
-  0x22: "sub",
   0x23: "subu",
   0x24: "and",
   0x25: "or",
   0x27: "nor",
   0x26: "xor",
-  0x0: "sll",
-  0x2: "srl",
-  0x3: "sra",
-  0x8: "jr",
+  0x00: "sll",
+  0x02: "srl",
+  0x03: "sra",
+  0x08: "jr",
 };
 
-opcodeMap = {
-  0x8: "addi",
-  0x9: "addiu",
-  0xc: "andi",
-  0xd: "ori",
-  0xe: "xori",
-  0x24: "lbu",
-  0x25: "lhu",
+var opcodeMap = {
+  0x09: "addiu",
+  0x0c: "andi",
+  0x0d: "ori",
+  0x0e: "xori",
+  0x20: "lb",
+  0x21: "lh",
   0x23: "lw",
-  0xf: "lui",
+  0x0f: "lui",
   0x28: "sb",
   0x29: "sh",
   0x2b: "sw",
-  0x4: "beq",
+  0x04: "beq",
 };
 
-nameToRegisterMap = {
+var nameToRegisterMap = {
   "$zero" : 0x0,
   "$at" : 0x1,
   "$v0" : 0x2,
@@ -63,43 +279,4 @@ nameToRegisterMap = {
   "$fp" : 0x1e,
   "$ra" : 0x1f,
   "$pc" : 0x20
-}
-
-function ToUint32(x) {
-  return x >>> 0;
-}
-
-function SignExtend16(x) {
-  x = ToUint32(x);
-  
-  if (x >>> 15 > 0) {
-    x |= 0xFFFF0000;
-  }
-  
-  return x;
-}
-
-function processMIPS(instruction, registers, memory) {
-  var opcode = parseInt(instruction.substr(0,6),2);
-
-  var rs, rt, rd;
-  var op_str;
-
-  // All R (register) instructions start with 0s
-  if (opcode == 0x0) {
-    // TODO: Fill out this area
-  }
-
-  // J instructions
-  // TODO: Figure out the opcode check for J instructions
-  else if (true) {
-    // J format: oooooott ttttttt tttttttt tttttttt
-    // TODO: Fill out this area
-  }
-
-  // TODO: Figure out the opcode check for I instructions
-  else {
-    // I format: ooooooss sssttttt iiiiiiii iiiiiiii
-    // TODO: Fill out this area
-  }
-}
+};

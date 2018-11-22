@@ -4,7 +4,7 @@ In this lesson, you'll be implementing the [`subu`](#subu) instruction.  Each of
 the parts in Lesson 1 will be adding to your code from previous ones, so by the
 end, you'll have a complete MIPS emulator.
 
-# Code structure
+# Code Structure
 Now that we've gotten through all that preliminary information, it's time for
 you to understand the structure of the code that you will be writing.  The code
 that we give you as a starting point is just a suggestion, and there are of
@@ -20,7 +20,7 @@ contains all the information you will need to perform the operation.  It is an
 array of strings that is the space-delimited form of the assembly instruction currently
 being executed (highlighted in the UI). This will be the case for all of Lesson 1,
 but it will differ slightly in future lessons. Keep that in the back of your mind 
-for when you have to adopt your code for future lessons! 
+for when you have to adapt your code for future lessons! 
 
 As an example, the assembly code line `addu $t5, $t0, $t0` would have the following
 value passed in `instruction`: `["addu", "$t5", "$t0", "$t0"]`. In order to execute 
@@ -28,20 +28,20 @@ the code, the code simply enumerates each of the possible
 operations, and then performs the necessary work for whichever particular
 instruction it is.  This is the simplest way to write an emulator; while the
 later lessons will deal with more and more complicated ideas, this basic
-structure will remain for the most part.
+structure will remain the same for the most part.
 
 ## Registers
 The `registers` variable contains an interface to the registers so you don't
-have to implement this functionality yourself (and also allows us to check your
+have to implement this functionality yourself (and so that we can check your
 work).  It provides a two-method interface: `registers.read(register)` and
 `registers.write(register, value)`. Specifically:
 
-- `registers.read(register)`: Returns the numeric value stored at that location. Note
+- `registers.read(register)`: Returns the numeric value stored at that register. Note
 that read takes in the **numeric** value of the register. So, trying to call
 `registers.read("$t5")`, for example, will simply return `undefined`, since there's
 no such value as `$t5` in the registers object: instead, it is `0xd`. To make this
-conversion easier for you, `nameToRegisterMap` to you, which gives the numeric value
-associated with a register name. Make sure to use this whenever doing lookups or writes!
+conversion easier for you, `nameToRegisterMap` is provided, which gives the numeric value
+associated with each register name. Make sure to use this whenever doing lookups or writes!
 - `registers.write(register, value)`: Writes the specified value into the register. Once
 again, the write functionality expects **numeric** values for the destination, which
 means you will have to look registers up in `nameToRegisterMap` before storing.
@@ -50,6 +50,18 @@ means you will have to look registers up in `nameToRegisterMap` before storing.
 The memory abstraction is just like the register abstraction.  It provides the
 two methods `memory.read(location)` and `memory.write(location.value)`.  You
 won't use memory until a later part, but now you know why it's there!
+
+## Globals
+The globals variable is an *Object* that is used for storing global values. If you
+have worked with data structures or databases, this effectively acts as a key-value
+storage system. You should *not* have to use this outside of a subsequent lesson, 
+where we remind you of the interface for this. However, if you wish to use it, simply
+read/write to it as a standard JS object with:
+
+- `read`: To read a field `property`, simply do `globals[property]`
+- `write`: To write to a field `property`, simply use `globals[property] = value`
+- `contains`: To check whether `property` has been set in this globals space,
+use: `globals.hasOwnProperty(property)`
 
 # Your Task
 You task in this part is to implement the following instruction:
@@ -78,7 +90,7 @@ R-Format instructions contain the following information:
 
 The previous definition isn't entirely correct, but it gives a base on which we
 will continue to build.  We will go into significantly more detail in the coming
-parts and lessons but this should be enough information for now.
+parts and lessons, but this should be enough information for now.
 
 ## More Instruction Formats
 There are two other instruction formats that you will encounter during the

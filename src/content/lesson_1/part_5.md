@@ -9,6 +9,16 @@ There are a couple strange things about branch and jump instructions that we'll
 gloss over for this lesson, but be prepared for a little bit of strangeness
 starting in Lesson 2.
 
+# Code Structure
+As we explain below, the instructions you will be implementing involve
+jumping to different labels in the code. In future parts, the destinations will
+be directly embedded in the instruction itself. Because of how we're passing
+in the instruction in this first lesson, however, we need a way to translate from
+the jump label to the program line. As a result, we provide a variable `labelToLine`
+for easy lookup of this information. Whenever you are jumping to a location, make
+sure to set `$pc` to the value of `labelToLine[label]`: setting it directly to 
+`label` will cause an error when attempting to jump to that location!
+
 # Your Task
 You task in this part is to implement the following instructions:
 

@@ -14,6 +14,19 @@ quite simple.  This is unlike the x86 processor that is probably in your
 computer right now, which has instructions that each perform many smaller
 sub-operations.
 
+## Code Structure
+**Important**: Do not skip reading this section in general.  It will make
+implementing the current and future lessons much more difficult than it need be
+(and sometimes completely impossible if you have to adhere to an API we have set
+up for you)!
+
+Since this is the first part, understanding the exact details of how the code
+works is not completely necessary.  The "Code Structure" section of the
+instructions is where we generally explain how we've laid out the code, and any
+new APIs we're exposing to you.  We will explain the code more in-depth in the
+following part, since you'll be modifying it more extensively there.  But, the
+change(s) you'll make in this part should be pretty micro in scope.
+
 ## Your Task
 You task for this part is to familiarize yourself with the interface since
 you'll be using it a lot in the upcoming lessons.  Try running the code!
@@ -82,16 +95,15 @@ the list of instructions below, you can see how all of the instructions are
 formatted and how they work.  Some of the information isn't going to be useful
 until Lesson 2, but for consistency, we'll list it here as well.
 
-
 ## The [`addu`](#addu) Instruction
 The [`addu`](#addu) instruction is one of the most straightforward instructions
 in this architecture.  It takes its second two operands, adds them, and writes
 the result into the first operand.  You can click on any instance of the
 [`addu`](#addu) instruction in this instructions panel to be taken to the
-glossary about it.
+glossary entry about it.
 
 ## What's in a Name?
-Why is this instruction called [`addu`](#addu) and not `add`?  I'll let you in
+Why is this instruction called [`addu`](#addu) and not just `add`?  I'll let you in
 on a little secret: There *is* an `add` instruction, but we're not making you
 implement it.  [`addu`](#addu) stands for Add Unsigned.  However, signed (using
 two's-complement) and unsigned additions and subtractions are completely

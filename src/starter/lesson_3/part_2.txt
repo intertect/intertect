@@ -1,3 +1,9 @@
+/**
+* Lesson 3, Part 2: Instruction Decode (ID)
+*
+* Goal: Implement Instruction Decode (ID) pipeline stage
+*/
+
 function ToUint32(x) {
   return x >>> 0;
 }
@@ -12,7 +18,7 @@ function SignExtend16(x) {
   return x;
 }
 
-function IF(latches, registers, memory) {
+function IF(latches, registers, memory, globals) {
   var location = registers.read(nameToRegisterMap["$pc"]);
 
   var byte_1 = memory.read(location);
@@ -28,11 +34,10 @@ function IF(latches, registers, memory) {
   latches.if_id = ToUint32(binary);
 }
 
-function ID(latches, registers, memory) {
+function ID(latches, registers, memory, globals) {
   var binary = latches.if_id;
   var opcode = binary >>> 26;
 
-  // All R (register) binarys start with 0s
   var rs, rt, rd;
   var op_str;
 
@@ -40,6 +45,7 @@ function ID(latches, registers, memory) {
   var instruction;
 
   if (opcode == 0x0) {
+    // R format: 000000ss sssttttt dddddaaa aaffffff
     // TODO: Fill this area
   }
 
@@ -56,17 +62,17 @@ function ID(latches, registers, memory) {
 
 // this is just a mock of the behind the scenes: altering this function will NOT
 // change the outcome of running your code
-function processMIPS(latches, registers, memory) {
-  IF(latches, registers, memory);
-  ID(latches, registers, memory);
+function processMIPS(latches, registers, memory, globals) {
+  IF(latches, registers, memory, globals);
+  ID(latches, registers, memory, globals);
 
   /* ------------------------------------------------------------------------ */
   // We've already implemented the functions below this line for you! You'll be
   // doing these in the following lessons
   /* ------------------------------------------------------------------------ */
-  EX(latches, registers, memory);
-  MEM(latches, registers, memory);
-  WB(latches, registers, memory);
+  EX(latches, registers, memory, globals);
+  MEM(latches, registers, memory, globals);
+  WB(latches, registers, memory, globals);
 }
 
 var functMap = {

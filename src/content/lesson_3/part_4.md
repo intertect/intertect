@@ -4,6 +4,10 @@ challenging, but you've done really well making it this far; only a little ways
 to go.  All that is left to do is memory operations (MEM stage) and register
 writeback (WB).
 
+# Code Structure
+There are no significant changes between this and the previous part. Refer to
+the Latch API below to see what is expected in your output of MEM.
+
 # Your Task
 Given the information passed along from the write stage, either perform a memory
 operation, or pass the data through to the WB stage.  Some points to keep in

@@ -2,7 +2,18 @@ function ToUint32(x) {
   return x >>> 0;
 }
 
-export function solution(instruction, registers, memory) {
+function SignExtend16(x) {
+  x = ToUint32(x);
+
+  if (x >>> 15 > 0) {
+    x |= 0xFFFF0000;
+  }
+
+  return x;
+}
+
+
+export function solution(instruction, registers, memory, globals) {
   var rd, rs, rt;
   var shamt;
   var result;
@@ -40,6 +51,13 @@ export function solution(instruction, registers, memory) {
       rs = nameToRegisterMap[instruction[2]];
       rt = nameToRegisterMap[instruction[3]];
       result = ToUint32(registers.read(rs) | registers.read(rt));
+      registers.write(rd, result);
+      break;
+    case 'nor':
+      rd = nameToRegisterMap[instruction[1]];
+      rs = nameToRegisterMap[instruction[2]];
+      rt = nameToRegisterMap[instruction[3]];
+      result = ToUint32(!(registers.read(rs) | registers.read(rt)));
       registers.write(rd, result);
       break;
     case 'xor':
@@ -101,42 +119,29 @@ export function solution(instruction, registers, memory) {
     case 'beq':
       rt = nameToRegisterMap[instruction[1]];
       rs = nameToRegisterMap[instruction[2]];
-      offset = ToUint32(instruction[3]);
-      pc = nameToRegisterMap["$pc"];
+      offset = ToUint32(instruction[3]) << 2;
 
-      result = ToUint32(registers.read(pc)) + offset;
-      registers.write(pc, offset);
+      if (registers.read(rs) == registers.read(rt)) {
+        pc = nameToRegisterMap["$pc"];
+        result = labelToLine[instruction[3]]
+        registers.write(pc, result);
+      }
+
       break;
     case 'j':
-      target = ToUint32(instruction[1]) << 2;
       pc = nameToRegisterMap["$pc"];
-      // Lop off the two top bits
-      target &= 0x3FFFFFFF;
+      result = labelToLine[instruction[1]]
 
-      pc_val = ToUint32(registers.read(pc));
-      // Keep only the top two bits
-      pc_val &= 0xC0000000;
-
-      result = pc_val | target;
-
-      registers.write(pc, offset);
+      registers.write(pc, result);
       break;
     case 'jal':
-      target = ToUint32(instruction[1]) << 2;
       pc = nameToRegisterMap["$pc"];
       ra = nameToRegisterMap["$ra"];
-      // Lop off the two top bits
-      target &= 0x3FFFFFFF;
 
-      pc_val = ToUint32(registers.read(pc));
-      // Keep only the top two bits
-      pc_val &= 0xC0000000;
-
-      result = pc_val | target;
-
-      registers.write(pc, offset);
-      registers.write(ra, pc);
-      break;
+      pc_val = ToUint32(registers.read(pc)) + 4;
+      registers.write(ra, pc_val);
+      result = labelToLine[instruction[1]]
+      registers.write(pc, result);
     case 'jr':
       rs = nameToRegisterMap[instruction[1]];
       pc = nameToRegisterMap["$pc"];

@@ -81,7 +81,6 @@ decimal to understand their underlying meaning */
 export function disassembleInstruction(instruction) {
   var opcode = (instruction >> 26) & 0x3F // 0x3F == 0b111111
 
-  // All R (register) instructions start with 0s
   var rs, rt, rd;
   var rs_str, rt_str, rd_str;
   var op_str;

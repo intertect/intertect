@@ -21,6 +21,16 @@
     height: 50%;
   }
 
+  .lesson__current-instruction {
+    font-size: smaller;
+    font-weight: bolder;
+    align-self: center;
+
+    a {
+      color: #2BBBAD;
+    }
+  }
+
   .lesson__testing {
     border-bottom: 5px solid #D3EFED;
 
@@ -43,8 +53,8 @@
 
     .lesson-testing__shell-div {
       background-color: #002B36;
-      height: 100%;
-      overflow: scroll;
+      height: 60%;
+      overflow-y: scroll;
 
       .lesson-testing__shell {
         list-style: none;
@@ -56,6 +66,21 @@
         .active {
           background-color: #FFA;
         }
+      }
+    }
+
+    .lesson-log__shell-div {
+      background-color: #FFFFFF;
+      height: 40%;
+      overflow-y: scroll;
+      border: solid 2px #C9C2D2;
+
+      .lesson-log__shell {
+        list-style: none;
+        color: #002B36;
+        font: 0.8em 'Andale Mono', Consolas, 'Courier New';
+        line-height: 1.6em;
+        height: 100%;
       }
     }
 
@@ -79,28 +104,38 @@
     border-top: 5px solid #d3efed;
 
     .btn, .lesson-debugging__registers, .lesson-debugging__memory {
-      max-width: 200px;
+      max-width: 350px;
       width: 100%;
       height: 38px;
     }
 
     .lesson-debugging__collapsible {
       max-height: calc(100% - 38px);
-      overflow: scroll;
+      overflow-y: scroll;
       height: 100%;
     }
 
     .lesson-debugging__tooltip {
-      text-decoration: underline;
       color: white;
+      border: 1px solid white;
     }
 
     .lesson-debugging__wrong-color {
       background-color: #FF4444;
+      color: white;
+
+      .lesson-debugging__tooltip:hover {
+        border: 1px solid #772226;
+      }
     }
 
     .lesson-debugging__right-color {
       background-color: #00C851;
+      color: white;
+
+      .lesson-debugging__tooltip:hover {
+        border: 1px solid #00695c;
+      }
     }
 
     .btn {

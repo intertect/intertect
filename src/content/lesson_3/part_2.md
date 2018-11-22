@@ -1,4 +1,4 @@
-# Part 2: Decode (ID)
+# Part 2: Instruction Decode (ID)
 Now that we've covered the basic of processor pipelining and the Instruction
 Fetch stage, we'll move on to implementing the second stage: Instruction Decode
 (ID)!  The instruction decode stage takes the binary instruction as read from
@@ -14,6 +14,10 @@ the ID stage:
 1. The operation of the instruction is determined
 2. The registers are read from the register file
 3. Branches and Jumps are executed
+
+# Code Structure
+There are no significant changes between this and the previous part. Refer to
+the Latch API below to see what is expected in your output of ID.
 
 # Your Task
 This code will be nearly identical to what you were doing in the cases of the

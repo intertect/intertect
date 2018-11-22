@@ -33,7 +33,27 @@ next lesson, but simply put, branches and jumps force the processor to wait so
 having an instruction that is always executed allows the processor to do
 something in what would otherwise be dead time.
 
-## Your Task
+# Code Structure
+As we mentioned in the first lesson part, the you should never have had to use the 
+`globals` variable *until now*. The state of the branch delay is a global state that
+must be tracked. To do so, we expect you to store and read states in the `globals`
+variable, described again below. Note that, outside of some small modifications to
+how values are stored in the jump/branch instructions, no modifications will be
+required in your case implementations.
+
+## Globals
+The globals variable is an *Object* that is used for storing global values. If you
+have worked with data structures or databases, this effectively acts as a key-value
+storage system. You should *not* have to use this outside of a subsequent lesson, 
+where we remind you of the interface for this. However, if you wish to use it, simply
+read/write to it as a standard JS object with:
+
+- `read`: To read a field `property`, simply do `globals[property]`
+- `write`: To write to a field `property`, simply use `globals[property] = value`
+- `contains`: To check whether `property` has been set in this globals space,
+use: `globals.hasOwnProperty(property)`
+
+# Your Task
 Implement the branch delay slot!  You have to keep track of whether or not
 there's an instruction in the branch delay slot as well as the location to jump
 to after the branch delay instruction has been executed.

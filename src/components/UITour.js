@@ -30,22 +30,29 @@ class UITour extends Component {
         Feel free to choose as you please (although Solarized Dark is the best).`,
       },
       {
-        selector: '#saveCode',
-        content: `If you want to take a break and resume later on, click
-        here to save your progress!`,
-      },
-
-      {
         selector: '#startOver',
         content: `To restart the level with a clean program, click here. This will erase all the
         progress you've made so far in the level, so make sure there's nothing you want to keep
         that hasn't been copied elsewhere.`,
       },
-      {
+      /* {
         selector: '#testing',
         content: `Once you think you've completed the lesson, either partially or in its entirety,
         it's time to test! No software development is complete without thorough testing, and that's
         certainly no different here.`
+      }, */
+      {
+        selector: '#assemblyCode',
+        content: `The test programs for each lesson is some compiled assembly code. For the first
+        lesson, the instructions you work with will come directly from the code displayed. For
+        later lessons, you will get these in binary, but the assembly is still shown to help you
+        understand why the outputs of the program should be what they are!`
+      },
+      {
+        selector: '#console',
+        content: `As with debugging any software, we expect you'll used plenty of print statements
+        while working through the lessons! All your console.logs and general syntax error handling
+        will be displayed in this window.`
       },
       {
         selector: '#testSelect',
@@ -78,7 +85,7 @@ class UITour extends Component {
         content: `When running the tests above, you'll see the "outputs" in this section. As you
         will learn, the outputs of processor instructions are always written to either memory or
         registers, which are displayed separately here.`,
-      },
+      }, /*
       {
         selector: '#registersTable',
         content: `As you run your program (with the Step or Run button in the test area), you will
@@ -90,8 +97,14 @@ class UITour extends Component {
         selector: '#memoryTable',
         content: `Similar to the registers table, the memory table holds values for any memory
         address you stored into. Note that memory doesn't become relevant for a couple more lessons,
-        so feel free to minimize this table to declutter your space in the meantime!`,
-      },
+        so this will remain empty until then!`,
+      }, */
+      {
+        selector: '',
+        content: `That's it: now you're ready to learn about computer architecture! Close this tour of the
+        UI to see the instructions panel, which will provide all the material you'll need to get going! Also,
+        if you were wondering, we will be saving your code, so feel free to exit and resume at any time!`
+      }
     ]
 
     return (

@@ -42,7 +42,6 @@ function ID(latches, registers, memory) {
   var binary = latches.if_id;
   var opcode = binary >>> 26;
 
-  // All R (register) binarys start with 0s
   var rs, rt, rd;
   var op_str;
 
@@ -154,7 +153,6 @@ function EX(latches, registers, memory) {
 
   var instruction = latches.id_ex;
 
-  // All R (register) instructions start with 0s
   var rs, rt, rd;
   var op_str = instruction["op_str"];
 
@@ -187,6 +185,9 @@ function EX(latches, registers, memory) {
         break;
       case 'or':
         result = ToUint32(registers.read(rs) | registers.read(rt));
+        break;
+      case 'nor':
+        result = ToUint32(!(registers.read(rs) | registers.read(rt)));
         break;
       case 'xor':
         result = ToUint32(registers.read(rs) ^ registers.read(rt));
@@ -266,7 +267,6 @@ function MEM(latches, registers, memory) {
 
   var mem_ops = ['sw', 'sh', 'sb', 'lw', 'lh', 'lb'];
 
-  // All R (register) instructions start with 0s
   var rs, rt, rd;
   var op_str = instruction["op_str"];
 
@@ -336,7 +336,6 @@ function MEM(latches, registers, memory) {
 
         location = "registers";
         position = rt;
-        console.log(result)
         break;
       case 'lb':
         byte_1 = memory.read(memory_address);

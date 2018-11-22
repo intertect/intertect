@@ -1,3 +1,9 @@
+/**
+* Lesson 3, Part 1: Instruction Fetch (IF)
+*
+* Goal: Implement Instruction Fetch (IF) pipeline stage
+*/
+
 function ToUint32(x) {
   return x >>> 0;
 }
@@ -12,23 +18,23 @@ function SignExtend16(x) {
   return x;
 }
 
-function IF(latches, registers, memory) {
+function IF(latches, registers, memory, globals) {
   // TODO: Fill this function
 }
 
 // this is just a mock of the behind the scenes: altering this function will NOT
 // change the outcome of running your code
-function processMIPS(latches, registers, memory) {
-  IF(latches, registers, memory);
+function processMIPS(latches, registers, memory, globals) {
+  IF(latches, registers, memory, globals);
 
   /* ------------------------------------------------------------------------ */
   // We've already implemented the functions below this line for you! You'll be
   // doing these in the following lessons
   /* ------------------------------------------------------------------------ */
-  ID(latches, registers, memory);
-  EX(latches, registers, memory);
-  MEM(latches, registers, memory);
-  WB(latches, registers, memory);
+  ID(latches, registers, memory, globals);
+  EX(latches, registers, memory, globals);
+  MEM(latches, registers, memory, globals);
+  WB(latches, registers, memory, globals);
 }
 
 var functMap = {

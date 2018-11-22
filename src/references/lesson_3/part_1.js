@@ -12,7 +12,7 @@ function SignExtend16(x) {
   return x;
 }
 
-function IF(latches, registers, memory) {
+function IF(latches, registers, memory, globals) {
   var location = registers.read(nameToRegisterMap["$pc"]);
 
   var byte_1 = memory.read(location);
@@ -33,11 +33,26 @@ function IF(latches, registers, memory) {
   }
 }
 
-function ID(latches, registers, memory) {
+function ID(latches, registers, memory, globals) {
+  if (latches.if_id === undefined) {
+    latches.id_ex = undefined;
+    return;
+  }
+
+  if (!globals.hasOwnProperty("branch_delay")) {
+    globals["branch_delay"] = false;
+  }
+
+  var pc = nameToRegisterMap["$pc"];
+  if (globals["branch_delay"]) {
+    globals["branch_delay"] = false;
+    registers.write(pc, globals["branch_target"]);
+    latches.id_ex = undefined;
+  }
+
   var binary = latches.if_id;
   var opcode = binary >>> 26;
 
-  // All R (register) binarys start with 0s
   var rs, rt, rd;
   var op_str;
 
@@ -55,10 +70,10 @@ function ID(latches, registers, memory) {
 
     switch(op_str) {
       case 'jr':
-        pc = nameToRegisterMap["$pc"];
-        position = pc;
         result = ToUint32(registers.read(rs));
-        registers.write(position, result)
+
+        globals["branch_delay"] = true;
+        globals["branch_target"] = result;
         break;
       default:
         instruction = {
@@ -80,7 +95,6 @@ function ID(latches, registers, memory) {
     position = nameToRegisterMap["$pc"];
     switch(op_str) {
       case 'j':
-        pc = nameToRegisterMap["$pc"];
         // Lop off the two top bits
         target &= 0x3FFFFFFF;
 
@@ -88,11 +102,10 @@ function ID(latches, registers, memory) {
         // Keep only the top two bits
         pc_val &= 0xC0000000;
 
-        result = pc_val | target;
-        registers.write(position, result)
+        globals["branch_delay"] = true;
+        globals["branch_target"] = result;
         break;
       case 'jal':
-        pc = nameToRegisterMap["$pc"];
         ra = nameToRegisterMap["$ra"];
         // Lop off the two top bits
         target &= 0x3FFFFFFF;
@@ -101,7 +114,8 @@ function ID(latches, registers, memory) {
 
         result = (pc_val & 0xC0000000) | target;
 
-        registers.write(position, result)
+        globals["branch_delay"] = true;
+        globals["branch_target"] = result;
         registers.write(ra, pc_val + 8);
         break;
       default:
@@ -119,12 +133,12 @@ function ID(latches, registers, memory) {
     switch(op_str) {
       case 'beq':
         if (registers.read(rs) == registers.read(rt)) {
-          pc = nameToRegisterMap["$pc"];
           var target = imm << 2;
 
-          position = pc;
           result = ToUint32(registers.read(pc) + target + 4);
-          registers.write(position, result)
+
+          globals["branch_delay"] = true;
+          globals["branch_target"] = result;
         }
         break;
       default:
@@ -141,10 +155,14 @@ function ID(latches, registers, memory) {
   latches.id_ex = instruction;
 }
 
-function EX(latches, registers, memory) {
+function EX(latches, registers, memory, globals) {
+  if (latches.id_ex === undefined) {
+    latches.ex_mem = undefined;
+    return;
+  }
+
   var instruction = latches.id_ex;
 
-  // All R (register) instructions start with 0s
   var rs, rt, rd;
   var op_str = instruction["op_str"];
 
@@ -177,6 +195,9 @@ function EX(latches, registers, memory) {
         break;
       case 'or':
         result = ToUint32(registers.read(rs) | registers.read(rt));
+        break;
+      case 'nor':
+        result = ToUint32(!(registers.read(rs) | registers.read(rt)));
         break;
       case 'xor':
         result = ToUint32(registers.read(rs) ^ registers.read(rt));
@@ -241,7 +262,12 @@ function EX(latches, registers, memory) {
   }
 }
 
-function MEM(latches, registers, memory) {
+function MEM(latches, registers, memory, globals) {
+  if (latches.ex_mem === undefined) {
+    latches.mem_wb = undefined;
+    return;
+  }
+
   var instruction = latches.ex_mem["instruction"];
   var memory_address = latches.ex_mem["memory_address"];
 
@@ -251,7 +277,6 @@ function MEM(latches, registers, memory) {
 
   var mem_ops = ['sw', 'sh', 'sb', 'lw', 'lh', 'lb'];
 
-  // All R (register) instructions start with 0s
   var rs, rt, rd;
   var op_str = instruction["op_str"];
 
@@ -321,7 +346,6 @@ function MEM(latches, registers, memory) {
 
         location = "registers";
         position = rt;
-        console.log(result)
         break;
       case 'lb':
         byte_1 = memory.read(memory_address);
@@ -351,18 +375,22 @@ function MEM(latches, registers, memory) {
   }
 }
 
-function WB(latches, registers, memory) {
+function WB(latches, registers, memory, globals) {
+  if (latches.mem_wb === undefined) {
+    return;
+  }
+
   if (latches.mem_wb["location"] == "registers") {
     registers.write(latches.mem_wb["position"], latches.mem_wb["result"])
   }
 }
 
-function processMIPS(latches, registers, memory) {
-  IF(latches, registers, memory);
-  ID(latches, registers, memory);
-  EX(latches, registers, memory);
-  MEM(latches, registers, memory);
-  WB(latches, registers, memory);
+function processMIPS(latches, registers, memory, globals) {
+  IF(latches, registers, memory, globals);
+  ID(latches, registers, memory, globals);
+  EX(latches, registers, memory, globals);
+  MEM(latches, registers, memory, globals);
+  WB(latches, registers, memory, globals);
 }
 
 export var solution = {

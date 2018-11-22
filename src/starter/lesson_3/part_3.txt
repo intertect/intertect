@@ -1,3 +1,9 @@
+/**
+* Lesson 3, Part 3: Execute (EX)
+*
+* Goal: Implement Execute (EX) pipeline stage
+*/
+
 function ToUint32(x) {
   return x >>> 0;
 }
@@ -12,7 +18,7 @@ function SignExtend16(x) {
   return x;
 }
 
-function IF(latches, registers, memory) {
+function IF(latches, registers, memory, globals) {
   var location = registers.read(nameToRegisterMap["$pc"]);
 
   var byte_1 = memory.read(location);
@@ -28,11 +34,26 @@ function IF(latches, registers, memory) {
   latches.if_id = ToUint32(binary);
 }
 
-function ID(latches, registers, memory) {
+function ID(latches, registers, memory, globals) {
+  if (latches.if_id === undefined) {
+    latches.id_ex = undefined;
+    return;
+  }
+
+  if (!globals.hasOwnProperty("branch_delay")) {
+    globals["branch_delay"] = false;
+  }
+
+  var pc = nameToRegisterMap["$pc"];
+  if (globals["branch_delay"]) {
+    globals["branch_delay"] = false;
+    registers.write(pc, globals["branch_target"]);
+    latches.id_ex = undefined;
+  }
+
   var binary = latches.if_id;
   var opcode = binary >>> 26;
 
-  // All R (register) binarys start with 0s
   var rs, rt, rd;
   var op_str;
 
@@ -40,6 +61,7 @@ function ID(latches, registers, memory) {
   var instruction;
 
   if (opcode == 0x0) {
+    // R format: 000000ss sssttttt dddddaaa aaffffff
     rs = binary >>> 21 & 0x1f
     rt = binary >>> 16 & 0x1f
     rd = binary >>> 11 & 0x1f
@@ -47,12 +69,23 @@ function ID(latches, registers, memory) {
     var funct = binary & 0x3f
 
     op_str = functMap[funct];
-    instruction = {
-      "op_str" : op_str,
-      "rs" : rs,
-      "rt" : rt,
-      "rd" : rd,
-      "shamt" : shamt
+
+    switch(op_str) {
+      case 'jr':
+        result = ToUint32(registers.read(rs));
+
+        globals["branch_delay"] = true;
+        globals["branch_target"] = result;
+        break;
+      default:
+        instruction = {
+          "op_str" : op_str,
+          "rs" : rs,
+          "rt" : rt,
+          "rd" : rd,
+          "shamt" : shamt
+        }
+        break;
     }
   }
 
@@ -61,9 +94,34 @@ function ID(latches, registers, memory) {
     var target = (binary & 0x3FFFFFF) << 2;
 
     op_str = opcode == 0x2 ? "j" : "jal";
-    instruction = {
-      "op_str" : op_str,
-      "target" : target
+    position = nameToRegisterMap["$pc"];
+    switch(op_str) {
+      case 'j':
+        // Lop off the two top bits
+        target &= 0x3FFFFFFF;
+
+        pc_val = ToUint32(registers.read(pc));
+        // Keep only the top two bits
+        pc_val &= 0xC0000000;
+
+        globals["branch_delay"] = true;
+        globals["branch_target"] = result;
+        break;
+      case 'jal':
+        ra = nameToRegisterMap["$ra"];
+        // Lop off the two top bits
+        target &= 0x3FFFFFFF;
+
+        pc_val = ToUint32(registers.read(pc));
+
+        result = (pc_val & 0xC0000000) | target;
+
+        globals["branch_delay"] = true;
+        globals["branch_target"] = result;
+        registers.write(ra, pc_val + 8);
+        break;
+      default:
+        break;
     }
   }
 
@@ -71,24 +129,39 @@ function ID(latches, registers, memory) {
     // I format: ooooooss sssttttt iiiiiiii iiiiiiii
     rs = (binary >>> 21) & 0x1F;
     rt = (binary >>> 16) & 0x1F;
-    var imm = (binary >>> 0) & 0xFFFF;
+    var imm = SignExtend16(binary & 0xFFFF);
 
     op_str = opcodeMap[opcode];
-    instruction = {
-      "op_str" : op_str,
-      "rs" : rs,
-      "rt" : rt,
-      "imm" : imm
+    switch(op_str) {
+      case 'beq':
+        if (registers.read(rs) == registers.read(rt)) {
+          var target = imm << 2;
+
+          result = ToUint32(registers.read(pc) + target + 4);
+
+          globals["branch_delay"] = true;
+          globals["branch_target"] = result;
+        }
+        break;
+      default:
+        instruction = {
+          "op_str" : op_str,
+          "rs" : rs,
+          "rt" : rt,
+          "imm" : imm
+        }
+        break;
     }
   }
 
   latches.id_ex = instruction;
 }
 
-function EX(latches, registers, memory) {
+function EX(latches, registers, memory, globals) {
+  // TODO: Remember to account for the case ID passes on undefined to EX
+
   var instruction = latches.id_ex;
 
-  // All R (register) instructions start with 0s
   var rs, rt, rd;
   var op_str = instruction["op_str"];
 
@@ -117,17 +190,17 @@ function EX(latches, registers, memory) {
 
 // this is just a mock of the behind the scenes: altering this function will NOT
 // change the outcome of running your code
-function processMIPS(latches, registers, memory) {
-  IF(latches, registers, memory);
-  ID(latches, registers, memory);
-  EX(latches, registers, memory);
+function processMIPS(latches, registers, memory, globals) {
+  IF(latches, registers, memory, globals);
+  ID(latches, registers, memory, globals);
+  EX(latches, registers, memory, globals);
 
   /* ------------------------------------------------------------------------ */
   // We've already implemented the functions below this line for you! You'll be
   // doing these in the following lessons
   /* ------------------------------------------------------------------------ */
-  MEM(latches, registers, memory);
-  WB(latches, registers, memory);
+  MEM(latches, registers, memory, globals);
+  WB(latches, registers, memory, globals);
 }
 
 var functMap = {

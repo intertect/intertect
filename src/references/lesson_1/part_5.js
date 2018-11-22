@@ -9,7 +9,18 @@ function ToUint32(x) {
   return x >>> 0;
 }
 
-export function solution(instruction, registers, memory) {
+function SignExtend16(x) {
+  x = ToUint32(x);
+
+  if (x >>> 15 > 0) {
+    x |= 0xFFFF0000;
+  }
+
+  return x;
+}
+
+
+export function solution(instruction, registers, memory, globals) {
   var rd, rs, rt;
   var shamt;
   var result;
@@ -44,6 +55,13 @@ export function solution(instruction, registers, memory) {
       rs = nameToRegisterMap[instruction[2]];
       rt = nameToRegisterMap[instruction[3]];
       result = ToUint32(registers.read(rs) | registers.read(rt));
+      registers.write(rd, result);
+      break;
+    case 'nor':
+      rd = nameToRegisterMap[instruction[1]];
+      rs = nameToRegisterMap[instruction[2]];
+      rt = nameToRegisterMap[instruction[3]];
+      result = ToUint32(!(registers.read(rs) | registers.read(rt)));
       registers.write(rd, result);
       break;
     case 'xor':
@@ -110,7 +128,6 @@ export function solution(instruction, registers, memory) {
 
       if (registers.read(rs) == registers.read(rt)) {
         pc = nameToRegisterMap["$pc"];
-        // result = ToUint32(registers.read(pc)) + offset;
         result = labelToLine[instruction[3]]
         registers.write(pc, result);
       }
@@ -118,13 +135,6 @@ export function solution(instruction, registers, memory) {
       break;
     case 'j':
       pc = nameToRegisterMap["$pc"];
-      /* target = ToUint32(instruction[1]) << 2;
-
-      pc_val = ToUint32(registers.read(pc));
-      // Keep only the top two bits
-      pc_val &= 0xC0000000;
-
-      result = pc_val | target; */
       result = labelToLine[instruction[1]]
 
       registers.write(pc, result);
@@ -135,11 +145,6 @@ export function solution(instruction, registers, memory) {
 
       pc_val = ToUint32(registers.read(pc)) + 4;
       registers.write(ra, pc_val);
-
-      // Keep only the top two bits
-      /* target = ToUint32(instruction[1]) << 2;
-      pc_val &= 0xC0000000;
-      result = pc_val | target; */
       result = labelToLine[instruction[1]]
       registers.write(pc, result);
       break;
