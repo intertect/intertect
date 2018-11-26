@@ -110,153 +110,211 @@ you'll be introduced to these instruction formats in much more detail.
 
 
 ---
-# The MIPS Instruction Set
+## The MIPS Instruction Set
 
 <a id="addu"></a>
 ### Add Unsigned (`addu $rd, $rs, $rt`)
 
+`$rd = $rs + $rt`
+
 Take the unsigned integer values from `$rs` and `$rt`, perform an unsigned add
-on them, and save the result into `$rd`
+on them, and save the result into `$rd`.  An unsigned add means that on
+overflow, the result wraps back around to 0.
 
-<a id="addi"></a>
-### Add Immediate (`addi $rt, $rs, val`)
-
-Take the signed integer values from `$rs` and `val` (which is stored in the
-instruction), perform a signed add on them, and write the value to `$rt`
+There is also an `add` instruction that performs a signed add, but we're not
+having you implement that.  If you're curious, the "signed" add means that the
+processor throws an error when there would be an overflow.  What happens is that
+the processor detects the case and signals to the operating system that
+something went wrong.  Since there isn't going to be an operating system here,
+there wasn't a point to having you implement this instruction.
 
 <a id="addiu"></a>
-### Add Immediate Unsigned (`addiu $rt, $rs, val`)
+### Add Immediate Unsigned (`addiu $rt, $rs, imm`)
 
-Take the unsigned integer values from `$rs` and `val` (which is stored in the
+`$rt = $rt + imm`
+
+Take the unsigned integer values from `$rs` and `imm` (which is stored in the
 instruction), perform an unsigned add on them, and write the value to `$rt`.
 
 <a id="subu"></a>
 ### Subtract Unsigned (`subu $rd, $rs, $rt`)
 
+`$rd = $rs - $rt`
+
 Take the unsigned integer values from `$rs` and `$rt`, perform an unsigned
-subtraction (`$rs - $rt`) on them, and save the result into `$rd`
+subtraction on them, and save the result into `$rd`.  See the above explanation
+for [addu](#addu) for more information about unsigned vs signed operations.
 
 <a id="and"></a>
 ### And (`and $rd, $rs, $rt`)
 
+`$rd = $rs & $rt`
+
 Perform a bitwise logical AND between `$rs` and `$rt`, saving the result into
-`$rd`
+`$rd`.
 
 <a id="andi"></a>
-### And Immediate (`andi $rt, $rs, val`)
+### And Immediate (`andi $rt, $rs, imm`)
 
-Perform a bitwise logical AND between `$rs` and `val` (which has been padded out
-to the left with 0), saving the result into `$rt`
+`$rt = $rs & ZeroExt(imm)`
+
+Perform a bitwise logical AND between `$rs` and a zero-extended `imm`, saving
+the result into `$rt`.
 
 <a id="or"></a>
 ### Or (`or $rd, $rs, $rt`)
 
+`$rd = $rs | $rt`
+
 Perform a bitwise logical OR between `$rs` and `$rt`, saving the value into
-`$rd`
+`$rd`.
 
 <a id="ori"></a>
-### Or Immediate (`ori $rt, $rs, val`)
+### Or Immediate (`ori $rt, $rs, imm`)
 
-Perform a bitwise logical OR between `$rs` and `val` (which has been padded out
-to the left with 0), saving the result into `$rt`
+`$rt = $rs | ZeroExt(imm)`
+
+Perform a bitwise logical OR between `$rs` and a zero-extended `imm`, saving the
+result into `$rt`.
 
 <a id="nor"></a>
 ### Nor (`nor $rd, $rs, $rt`)
 
+`$rd = ~($rs | $rt)`
+
 Perform a bitwise logical NOR between `$rs` and `$rt` which is the same as
-taking the bitwise logical OR and then negating it (`~($rs | $rt)`), saving the
-result into `$rd`
+taking the bitwise logical OR and then negating it, saving the result into
+`$rd`.
 
 <a id="xor"></a>
 ### Xor (`xor $rd, $rs, $rt`)
 
+`$rd = $rs ^ $rt`
+
 Perform a bitwise logical XOR between `$rs` and `$rt`, saving the result into
-`$rd`
+`$rd`.
 
 <a id="xori"></a>
 ### Xor Immediate (`xori`)
 
-Perform a bitwise logical XOR between `$rs` and `val` (which has been padded to
+`$rd = $rs ^ ZeroExt(imm)`
+
+Perform a bitwise logical XOR between `$rs` and `imm` (which has been padded to
 the left with 0), saving the result into `$rt`
 
 <a id="sll"></a>
-### Shift Left Logical (`sll $rt, $rs, val`)
+### Shift Left Logical (`sll $rt, $rs, shamt`)
 
-Perform a logical shift left of `$rt` by `val` places, saving the result into
-`$rt`.  This is integer multiplication by 2
+`$rt = $rs << shamt`
+
+Perform a logical shift left of `$rt` by `shamt` binary digits, saving the
+result into `$rt`.  This is integer multiplication by 2.
 
 <a id="srl"></a>
-### Shift Right Logical (`srl $rt, $rs, val`)
+### Shift Right Logical (`srl $rt, $rs, shamt`)
 
-Perform a logical right shift of `$rs` by `val` places, filling the vacated
-places on the left with 0, saving the result into `$rt`
+`$rt = $rs >>> shamt`
+
+Perform a logical right shift of `$rs` by `shamt` places, filling the vacated
+places on the left with 0 and saving the result into `$rt`.
 
 <a id="sra"></a>
-### Shift Right Arithmetic (`sra $rt, $rs, val`)
+### Shift Right Arithmetic (`sra $rt, $rs, shamt`)
 
-Perform an arithmetic right shift of `$rs` by `val` places, filling the vacated
-places with 0 if the leading bit was 0, and 1 if the leading place was one.
-This is integer division by 2
+`$rt = $rs >> shamt`
+
+Perform an arithmetic right shift of `$rs` by `shamt` places, filling the
+vacated places with 0 if the leading bit was 0 (number was positive), and 1 if
+the leading place was one (number was negative).  This is integer division by 2
+with rounding towards negative infinity.
 
 <a id="beq"></a>
-### Branch On Equal (`beq $rt, $rs, val`)
+### Branch On Equal (`beq $rt, $rs, imm`)
 
-if `$rs == $rt`, jump to the location specified by `val` shifted left by two
-places (multiplied by 4)
+if `$rs == $rt`, jump to the branch target.  The branch target is calculated as
+follows: `$pc + 4 + imm << 2`.  In English, the branch target is `imm`
+multiplied by 4 bytes after the address of the **next** instruction.
 
-<a id="blt"></a>
-### Branch Less Than (`blt $rt, $rs, val`)
-
-if `$rs < $rt` (yes, this does seem quite backwards), jump to the location
-specified by `val` shifted left by two places (multiplied by 4)
+Since instructions are all 4 bytes in length, this can be thought of as `imm`
+instructions after the instruction following the branch.
 
 <a id="j"></a>
-### Jump (`j val`)
+### Jump (`j imm`)
 
-Jump to the address specified in val shifted left 2 places (multiply by 4)
+Unconditionally jump to the jump target.  The jump target is calculated by
+taking the top 4 bytes of the address of the **next instruction** and adding
+below that `imm` * 4.
 
 <a id="jal"></a>
-### Jump And Link (`jal val`)
+### Jump And Link (`jal imm`)
 
-Jump to the address specified in val shifted left 2 places (multiplied by 4),
-and save the address of the next instruction into `$ra`
+An unconditional branch like above, but the address of the next instruction is
+saved into the `$ra` register.
 
 <a id="jr"></a>
 ### Jump Register (`jr $rs`)
 
-Jump to the address stored in `$rs` shifted left two places (multiplied by 4)
+`$pc = $rs`
 
+Jump to the address stored in `$rs`.
 
 <a id="lbu"></a>
-### Load Byte Unsigned (`lbu`)
+### Load Byte Unsigned (`lbu $rt, imm($rs)`)
+
+Load a single byte from address `$rs + imm` into `$rt`.  An unsigned load means
+that the top 24 bits of the register should be set to 0.  A signed load would
+mean setting the top 24 bits to the top bit of the byte read.
 
 <a id="lhu"></a>
-### Load Halfword Unsigned (`lhu`)
+### Load Halfword Unsigned (`lhu $t, imm($rs)`)
+
+Load a halfword (2 bytes) from address `$rs + imm` into `$rt`.  The top 16 bits
+will be 0.  The ordering of the bytes depends on the endianness of the
+architecture.  The bytes read from memory go from most significant byte to least
+significant.
 
 <a id="lw"></a>
 ### Load Word (`lw`)
 
-<a id="lui"></a>
-### Load Upper Immediate (`lui`)
+Load a word (4 bytes) from address `$rs + imm` into `$rt`. There is no
+signed/unsigned distinction here since the read will fill the whole register.
+The bytes read from memory go from most significant byte to least significant.
 
-<a id="li"></a>
-### Load Immediate (`li`)
+<a id="lui"></a>
+### Load Upper Immediate (`lui $rt imm`)
+
+`$rt = imm << 16`
+
+Load the upper 16 bits of `$rt` with `imm`.  The bottom 16 bits of `$rt` will be
+0.
 
 <a id="sb"></a>
-### Store Byte (`sb`)
+### Store Byte (`sb $rt, imm($rs)`)
+
+Store the least significant byte of `$rt` into the address `imm + $rs`.
 
 <a id="sh"></a>
-### Store Halfword (`sh`)
+### Store Halfword (`sh $rt, imm($rs)`)
+
+Store the two least significant bytes of `$rt` into addresses starting with `imm
++ $rs`.  The bytes stored go from most to least significant.
 
 <a id="sw"></a>
-### Store Word (`sw`)
+### Store Word (`sw $rt, imm($rs)`)
 
-## Special
+Store the four bytes of `$rt` into the addresses starting with `imm + $rs`.  The
+bytes are stored from most significant to least significant.
 
 <a id="noop"></a>
 ### No Operation (`noop`)
-Do nothing.  This might not seem like a useful instruction to have in an
-instruction set archiecture, but it can really come in handy when you need to
-fill a space with something and you want to make sure that nothing could
-possibly happen if you end up there.  It certainly doesn't come up much, but
-it's very handy to have around when it does.
+
+Do nothing.
+
+Noop (also no-op, no op, nop, etc.) instructions are used when a region of
+memory will be executed but the programmer doesn't want anything to happen.
+They are used liberally in MIPS in the branch delay slot when nothing else will
+fit.  They are also occasionally seen in buffer overrun attacks to make the
+target calculation easier (as a "nop sled").
+
+The most common noop instruction in MIPS is the all 0 instruction, although
+anything that writes to the `$zero` register is a functional no-op.
